@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "Ko30o4ve+BA=",
+  "dgSpecHash": "UuUzlQpjnNU=",
   "success": true,
   "projectFilePath": "D:\\Programmings\\Project\\Real projects\\Diem_danh_nha_nuoc\\real-app\\backend\\uef_diem_danh\\uef_diem_danh\\uef_diem_danh.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\exceldatareader\\3.7.0\\exceldatareader.3.7.0.nupkg.sha512"
+  ],
   "logs": []
 }
