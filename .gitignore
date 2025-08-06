@@ -482,3 +482,10 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+*.suo
+*.user
+_ReSharper.*
+bin
+obj
+packages
