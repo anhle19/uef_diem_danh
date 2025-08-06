@@ -1,12 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "0ZGYethmb+o=",
+  "dgSpecHash": "Ko30o4ve+BA=",
   "success": true,
-  "projectFilePath": "/Users/macpro/Desktop/uef_diem_danh/uef_diem_danh/uef_diem_danh.csproj",
-  "expectedPackageFiles": [
-    "/Users/macpro/.nuget/packages/microsoft.netcore.app.ref/8.0.13/microsoft.netcore.app.ref.8.0.13.nupkg.sha512",
-    "/Users/macpro/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.13/microsoft.aspnetcore.app.ref.8.0.13.nupkg.sha512",
-    "/Users/macpro/.nuget/packages/microsoft.netcore.app.host.osx-arm64/8.0.13/microsoft.netcore.app.host.osx-arm64.8.0.13.nupkg.sha512"
-  ],
+  "projectFilePath": "D:\\Programmings\\Project\\Real projects\\Diem_danh_nha_nuoc\\real-app\\backend\\uef_diem_danh\\uef_diem_danh\\uef_diem_danh.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }
