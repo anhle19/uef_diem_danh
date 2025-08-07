@@ -1,4 +1,9 @@
+using uef_diem_danh.Database;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Db Context
+builder.Services.AddDbContext<AppDbContext>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
