@@ -130,5 +130,26 @@ namespace uef_diem_danh.Controllers
         }
 
 
+
+        [Route("cap-nhat-lop-hoc/{study_class_id}")]
+        [HttpPost]
+        public async Task<IActionResult> Update(int study_class_id, StudyClassCreateRequest request)
+        {
+
+            LopHoc studyClass = await context.LopHocs
+                .FirstOrDefaultAsync(lh => lh.MaLopHoc == study_class_id);
+
+            studyClass.TenLopHoc = request.StudyClassName;
+            studyClass.ThoiGianBatDau = DateOnly.ParseExact(request.StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            studyClass.ThoiGianKetThuc = DateOnly.ParseExact(request.EndDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+
+            await context.SaveChangesAsync();
+
+            return View("~/Views/StudyClasses/ListView.cshtml");
+        }
+
+
+
+
     }
 }
