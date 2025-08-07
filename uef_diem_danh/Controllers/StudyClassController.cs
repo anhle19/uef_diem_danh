@@ -17,8 +17,8 @@ namespace uef_diem_danh.Controllers
             this.context = context;
         }
 
-        [Route("list-of-study-classes")]
-        public async Task<IActionResult> GetListManagementPage([FromQuery] int pageNumber)
+        [Route("quan-ly-danh-sach-lop-hoc")]
+        public async Task<IActionResult> GetListManagementPage([FromQuery] int pageNumber = 1)
         {
             int pageSize = 10;
 
@@ -37,13 +37,13 @@ namespace uef_diem_danh.Controllers
                 .ToListAsync();
 
 
-            return View();
+            return View("~/Views/StudyClasses/ListView.cshtml", studyClasses);
         }
 
 
-        [Route("study-classes/search")]
+        [Route("quan-ly-danh-sach-lop-hoc/tim-kiem")]
         [HttpPost]
-        public async Task<IActionResult> SearchFilterStudyClass([FromBody] StudyClassSearchFilterRequest request)
+        public async Task<IActionResult> SearchFilterStudyClass([FromBody] SearchFilterStudyClassRequest request)
         {
             List<StudyClassListManagementDto> studyClasses = new List<StudyClassListManagementDto>();
 
