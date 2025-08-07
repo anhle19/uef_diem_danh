@@ -1,5 +1,6 @@
 ﻿using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 using System.Text;
 using uef_diem_danh.Database;
 using uef_diem_danh.DTOs;
@@ -58,7 +59,7 @@ namespace uef_diem_danh.Controllers
                 // Read excel file
                 using (var readExcelStream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read))
                 {
-                    using (var excelReader = ExcelDataReader.ExcelReaderFactory.CreateReader(readExcelStream, config))
+                    using (var excelReader = ExcelReaderFactory.CreateReader(readExcelStream, config))
                     {
 
                         int currentRow = 0; // Current row (starting at first row)
@@ -85,9 +86,14 @@ namespace uef_diem_danh.Controllers
                                     Ten = excelReader.GetValue(FIRST_NAME_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
                                     Email = excelReader.GetValue(EMAIL_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
                                     SoDienThoai = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
-                                    NgaySinh = DateOnly.Parse(excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? "01/01/1900"),
+                                    NgaySinh = DateOnly
+                                        .ParseExact(
+                                            excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? "01/01/1900", 
+                                            "dd/MM/yyyy", 
+                                            CultureInfo.InvariantCulture
+                                    ),
                                     DiaChi = excelReader.GetValue(ADDRESS_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
-                                    MaBarCode = string.Empty,
+                                    MaBarCode = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
                                     CreatedAt = DateTime.UtcNow
                                 };
 

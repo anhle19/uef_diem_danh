@@ -31,7 +31,7 @@ namespace uef_diem_danh.Controllers
 
         [Route("login")]
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginRequest model)
         {
             if (!ModelState.IsValid) return View(model);
 
@@ -47,7 +47,7 @@ namespace uef_diem_danh.Controllers
 
         [Route("register")]
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterRequest model)
         {
             if (!ModelState.IsValid) return View(model);
 

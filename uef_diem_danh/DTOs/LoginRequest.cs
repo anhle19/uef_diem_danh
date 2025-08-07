@@ -2,7 +2,7 @@
 
 namespace uef_diem_danh.DTOs
 {
-    public class LoginViewModel
+    public class LoginRequest
     {
         public string Email { get; set; }
 
