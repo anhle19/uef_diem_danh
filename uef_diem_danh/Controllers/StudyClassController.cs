@@ -149,7 +149,19 @@ namespace uef_diem_danh.Controllers
         }
 
 
+        [Route("xoa-lop-hoc/{study_class_id}")]
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int study_class_id)
+        {
 
+            LopHoc studyClass = await context.LopHocs
+                .FirstOrDefaultAsync(lh => lh.MaLopHoc == study_class_id);
+
+            context.LopHocs.Remove(studyClass);
+            await context.SaveChangesAsync();
+
+            return Ok("Xóa một lớp học thành công");
+        }
 
     }
 }
