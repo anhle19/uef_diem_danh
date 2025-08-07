@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using uef_diem_danh.Database;
 using uef_diem_danh.DTOs;
+using uef_diem_danh.Models;
 
 namespace uef_diem_danh.Controllers
 {
@@ -18,6 +19,7 @@ namespace uef_diem_danh.Controllers
         }
 
         [Route("quan-ly-danh-sach-lop-hoc")]
+        [HttpGet]
         public async Task<IActionResult> GetListManagementPage([FromQuery] int pageNumber = 1)
         {
             int pageSize = 10;
@@ -107,6 +109,26 @@ namespace uef_diem_danh.Controllers
 
             return View();
         }
+
+        [Route("tao-moi-lop-hoc")]
+        [HttpPost]
+        public async Task<IActionResult> Create(StudyClassCreateRequest request)
+        {
+
+            LopHoc studyClass = new LopHoc
+            {
+                TenLopHoc = request.StudyClassName,
+                ThoiGianBatDau = DateOnly.ParseExact(request.StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture),
+                ThoiGianKetThuc = DateOnly.ParseExact(request.EndDate, "dd/MM/yyyy", CultureInfo.InvariantCulture),
+            };
+
+            context.LopHocs.Add(studyClass);
+            await context.SaveChangesAsync();
+
+            return View("~/Views/StudyClasses/ListView.cshtml");
+
+        }
+
 
     }
 }
