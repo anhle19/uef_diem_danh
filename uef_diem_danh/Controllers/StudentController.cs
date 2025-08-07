@@ -87,7 +87,8 @@ namespace uef_diem_danh.Controllers
                                     SoDienThoai = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
                                     NgaySinh = DateOnly.Parse(excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? "01/01/1900"),
                                     DiaChi = excelReader.GetValue(ADDRESS_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
-                                    MaBarCode = string.Empty
+                                    MaBarCode = string.Empty,
+                                    CreatedAt = DateTime.UtcNow
                                 };
 
                                 //string? lastName = excelReader.GetValue(LAST_NAME_COLUMN_INDEX)?.ToString()?.Trim();
@@ -110,7 +111,24 @@ namespace uef_diem_danh.Controllers
                                 // Check if student already exists by phone number
                                 if (!context.HocViens.Any(hv => hv.SoDienThoai == student.SoDienThoai))
                                 {
-                                    students.Add(student);
+                                    // If study class is provided, then save student with study class
+                                    if (studyClass != null)
+                                    {
+                                        student.ThamGias = new List<ThamGia>
+                                        {
+                                            new ThamGia
+                                            {
+                                                MaLopHoc = studyClass.MaLopHoc,
+                                                CreatedAt = DateTime.UtcNow
+                                            }
+                                        };
+                                        students.Add(student);
+                                    }
+                                    // If not then just save student
+                                    else
+                                    {
+                                        students.Add(student);
+                                    }
                                 }
 
                             }
