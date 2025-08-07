@@ -42,6 +42,36 @@ namespace uef_diem_danh.Controllers
             return View("~/Views/StudyClasses/ListView.cshtml", studyClasses);
         }
 
+        [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-hoc-vien")]
+        [HttpGet]
+        public async Task<IActionResult> GetListOfStudentsManagementPage(int study_class_id, [FromQuery] int pageNumber = 1)
+        {
+            int pageSize = 10;
+
+            List<StudyClassStudentListManagementDto> students = await context.ThamGias
+                .Where(tg => tg.MaLopHoc == study_class_id)
+                .Select(tg => new StudyClassStudentListManagementDto
+                {
+                    MaHocVien = tg.HocVien.MaHocVien,
+                    Ho = tg.HocVien.Ho,
+                    Ten = tg.HocVien.Ten,
+                    Email = tg.HocVien.Email,
+                    SoDienThoai = tg.HocVien.SoDienThoai,
+                    MaBarCode = tg.HocVien.MaBarCode,
+                    DiaChi = tg.HocVien.DiaChi,
+                    NgaySinh = tg.HocVien.NgaySinh,
+                    CreatedAt = tg.HocVien.CreatedAt
+                })
+                .OrderBy(hv => hv.Ten)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+
+            return View("", students);
+        }
+
+
 
         [Route("quan-ly-danh-sach-lop-hoc/tim-kiem")]
         [HttpPost]
