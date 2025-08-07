@@ -1,19 +1,42 @@
 ﻿using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
+using uef_diem_danh.Database;
 using uef_diem_danh.DTOs;
+using uef_diem_danh.Models;
 
 namespace uef_diem_danh.Controllers
 {
     public class StudentController : Controller
     {
 
+        private readonly AppDbContext context;
+
+        public StudentController(AppDbContext context)
+        {
+            this.context = context;
+        }
+
+
         [HttpPost]
         [Route("student/excel-import")]
-        public IActionResult ImportFromExcel([FromForm] ImportStudentExcelRequest request)
+        public async Task<IActionResult> ImportFromExcel([FromForm] ImportStudentExcelRequest request)
         {
+            List<HocVien> students = new List<HocVien>();
+            LopHoc studyClass = new LopHoc();
             string fileExtension = Path.GetExtension(request.ExcelFile.FileName);
             string excelFileName = $"student_excel_{Guid.NewGuid()}.{fileExtension}";
+
+            // Validate file extension
+            if (fileExtension != ".xlsx" && fileExtension != ".xls")
+            {
+                return BadRequest("File không hợp lệ. Vui lòng tải lên file Excel (.xlsx hoặc .xls).");
+            }
+
+            if (request.MaLopHoc != null)
+            {
+                studyClass = context.LopHocs.FirstOrDefault(x => x.MaLopHoc == request.MaLopHoc);
+            }
 
             try
             {
@@ -56,22 +79,40 @@ namespace uef_diem_danh.Controllers
                             // Extract data
                             if (currentRow >= 4)
                             {
-                                string? lastName = excelReader.GetValue(LAST_NAME_COLUMN_INDEX)?.ToString()?.Trim();
-                                string? firstName = excelReader.GetValue(FIRST_NAME_COLUMN_INDEX)?.ToString()?.Trim();
-                                string? email = excelReader.GetValue(EMAIL_COLUMN_INDEX)?.ToString()?.Trim();
-                                string? phoneNumber = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim();
-                                string? dob = excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString()?.Trim();
-                                string? address = excelReader.GetValue(ADDRESS_COLUMN_INDEX)?.ToString()?.Trim();
+                                HocVien student = new HocVien
+                                {
+                                    Ho = excelReader.GetValue(LAST_NAME_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    Ten = excelReader.GetValue(FIRST_NAME_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    Email = excelReader.GetValue(EMAIL_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    SoDienThoai = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    NgaySinh = DateOnly.Parse(excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? "01/01/1900"),
+                                    DiaChi = excelReader.GetValue(ADDRESS_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    MaBarCode = string.Empty
+                                };
 
-                                // Allow print UTF-8 characters in console
-                                Console.OutputEncoding = Encoding.UTF8;
+                                //string? lastName = excelReader.GetValue(LAST_NAME_COLUMN_INDEX)?.ToString()?.Trim();
+                                //string? firstName = excelReader.GetValue(FIRST_NAME_COLUMN_INDEX)?.ToString()?.Trim();
+                                //string? email = excelReader.GetValue(EMAIL_COLUMN_INDEX)?.ToString()?.Trim();
+                                //string? phoneNumber = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim();
+                                //string? dob = excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString()?.Trim();
+                                //string? address = excelReader.GetValue(ADDRESS_COLUMN_INDEX)?.ToString()?.Trim();
 
-                                Console.WriteLine("Last Name: " + lastName);
-                                Console.WriteLine("First Name: " + firstName);
-                                Console.WriteLine("Email: " + email);
-                                Console.WriteLine("Phone Number: " + phoneNumber);
-                                Console.WriteLine("Date of Birth: " + dob);
-                                Console.WriteLine("Address: " + address);
+                                //// Allow print UTF-8 characters in console
+                                //Console.OutputEncoding = Encoding.UTF8;
+
+                                //Console.WriteLine("Last Name: " + lastName);
+                                //Console.WriteLine("First Name: " + firstName);
+                                //Console.WriteLine("Email: " + email);
+                                //Console.WriteLine("Phone Number: " + phoneNumber);
+                                //Console.WriteLine("Date of Birth: " + dob);
+                                //Console.WriteLine("Address: " + address);
+
+                                // Check if student already exists by phone number
+                                if (!context.HocViens.Any(hv => hv.SoDienThoai == student.SoDienThoai))
+                                {
+                                    students.Add(student);
+                                }
+
                             }
                         }
                     }
@@ -80,13 +121,19 @@ namespace uef_diem_danh.Controllers
                 // Delete excel file after processing
                 System.IO.File.Delete(filePath);
 
+                // Save students to database
+                context.HocViens.AddRange(students);
+                await context.SaveChangesAsync();
+
+                return Ok("Nhập file excel thành công");
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+                return BadRequest("Lỗi khi nhập file excel: " + ex.Message);
             }
 
-            return Ok("Nhập file excel");
         }
     }
 }
