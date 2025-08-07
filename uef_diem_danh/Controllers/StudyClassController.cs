@@ -73,9 +73,9 @@ namespace uef_diem_danh.Controllers
 
 
 
-        [Route("quan-ly-danh-sach-lop-hoc/tim-kiem")]
+        [Route("quan-ly-danh-sach-lop-hoc/tim-kiem-sap-xep")]
         [HttpPost]
-        public async Task<IActionResult> SearchFilterStudyClass([FromBody] SearchFilterStudyClassRequest request)
+        public async Task<IActionResult> SearchSortStudyClass([FromBody] StudyClassSearchSortRequest request)
         {
             List<StudyClassListManagementDto> studyClasses = new List<StudyClassListManagementDto>();
 
@@ -94,47 +94,193 @@ namespace uef_diem_danh.Controllers
                     .ToListAsync();
             }
 
-            if (request.Type == "FILTER_ONLY")
+            if (request.Type == "SORT_ONLY")
             {
-                DateOnly startDate = DateOnly.ParseExact(request.ThoiGianBatDau, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                DateOnly endtDate = DateOnly.ParseExact(request.ThoiGianKetThuc, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                if (request.SortType == "ASC" && request.SortField == "CreatedAt")
+                {
+                    studyClasses = await context.LopHocs
+                        .Select(lh => new StudyClassListManagementDto
+                        {
+                            Id = lh.MaLopHoc,
+                            StudyClassName = lh.TenLopHoc,
+                            StartDate = lh.ThoiGianBatDau,
+                            EndDate = lh.ThoiGianKetThuc,
+                            CreatedAt = lh.CreatedAt
+                        })
+                        .OrderBy(lh => lh.CreatedAt)
+                        .ToListAsync();
+                }
+                if (request.SortType == "DESC" && request.SortField == "CreatedAt")
+                {
+                    studyClasses = await context.LopHocs
+                        .Select(lh => new StudyClassListManagementDto
+                        {
+                            Id = lh.MaLopHoc,
+                            StudyClassName = lh.TenLopHoc,
+                            StartDate = lh.ThoiGianBatDau,
+                            EndDate = lh.ThoiGianKetThuc,
+                            CreatedAt = lh.CreatedAt
+                        })
+                        .OrderByDescending(lh => lh.CreatedAt)
+                        .ToListAsync();
+                }
 
-                studyClasses = await context.LopHocs
-                    .Where(lh => 
-                                lh.ThoiGianBatDau >= startDate &&
-                                lh.ThoiGianKetThuc <= endtDate
-                    )
-                    .Select(lh => new StudyClassListManagementDto
-                    {
-                        Id = lh.MaLopHoc,
-                        StudyClassName = lh.TenLopHoc,
-                        StartDate = lh.ThoiGianBatDau,
-                        EndDate = lh.ThoiGianKetThuc,
-                        CreatedAt = lh.CreatedAt
-                    })
-                    .ToListAsync();
+                if (request.SortType == "ASC" && request.SortField == "StartDate")
+                {
+                    studyClasses = await context.LopHocs
+                        .Select(lh => new StudyClassListManagementDto
+                        {
+                            Id = lh.MaLopHoc,
+                            StudyClassName = lh.TenLopHoc,
+                            StartDate = lh.ThoiGianBatDau,
+                            EndDate = lh.ThoiGianKetThuc,
+                            CreatedAt = lh.CreatedAt
+                        })
+                        .OrderBy(lh => lh.StartDate)
+                        .ToListAsync();
+                }
+                if (request.SortType == "DESC" && request.SortField == "StartDate")
+                {
+                    studyClasses = await context.LopHocs
+                        .Select(lh => new StudyClassListManagementDto
+                        {
+                            Id = lh.MaLopHoc,
+                            StudyClassName = lh.TenLopHoc,
+                            StartDate = lh.ThoiGianBatDau,
+                            EndDate = lh.ThoiGianKetThuc,
+                            CreatedAt = lh.CreatedAt
+                        })
+                        .OrderByDescending(lh => lh.StartDate)
+                        .ToListAsync();
+                }
+
+                if (request.SortType == "ASC" && request.SortField == "EndDate")
+                {
+                    studyClasses = await context.LopHocs
+                        .Select(lh => new StudyClassListManagementDto
+                        {
+                            Id = lh.MaLopHoc,
+                            StudyClassName = lh.TenLopHoc,
+                            StartDate = lh.ThoiGianBatDau,
+                            EndDate = lh.ThoiGianKetThuc,
+                            CreatedAt = lh.CreatedAt
+                        })
+                        .OrderBy(lh => lh.EndDate)
+                        .ToListAsync();
+                }
+                if (request.SortType == "DESC" && request.SortField == "EndDate")
+                {
+                    studyClasses = await context.LopHocs
+                        .Select(lh => new StudyClassListManagementDto
+                        {
+                            Id = lh.MaLopHoc,
+                            StudyClassName = lh.TenLopHoc,
+                            StartDate = lh.ThoiGianBatDau,
+                            EndDate = lh.ThoiGianKetThuc,
+                            CreatedAt = lh.CreatedAt
+                        })
+                        .OrderByDescending(lh => lh.EndDate)
+                        .ToListAsync();
+                }
+
             }
 
-            if (request.Type == "SEARCH_AND_FILTER")
+            if (request.Type == "SEARCH_AND_SORT")
             {
-                DateOnly startDate = DateOnly.ParseExact(request.ThoiGianBatDau, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                DateOnly endtDate = DateOnly.ParseExact(request.ThoiGianKetThuc, "dd/MM/yyyy", CultureInfo.InvariantCulture);
 
-                studyClasses = await context.LopHocs
-                    .Where(lh => 
-                                lh.TenLopHoc.Contains(request.TenLopHoc) &&
-                                lh.ThoiGianBatDau >= startDate &&
-                                lh.ThoiGianKetThuc <= endtDate
-                    )
-                    .Select(lh => new StudyClassListManagementDto
-                    {
-                        Id = lh.MaLopHoc,
-                        StudyClassName = lh.TenLopHoc,
-                        StartDate = lh.ThoiGianBatDau,
-                        EndDate = lh.ThoiGianKetThuc,
-                        CreatedAt = lh.CreatedAt
-                    })
-                    .ToListAsync();
+                if (request.SortType == "ASC" && request.SortField == "CreatedAt")
+                {
+                    studyClasses = await context.LopHocs
+                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
+                        .Select(lh => new StudyClassListManagementDto
+                        {
+                            Id = lh.MaLopHoc,
+                            StudyClassName = lh.TenLopHoc,
+                            StartDate = lh.ThoiGianBatDau,
+                            EndDate = lh.ThoiGianKetThuc,
+                            CreatedAt = lh.CreatedAt
+                        })
+                        .OrderBy(lh => lh.CreatedAt)
+                        .ToListAsync();
+                }
+                if (request.SortType == "DESC" && request.SortField == "CreatedAt")
+                {
+                    studyClasses = await context.LopHocs
+                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
+                        .Select(lh => new StudyClassListManagementDto
+                        {
+                            Id = lh.MaLopHoc,
+                            StudyClassName = lh.TenLopHoc,
+                            StartDate = lh.ThoiGianBatDau,
+                            EndDate = lh.ThoiGianKetThuc,
+                            CreatedAt = lh.CreatedAt
+                        })
+                        .OrderByDescending(lh => lh.CreatedAt)
+                        .ToListAsync();
+                }
+
+                if (request.SortType == "ASC" && request.SortField == "StartDate")
+                {
+                    studyClasses = await context.LopHocs
+                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
+                        .Select(lh => new StudyClassListManagementDto
+                        {
+                            Id = lh.MaLopHoc,
+                            StudyClassName = lh.TenLopHoc,
+                            StartDate = lh.ThoiGianBatDau,
+                            EndDate = lh.ThoiGianKetThuc,
+                            CreatedAt = lh.CreatedAt
+                        })
+                        .OrderBy(lh => lh.StartDate)
+                        .ToListAsync();
+                }
+                if (request.SortType == "DESC" && request.SortField == "StartDate")
+                {
+                    studyClasses = await context.LopHocs
+                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
+                        .Select(lh => new StudyClassListManagementDto
+                        {
+                            Id = lh.MaLopHoc,
+                            StudyClassName = lh.TenLopHoc,
+                            StartDate = lh.ThoiGianBatDau,
+                            EndDate = lh.ThoiGianKetThuc,
+                            CreatedAt = lh.CreatedAt
+                        })
+                        .OrderByDescending(lh => lh.StartDate)
+                        .ToListAsync();
+                }
+
+                if (request.SortType == "ASC" && request.SortField == "EndDate")
+                {
+                    studyClasses = await context.LopHocs
+                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
+                        .Select(lh => new StudyClassListManagementDto
+                        {
+                            Id = lh.MaLopHoc,
+                            StudyClassName = lh.TenLopHoc,
+                            StartDate = lh.ThoiGianBatDau,
+                            EndDate = lh.ThoiGianKetThuc,
+                            CreatedAt = lh.CreatedAt
+                        })
+                        .OrderBy(lh => lh.EndDate)
+                        .ToListAsync();
+                }
+                if (request.SortType == "DESC" && request.SortField == "EndDate")
+                {
+                    studyClasses = await context.LopHocs
+                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
+                        .Select(lh => new StudyClassListManagementDto
+                        {
+                            Id = lh.MaLopHoc,
+                            StudyClassName = lh.TenLopHoc,
+                            StartDate = lh.ThoiGianBatDau,
+                            EndDate = lh.ThoiGianKetThuc,
+                            CreatedAt = lh.CreatedAt
+                        })
+                        .OrderByDescending(lh => lh.EndDate)
+                        .ToListAsync();
+                }
+
             }
 
             return View();
