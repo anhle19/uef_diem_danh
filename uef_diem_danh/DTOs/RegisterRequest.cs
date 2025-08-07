@@ -2,7 +2,7 @@
 
 namespace uef_diem_danh.DTOs
 {
-    public class RegisterViewModel
+    public class RegisterRequest
     {
         public string Email { get; set; }
 
