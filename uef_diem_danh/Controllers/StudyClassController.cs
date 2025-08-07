@@ -75,8 +75,12 @@ namespace uef_diem_danh.Controllers
 
         [Route("quan-ly-danh-sach-lop-hoc/tim-kiem-sap-xep")]
         [HttpPost]
-        public async Task<IActionResult> SearchSortStudyClass([FromBody] StudyClassSearchSortRequest request)
+        public async Task<IActionResult> SearchSortStudyClass(
+            [FromBody] StudyClassSearchSortRequest request, 
+            [FromQuery] int pageNumber = 1
+        )
         {
+            int pageSize = 10;
             List<StudyClassListManagementDto> studyClasses = new List<StudyClassListManagementDto>();
 
             if (request.Type == "SEARCH_ONLY")
@@ -91,6 +95,8 @@ namespace uef_diem_danh.Controllers
                         EndDate = lh.ThoiGianKetThuc,
                         CreatedAt = lh.CreatedAt
                     })
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
             }
 
@@ -108,6 +114,8 @@ namespace uef_diem_danh.Controllers
                             CreatedAt = lh.CreatedAt
                         })
                         .OrderBy(lh => lh.CreatedAt)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
                         .ToListAsync();
                 }
                 if (request.SortType == "DESC" && request.SortField == "CreatedAt")
@@ -122,6 +130,8 @@ namespace uef_diem_danh.Controllers
                             CreatedAt = lh.CreatedAt
                         })
                         .OrderByDescending(lh => lh.CreatedAt)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
                         .ToListAsync();
                 }
 
@@ -137,6 +147,8 @@ namespace uef_diem_danh.Controllers
                             CreatedAt = lh.CreatedAt
                         })
                         .OrderBy(lh => lh.StartDate)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
                         .ToListAsync();
                 }
                 if (request.SortType == "DESC" && request.SortField == "StartDate")
@@ -151,6 +163,8 @@ namespace uef_diem_danh.Controllers
                             CreatedAt = lh.CreatedAt
                         })
                         .OrderByDescending(lh => lh.StartDate)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
                         .ToListAsync();
                 }
 
@@ -166,6 +180,8 @@ namespace uef_diem_danh.Controllers
                             CreatedAt = lh.CreatedAt
                         })
                         .OrderBy(lh => lh.EndDate)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
                         .ToListAsync();
                 }
                 if (request.SortType == "DESC" && request.SortField == "EndDate")
@@ -180,6 +196,8 @@ namespace uef_diem_danh.Controllers
                             CreatedAt = lh.CreatedAt
                         })
                         .OrderByDescending(lh => lh.EndDate)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
                         .ToListAsync();
                 }
 
@@ -201,6 +219,8 @@ namespace uef_diem_danh.Controllers
                             CreatedAt = lh.CreatedAt
                         })
                         .OrderBy(lh => lh.CreatedAt)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
                         .ToListAsync();
                 }
                 if (request.SortType == "DESC" && request.SortField == "CreatedAt")
@@ -216,6 +236,8 @@ namespace uef_diem_danh.Controllers
                             CreatedAt = lh.CreatedAt
                         })
                         .OrderByDescending(lh => lh.CreatedAt)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
                         .ToListAsync();
                 }
 
@@ -232,6 +254,8 @@ namespace uef_diem_danh.Controllers
                             CreatedAt = lh.CreatedAt
                         })
                         .OrderBy(lh => lh.StartDate)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
                         .ToListAsync();
                 }
                 if (request.SortType == "DESC" && request.SortField == "StartDate")
@@ -247,6 +271,8 @@ namespace uef_diem_danh.Controllers
                             CreatedAt = lh.CreatedAt
                         })
                         .OrderByDescending(lh => lh.StartDate)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
                         .ToListAsync();
                 }
 
@@ -263,6 +289,8 @@ namespace uef_diem_danh.Controllers
                             CreatedAt = lh.CreatedAt
                         })
                         .OrderBy(lh => lh.EndDate)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
                         .ToListAsync();
                 }
                 if (request.SortType == "DESC" && request.SortField == "EndDate")
@@ -278,12 +306,503 @@ namespace uef_diem_danh.Controllers
                             CreatedAt = lh.CreatedAt
                         })
                         .OrderByDescending(lh => lh.EndDate)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
                         .ToListAsync();
                 }
 
             }
 
             return View();
+        }
+
+        [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-hoc-vien/tim-kiem-sap-xep")]
+        [HttpPost]
+        public async Task<IActionResult> SearchSortStudent(
+            int study_class_id, 
+            [FromBody] StudentSearchSortRequest request, 
+            [FromQuery] int pageNumber = 1
+        )
+        {
+            int pageSize = 10;
+            List<StudyClassStudentListManagementDto> students = new List<StudyClassStudentListManagementDto>();
+
+            if (request.Type == "SEARCH_ONLY")
+            {
+                if (request.FirstName != null && request.PhoneNumber != null)
+                {
+                    students = await context.ThamGias
+                        .Where(tg => 
+                                    tg.HocVien.Ten.Contains(request.FirstName) && 
+                                    tg.HocVien.SoDienThoai.Contains(request.PhoneNumber) && 
+                                    tg.MaLopHoc == study_class_id
+                        )
+                        .Select(tg => new StudyClassStudentListManagementDto
+                        {
+                            MaHocVien = tg.HocVien.MaHocVien,
+                            Ho = tg.HocVien.Ho,
+                            Ten = tg.HocVien.Ten,
+                            Email = tg.HocVien.Email,
+                            SoDienThoai = tg.HocVien.SoDienThoai,
+                            MaBarCode = tg.HocVien.MaBarCode,
+                            DiaChi = tg.HocVien.DiaChi,
+                            NgaySinh = tg.HocVien.NgaySinh,
+                            CreatedAt = tg.HocVien.CreatedAt
+                        })
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToListAsync();
+                }
+                if (request.FirstName != null && request.PhoneNumber == null)
+                {
+                    students = await context.ThamGias
+                        .Where(tg => tg.HocVien.Ten.Contains(request.FirstName) && tg.MaLopHoc == study_class_id)
+                        .Select(tg => new StudyClassStudentListManagementDto
+                        {
+                            MaHocVien = tg.HocVien.MaHocVien,
+                            Ho = tg.HocVien.Ho,
+                            Ten = tg.HocVien.Ten,
+                            Email = tg.HocVien.Email,
+                            SoDienThoai = tg.HocVien.SoDienThoai,
+                            MaBarCode = tg.HocVien.MaBarCode,
+                            DiaChi = tg.HocVien.DiaChi,
+                            NgaySinh = tg.HocVien.NgaySinh,
+                            CreatedAt = tg.HocVien.CreatedAt
+                        })
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToListAsync();
+                }
+                if (request.FirstName == null && request.PhoneNumber != null)
+                {
+                    students = await context.ThamGias
+                        .Where(tg => tg.HocVien.SoDienThoai.Contains(request.PhoneNumber) && tg.MaLopHoc == study_class_id)
+                        .Select(tg => new StudyClassStudentListManagementDto
+                        {
+                            MaHocVien = tg.HocVien.MaHocVien,
+                            Ho = tg.HocVien.Ho,
+                            Ten = tg.HocVien.Ten,
+                            Email = tg.HocVien.Email,
+                            SoDienThoai = tg.HocVien.SoDienThoai,
+                            MaBarCode = tg.HocVien.MaBarCode,
+                            DiaChi = tg.HocVien.DiaChi,
+                            NgaySinh = tg.HocVien.NgaySinh,
+                            CreatedAt = tg.HocVien.CreatedAt
+                        })
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToListAsync();
+                }
+                if (request.FirstName == null && request.PhoneNumber == null)
+                {
+                    return BadRequest("Vui lòng nhập tên hoặc số điện thoại để tìm kiếm");
+                }
+
+            }
+
+            if (request.Type == "SORT_ONLY")
+            {
+                if (request.SortType == "ASC" && request.SortField == "FirstName")
+                {
+                    students = await context.ThamGias
+                        .Where(tg => tg.MaLopHoc == study_class_id)
+                        .Select(tg => new StudyClassStudentListManagementDto
+                        {
+                            MaHocVien = tg.HocVien.MaHocVien,
+                            Ho = tg.HocVien.Ho,
+                            Ten = tg.HocVien.Ten,
+                            Email = tg.HocVien.Email,
+                            SoDienThoai = tg.HocVien.SoDienThoai,
+                            MaBarCode = tg.HocVien.MaBarCode,
+                            DiaChi = tg.HocVien.DiaChi,
+                            NgaySinh = tg.HocVien.NgaySinh,
+                            CreatedAt = tg.HocVien.CreatedAt
+                        })
+                        .OrderBy(hv => hv.Ten)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToListAsync();
+                }
+                if (request.SortType == "DESC" && request.SortField == "FirstName")
+                {
+                    students = await context.ThamGias
+                        .Where(tg => tg.MaLopHoc == study_class_id)
+                        .Select(tg => new StudyClassStudentListManagementDto
+                        {
+                            MaHocVien = tg.HocVien.MaHocVien,
+                            Ho = tg.HocVien.Ho,
+                            Ten = tg.HocVien.Ten,
+                            Email = tg.HocVien.Email,
+                            SoDienThoai = tg.HocVien.SoDienThoai,
+                            MaBarCode = tg.HocVien.MaBarCode,
+                            DiaChi = tg.HocVien.DiaChi,
+                            NgaySinh = tg.HocVien.NgaySinh,
+                            CreatedAt = tg.HocVien.CreatedAt
+                        })
+                        .OrderByDescending(hv => hv.Ten)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToListAsync();
+                }
+
+                if (request.SortType == "ASC" && request.SortField == "DayOfBirth")
+                {
+                    students = await context.ThamGias
+                        .Where(tg => tg.MaLopHoc == study_class_id)
+                        .Select(tg => new StudyClassStudentListManagementDto
+                        {
+                            MaHocVien = tg.HocVien.MaHocVien,
+                            Ho = tg.HocVien.Ho,
+                            Ten = tg.HocVien.Ten,
+                            Email = tg.HocVien.Email,
+                            SoDienThoai = tg.HocVien.SoDienThoai,
+                            MaBarCode = tg.HocVien.MaBarCode,
+                            DiaChi = tg.HocVien.DiaChi,
+                            NgaySinh = tg.HocVien.NgaySinh,
+                            CreatedAt = tg.HocVien.CreatedAt
+                        })
+                        .OrderBy(hv => hv.NgaySinh)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToListAsync();
+                }
+                if (request.SortType == "DESC" && request.SortField == "DayOfBirth")
+                {
+                    students = await context.ThamGias
+                        .Where(tg => tg.MaLopHoc == study_class_id)
+                        .Select(tg => new StudyClassStudentListManagementDto
+                        {
+                            MaHocVien = tg.HocVien.MaHocVien,
+                            Ho = tg.HocVien.Ho,
+                            Ten = tg.HocVien.Ten,
+                            Email = tg.HocVien.Email,
+                            SoDienThoai = tg.HocVien.SoDienThoai,
+                            MaBarCode = tg.HocVien.MaBarCode,
+                            DiaChi = tg.HocVien.DiaChi,
+                            NgaySinh = tg.HocVien.NgaySinh,
+                            CreatedAt = tg.HocVien.CreatedAt
+                        })
+                        .OrderByDescending(hv => hv.NgaySinh)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToListAsync();
+                }
+
+            }
+
+            if (request.Type == "SEARCH_AND_SORT")
+            {
+
+                if (request.SortType == "ASC" && request.SortField == "FirstName")
+                {
+                    if (request.FirstName != null && request.PhoneNumber != null)
+                    {
+                        students = await context.ThamGias
+                            .Where(tg =>
+                                        tg.HocVien.Ten.Contains(request.FirstName) &&
+                                        tg.HocVien.SoDienThoai.Contains(request.PhoneNumber) &&
+                                        tg.MaLopHoc == study_class_id
+                            )
+                            .Select(tg => new StudyClassStudentListManagementDto
+                            {
+                                MaHocVien = tg.HocVien.MaHocVien,
+                                Ho = tg.HocVien.Ho,
+                                Ten = tg.HocVien.Ten,
+                                Email = tg.HocVien.Email,
+                                SoDienThoai = tg.HocVien.SoDienThoai,
+                                MaBarCode = tg.HocVien.MaBarCode,
+                                DiaChi = tg.HocVien.DiaChi,
+                                NgaySinh = tg.HocVien.NgaySinh,
+                                CreatedAt = tg.HocVien.CreatedAt
+                            })
+                            .OrderBy(hv => hv.Ten)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
+                    }
+                    if (request.FirstName != null && request.PhoneNumber == null)
+                    {
+                        students = await context.ThamGias
+                            .Where(tg =>
+                                        tg.HocVien.Ten.Contains(request.FirstName) &&
+                                        tg.MaLopHoc == study_class_id
+                            )
+                            .Select(tg => new StudyClassStudentListManagementDto
+                            {
+                                MaHocVien = tg.HocVien.MaHocVien,
+                                Ho = tg.HocVien.Ho,
+                                Ten = tg.HocVien.Ten,
+                                Email = tg.HocVien.Email,
+                                SoDienThoai = tg.HocVien.SoDienThoai,
+                                MaBarCode = tg.HocVien.MaBarCode,
+                                DiaChi = tg.HocVien.DiaChi,
+                                NgaySinh = tg.HocVien.NgaySinh,
+                                CreatedAt = tg.HocVien.CreatedAt
+                            })
+                            .OrderBy(hv => hv.Ten)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
+                    }
+                    if (request.FirstName == null && request.PhoneNumber != null)
+                    {
+                        students = await context.ThamGias
+                            .Where(tg =>
+                                        tg.HocVien.SoDienThoai.Contains(request.PhoneNumber) &&
+                                        tg.MaLopHoc == study_class_id
+                            )
+                            .Select(tg => new StudyClassStudentListManagementDto
+                            {
+                                MaHocVien = tg.HocVien.MaHocVien,
+                                Ho = tg.HocVien.Ho,
+                                Ten = tg.HocVien.Ten,
+                                Email = tg.HocVien.Email,
+                                SoDienThoai = tg.HocVien.SoDienThoai,
+                                MaBarCode = tg.HocVien.MaBarCode,
+                                DiaChi = tg.HocVien.DiaChi,
+                                NgaySinh = tg.HocVien.NgaySinh,
+                                CreatedAt = tg.HocVien.CreatedAt
+                            })
+                            .OrderBy(hv => hv.Ten)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
+                    }
+                }
+                if (request.SortType == "DESC" && request.SortField == "FirstName")
+                {
+                    if (request.FirstName != null && request.PhoneNumber != null)
+                    {
+                        students = await context.ThamGias
+                            .Where(tg =>
+                                        tg.HocVien.Ten.Contains(request.FirstName) &&
+                                        tg.HocVien.SoDienThoai.Contains(request.PhoneNumber) &&
+                                        tg.MaLopHoc == study_class_id
+                            )
+                            .Select(tg => new StudyClassStudentListManagementDto
+                            {
+                                MaHocVien = tg.HocVien.MaHocVien,
+                                Ho = tg.HocVien.Ho,
+                                Ten = tg.HocVien.Ten,
+                                Email = tg.HocVien.Email,
+                                SoDienThoai = tg.HocVien.SoDienThoai,
+                                MaBarCode = tg.HocVien.MaBarCode,
+                                DiaChi = tg.HocVien.DiaChi,
+                                NgaySinh = tg.HocVien.NgaySinh,
+                                CreatedAt = tg.HocVien.CreatedAt
+                            })
+                            .OrderByDescending(hv => hv.Ten)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
+                    }
+                    if (request.FirstName != null && request.PhoneNumber == null)
+                    {
+                        students = await context.ThamGias
+                            .Where(tg =>
+                                        tg.HocVien.Ten.Contains(request.FirstName) &&
+                                        tg.MaLopHoc == study_class_id
+                            )
+                            .Select(tg => new StudyClassStudentListManagementDto
+                            {
+                                MaHocVien = tg.HocVien.MaHocVien,
+                                Ho = tg.HocVien.Ho,
+                                Ten = tg.HocVien.Ten,
+                                Email = tg.HocVien.Email,
+                                SoDienThoai = tg.HocVien.SoDienThoai,
+                                MaBarCode = tg.HocVien.MaBarCode,
+                                DiaChi = tg.HocVien.DiaChi,
+                                NgaySinh = tg.HocVien.NgaySinh,
+                                CreatedAt = tg.HocVien.CreatedAt
+                            })
+                            .OrderByDescending(hv => hv.Ten)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
+                    }
+                    if (request.FirstName == null && request.PhoneNumber != null)
+                    {
+                        students = await context.ThamGias
+                            .Where(tg =>
+                                        tg.HocVien.SoDienThoai.Contains(request.PhoneNumber) &&
+                                        tg.MaLopHoc == study_class_id
+                            )
+                            .Select(tg => new StudyClassStudentListManagementDto
+                            {
+                                MaHocVien = tg.HocVien.MaHocVien,
+                                Ho = tg.HocVien.Ho,
+                                Ten = tg.HocVien.Ten,
+                                Email = tg.HocVien.Email,
+                                SoDienThoai = tg.HocVien.SoDienThoai,
+                                MaBarCode = tg.HocVien.MaBarCode,
+                                DiaChi = tg.HocVien.DiaChi,
+                                NgaySinh = tg.HocVien.NgaySinh,
+                                CreatedAt = tg.HocVien.CreatedAt
+                            })
+                            .OrderByDescending(hv => hv.Ten)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
+                    }
+                }
+
+                if (request.SortType == "ASC" && request.SortField == "DayOfBirth")
+                {
+                    if (request.FirstName != null && request.PhoneNumber != null)
+                    {
+                        students = await context.ThamGias
+                            .Where(tg =>
+                                        tg.HocVien.Ten.Contains(request.FirstName) &&
+                                        tg.HocVien.SoDienThoai.Contains(request.PhoneNumber) &&
+                                        tg.MaLopHoc == study_class_id
+                            )
+                            .Select(tg => new StudyClassStudentListManagementDto
+                            {
+                                MaHocVien = tg.HocVien.MaHocVien,
+                                Ho = tg.HocVien.Ho,
+                                Ten = tg.HocVien.Ten,
+                                Email = tg.HocVien.Email,
+                                SoDienThoai = tg.HocVien.SoDienThoai,
+                                MaBarCode = tg.HocVien.MaBarCode,
+                                DiaChi = tg.HocVien.DiaChi,
+                                NgaySinh = tg.HocVien.NgaySinh,
+                                CreatedAt = tg.HocVien.CreatedAt
+                            })
+                            .OrderBy(hv => hv.NgaySinh)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
+                    }
+                    if (request.FirstName != null && request.PhoneNumber == null)
+                    {
+                        students = await context.ThamGias
+                            .Where(tg =>
+                                        tg.HocVien.Ten.Contains(request.FirstName) &&
+                                        tg.MaLopHoc == study_class_id
+                            )
+                            .Select(tg => new StudyClassStudentListManagementDto
+                            {
+                                MaHocVien = tg.HocVien.MaHocVien,
+                                Ho = tg.HocVien.Ho,
+                                Ten = tg.HocVien.Ten,
+                                Email = tg.HocVien.Email,
+                                SoDienThoai = tg.HocVien.SoDienThoai,
+                                MaBarCode = tg.HocVien.MaBarCode,
+                                DiaChi = tg.HocVien.DiaChi,
+                                NgaySinh = tg.HocVien.NgaySinh,
+                                CreatedAt = tg.HocVien.CreatedAt
+                            })
+                            .OrderBy(hv => hv.NgaySinh)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
+                    }
+                    if (request.FirstName == null && request.PhoneNumber != null)
+                    {
+                        students = await context.ThamGias
+                            .Where(tg =>
+                                        tg.HocVien.SoDienThoai.Contains(request.PhoneNumber) &&
+                                        tg.MaLopHoc == study_class_id
+                            )
+                            .Select(tg => new StudyClassStudentListManagementDto
+                            {
+                                MaHocVien = tg.HocVien.MaHocVien,
+                                Ho = tg.HocVien.Ho,
+                                Ten = tg.HocVien.Ten,
+                                Email = tg.HocVien.Email,
+                                SoDienThoai = tg.HocVien.SoDienThoai,
+                                MaBarCode = tg.HocVien.MaBarCode,
+                                DiaChi = tg.HocVien.DiaChi,
+                                NgaySinh = tg.HocVien.NgaySinh,
+                                CreatedAt = tg.HocVien.CreatedAt
+                            })
+                            .OrderBy(hv => hv.NgaySinh)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
+                    }
+                }
+                if (request.SortType == "DESC" && request.SortField == "DayOfBirth")
+                {
+                    if (request.FirstName != null && request.PhoneNumber != null)
+                    {
+                        students = await context.ThamGias
+                            .Where(tg =>
+                                        tg.HocVien.Ten.Contains(request.FirstName) &&
+                                        tg.HocVien.SoDienThoai.Contains(request.PhoneNumber) &&
+                                        tg.MaLopHoc == study_class_id
+                            )
+                            .Select(tg => new StudyClassStudentListManagementDto
+                            {
+                                MaHocVien = tg.HocVien.MaHocVien,
+                                Ho = tg.HocVien.Ho,
+                                Ten = tg.HocVien.Ten,
+                                Email = tg.HocVien.Email,
+                                SoDienThoai = tg.HocVien.SoDienThoai,
+                                MaBarCode = tg.HocVien.MaBarCode,
+                                DiaChi = tg.HocVien.DiaChi,
+                                NgaySinh = tg.HocVien.NgaySinh,
+                                CreatedAt = tg.HocVien.CreatedAt
+                            })
+                            .OrderByDescending(hv => hv.NgaySinh)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
+                    }
+                    if (request.FirstName != null && request.PhoneNumber == null)
+                    {
+                        students = await context.ThamGias
+                            .Where(tg =>
+                                        tg.HocVien.Ten.Contains(request.FirstName) &&
+                                        tg.MaLopHoc == study_class_id
+                            )
+                            .Select(tg => new StudyClassStudentListManagementDto
+                            {
+                                MaHocVien = tg.HocVien.MaHocVien,
+                                Ho = tg.HocVien.Ho,
+                                Ten = tg.HocVien.Ten,
+                                Email = tg.HocVien.Email,
+                                SoDienThoai = tg.HocVien.SoDienThoai,
+                                MaBarCode = tg.HocVien.MaBarCode,
+                                DiaChi = tg.HocVien.DiaChi,
+                                NgaySinh = tg.HocVien.NgaySinh,
+                                CreatedAt = tg.HocVien.CreatedAt
+                            })
+                            .OrderByDescending(hv => hv.NgaySinh)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
+                    }
+                    if (request.FirstName == null && request.PhoneNumber != null)
+                    {
+                        students = await context.ThamGias
+                            .Where(tg =>
+                                        tg.HocVien.SoDienThoai.Contains(request.PhoneNumber) &&
+                                        tg.MaLopHoc == study_class_id
+                            )
+                            .Select(tg => new StudyClassStudentListManagementDto
+                            {
+                                MaHocVien = tg.HocVien.MaHocVien,
+                                Ho = tg.HocVien.Ho,
+                                Ten = tg.HocVien.Ten,
+                                Email = tg.HocVien.Email,
+                                SoDienThoai = tg.HocVien.SoDienThoai,
+                                MaBarCode = tg.HocVien.MaBarCode,
+                                DiaChi = tg.HocVien.DiaChi,
+                                NgaySinh = tg.HocVien.NgaySinh,
+                                CreatedAt = tg.HocVien.CreatedAt
+                            })
+                            .OrderByDescending(hv => hv.NgaySinh)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
+                    }
+                }
+
+            }
+
+
+            return View("", students);
         }
 
         [Route("tao-moi-lop-hoc")]
