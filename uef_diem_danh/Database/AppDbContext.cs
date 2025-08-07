@@ -1,17 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using uef_diem_danh.Models;
 
 namespace uef_diem_danh.Database
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<NguoiDungUngDung>
     {
         private readonly IConfiguration _configuration;
 
-        public AppDbContext(IConfiguration configuration)
+        public AppDbContext(DbContextOptions<AppDbContext> options, IConfiguration configuration) : base(options)
         {
             _configuration = configuration;
         }
 
+        public DbSet<NguoiDungUngDung> NguoiDungUngDungs { get; set; }
         public DbSet<HocVien> HocViens { get; set; }
         public DbSet<LopHoc> LopHocs { get; set; }
         public DbSet<ThamGia> ThamGias { get; set; }

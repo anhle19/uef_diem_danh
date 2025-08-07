@@ -1,9 +1,20 @@
+using Microsoft.AspNetCore.Identity;
 using uef_diem_danh.Database;
+using uef_diem_danh.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("AppDbContextConnection") ?? throw new InvalidOperationException("Connection string 'AppDbContextConnection' not found.");
 
 // Add Db Context
 builder.Services.AddDbContext<AppDbContext>();
+
+builder.Services.AddDefaultIdentity<NguoiDungUngDung>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
+
+// Add Identity
+builder.Services.AddIdentity<NguoiDungUngDung, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -23,6 +34,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
