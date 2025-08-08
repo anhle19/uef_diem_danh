@@ -18,7 +18,7 @@ namespace uef_diem_danh.Controllers
             this.context = context;
         }
 
-        [Route("quan-ly-danh-sach-lop-hoc")]
+        [Route("")]
         [HttpGet]
         public async Task<IActionResult> GetListManagementPage([FromQuery] int pageNumber = 1)
         {

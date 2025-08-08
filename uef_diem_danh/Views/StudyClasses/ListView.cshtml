@@ -3,40 +3,268 @@
 *@
 @model List<uef_diem_danh.DTOs.StudyClassListManagementDto>
 @{
+    Layout = "~/Views/Layout/Main.cshtml";
+    ViewData["Title"] = "Quản lý lớp học";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách lớp học</title>
-</head>
-<body>
-    <h2>Danh sách lớp học</h2>
+<div>
+	<div class="d-flex justify-content-between align-items-start mb-3">
+		<div>
+			<h2 class="table-title">Quản lý lớp học</h2>
+			<div class="d-flex search-row">
+				<input id="kw"
+					   class="form-control form-control-sm"
+					   placeholder="Tìm theo tên lớp..." />
+				<button class="btn-next-secondary btn-sm" id="btnSearch">
+					Tìm
+				</button>
+			</div>
+		</div>
+		<div>
+			<button type="button"
+					class="btn-next-secondary btn -sm btn-add"
+					data-bs-toggle="modal"
+					data-bs-target="#popupThemLop">
+				Thêm lớp học
+			</button>
+		</div>
+	</div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Study Class Name</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Created At</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var studyClass in Model)
-            {
-                <tr>
-                    <td>@studyClass.Id</td>
-                    <td>@studyClass.StudyClassName</td>
-                    <td>@studyClass.StartDate.ToString("dd/MM/yyyy")</td>
-                    <td>@studyClass.EndDate.ToString("dd/MM/yyyy")</td>
-                    <td>@studyClass.CreatedAt.ToString("dd/MM/yyyy")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</body>
-</html>
+	<div class="table-wrapper">
+		<table class="fl-table">
+			<thead>
+				<tr>
+					<th>STT</th>
+					<th>Tên lớp</th>
+					<th>Ngày bắt đầu</th>
+					<th>Ngày kết thúc</th>
+					<th>Import</th>
+					<th>Học viên</th>
+					<th>Buổi học</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody class="classesTableBody"></tbody>
+		</table>
+	</div>
+</div>
+
+<!-- Modal: Thêm lớp -->
+<div class="modal fade"
+	 id="popupThemLop"
+	 tabindex="-1"
+	 aria-labelledby="popupThemLopLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="popupThemLopLabel">Thêm lớp học</h5>
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Đóng"></button>
+			</div>
+			<div class="modal-body">
+				<div class="mb-2">
+					<label class="form-label">Tên lớp <span class="text-danger">*</span></label>
+					<input type="text"
+						   id="themTenLop"
+						   class="form-control"
+						   placeholder="VD: Lịch sử Đảng" />
+				</div>
+				<div class="row g-2">
+					<div class="col-6">
+						<label class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
+						<input type="date" id="themNgayBD" class="form-control" />
+					</div>
+					<div class="col-6">
+						<label class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
+						<input type="date" id="themNgayKT" class="form-control" />
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button"
+						class="btn-next-secondary"
+						data-bs-dismiss="modal">
+					Đóng
+				</button>
+				<button type="button" class="btn-next-primary" id="btnLuuLopMoi">
+					Lưu
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal: Sửa lớp -->
+<div class="modal fade"
+	 id="popupSuaLop"
+	 tabindex="-1"
+	 aria-labelledby="popupSuaLopLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="popupSuaLopLabel">Sửa lớp học</h5>
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Đóng"></button>
+			</div>
+			<div class="modal-body">
+				<div class="mb-2">
+					<label class="form-label">Tên lớp <span class="text-danger">*</span></label>
+					<input type="text" id="suaTenLop" class="form-control" />
+				</div>
+				<div class="row g-2">
+					<div class="col-6">
+						<label class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
+						<input type="date" id="suaNgayBD" class="form-control" />
+					</div>
+					<div class="col-6">
+						<label class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
+						<input type="date" id="suaNgayKT" class="form-control" />
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button"
+						class="btn-next-secondary"
+						data-bs-dismiss="modal">
+					Đóng
+				</button>
+				<button type="button" class="btn-next-primary" id="btnLuuSuaLop">
+					Lưu thay đổi
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal: Xoá lớp -->
+<div class="modal fade"
+	 id="popupXoaLop"
+	 tabindex="-1"
+	 aria-labelledby="popupXoaLopLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="popupXoaLopLabel">Xác nhận xoá</h5>
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Đóng"></button>
+			</div>
+			<div class="modal-body">Bạn có chắc chắn muốn xoá lớp này không?</div>
+			<div class="modal-footer">
+				<button type="button"
+						class="btn-next-secondary"
+						data-bs-dismiss="modal">
+					Huỷ
+				</button>
+				<button type="button"
+						class="btn-next-primary"
+						id="btnXacNhanXoaLop">
+					Xoá
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal: Import học viên -->
+<div class="modal fade"
+	 id="popupImport"
+	 tabindex="-1"
+	 aria-labelledby="popupImportLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="popupImportLabel">
+					Import danh sách học viên
+				</h5>
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Đóng"></button>
+			</div>
+			<div class="modal-body">
+				<div class="mb-2">
+					<button id="btnDownloadTemplate"
+							class="btn-next-secondary btn-sm">
+						Tải danh sách học viên
+					</button>
+				</div>
+				<div class="uploader">
+					<input type="file"
+						   id="fileImport"
+						   accept=".csv,.xlsx,.xls"
+						   class="form-control" />
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button"
+						class="btn-next-secondary"
+						data-bs-dismiss="modal">
+					Đóng
+				</button>
+				<button type="button"
+						class="btn-next-primary"
+						id="btnThucHienImport">
+					Import
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal: Danh sách học viên của lớp -->
+<div class="modal fade"
+	 id="popupHocVien"
+	 tabindex="-1"
+	 aria-labelledby="popupHocVienLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="popupHocVienLabel">Học viên của lớp</h5>
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Đóng"></button>
+			</div>
+			<div class="modal-body">
+				<div class="table-wrapper">
+					<table class="fl-table">
+						<thead>
+							<tr>
+								<th>STT</th>
+								<th>Họ</th>
+								<th>Tên</th>
+								<th>Email</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody class="studentsTableBody"></tbody>
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button"
+						class="btn-next-secondary"
+						data-bs-dismiss="modal">
+					Đóng
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- Mock data -->
+<script src="~/js/StudyClass.js"></script>
+
