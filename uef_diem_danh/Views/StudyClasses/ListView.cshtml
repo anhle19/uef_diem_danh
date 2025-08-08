@@ -34,7 +34,7 @@
 		<table class="fl-table">
 			<thead>
 				<tr>
-					<th>STT</th>
+                    <th>Mã lớp</th>
 					<th>Tên lớp</th>
 					<th>Ngày bắt đầu</th>
 					<th>Ngày kết thúc</th>
@@ -45,7 +45,65 @@
 					<th></th>
 				</tr>
 			</thead>
-			<tbody class="classesTableBody"></tbody>
+			<tbody class="classesTableBody">
+				@foreach (var studyClass in Model)
+				{
+					<tr>
+						<td>@studyClass.Id</td>
+                        <td>@studyClass.StudyClassName</td>
+						<td>@studyClass.StartDate.ToString("dd/MM/yyyy")</td>
+						<td>@studyClass.EndDate.ToString("dd/MM/yyyy")</td>
+						<td>
+							<button 
+								class="btn btn-outline-secondary btn-sm btn-import" 
+								data-id="@studyClass.Id"
+								data-bs-toggle="modal" 
+								data-bs-target="#popupImport"
+							>
+								Import
+							</button>
+						</td>
+						<td>
+							<button 
+								class="btn btn-outline-primary btn-sm btn-view-students" 
+								data-id="@studyClass.Id"
+								data-bs-toggle="modal" 
+								data-bs-target="#popupHocVien"
+							>
+								Xem
+							</button>
+						</td>
+						<td>
+							<a
+								class="action-link" 
+								href="/html/layout/main.html?page=classes&classId=@studyClass.Id"
+							>
+								Quản lý buổi học
+							</a>
+						</td>
+						<td>
+							<button 
+								class="btn btn-outline-secondary btn-sm btn-edit" 
+								data-id="@studyClass.Id"
+								data-bs-toggle="modal" 
+								data-bs-target="#popupSuaLop"
+							>
+								Sửa
+							</button>
+						</td>
+						<td>
+							<button 
+								class="btn btn-outline-danger btn-sm btn-delete" 
+								data-id="@studyClass.Id" 
+								data-bs-toggle="modal" 
+								data-bs-target="#popupXoaLop"
+							>
+								Xoá
+							</button>
+						</td>
+					</tr>
+				}
+			</tbody>
 		</table>
 	</div>
 </div>
