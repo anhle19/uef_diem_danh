@@ -84,7 +84,7 @@ namespace uef_diem_danh.Controllers
         [Route("quan-ly-danh-sach-lop-hoc/tim-kiem-sap-xep")]
         [HttpPost]
         public async Task<IActionResult> SearchSortStudyClass(
-            [FromBody] StudyClassSearchSortRequest request, 
+            [FromForm] StudyClassSearchSortRequest request, 
             [FromQuery] int pageNumber = 1
         )
         {
@@ -94,7 +94,7 @@ namespace uef_diem_danh.Controllers
             if (request.Type == "SEARCH_ONLY")
             {
                 studyClasses = await context.LopHocs
-                    .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
+                    .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
                     .Select(lh => new StudyClassListManagementDto
                     {
                         Id = lh.MaLopHoc,
@@ -217,7 +217,7 @@ namespace uef_diem_danh.Controllers
                 if (request.SortType == "ASC" && request.SortField == "CreatedAt")
                 {
                     studyClasses = await context.LopHocs
-                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
+                        .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
                         .Select(lh => new StudyClassListManagementDto
                         {
                             Id = lh.MaLopHoc,
@@ -234,7 +234,7 @@ namespace uef_diem_danh.Controllers
                 if (request.SortType == "DESC" && request.SortField == "CreatedAt")
                 {
                     studyClasses = await context.LopHocs
-                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
+                        .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
                         .Select(lh => new StudyClassListManagementDto
                         {
                             Id = lh.MaLopHoc,
@@ -252,7 +252,7 @@ namespace uef_diem_danh.Controllers
                 if (request.SortType == "ASC" && request.SortField == "StartDate")
                 {
                     studyClasses = await context.LopHocs
-                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
+                        .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
                         .Select(lh => new StudyClassListManagementDto
                         {
                             Id = lh.MaLopHoc,
@@ -269,7 +269,7 @@ namespace uef_diem_danh.Controllers
                 if (request.SortType == "DESC" && request.SortField == "StartDate")
                 {
                     studyClasses = await context.LopHocs
-                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
+                        .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
                         .Select(lh => new StudyClassListManagementDto
                         {
                             Id = lh.MaLopHoc,
@@ -287,7 +287,7 @@ namespace uef_diem_danh.Controllers
                 if (request.SortType == "ASC" && request.SortField == "EndDate")
                 {
                     studyClasses = await context.LopHocs
-                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
+                        .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
                         .Select(lh => new StudyClassListManagementDto
                         {
                             Id = lh.MaLopHoc,
@@ -304,7 +304,7 @@ namespace uef_diem_danh.Controllers
                 if (request.SortType == "DESC" && request.SortField == "EndDate")
                 {
                     studyClasses = await context.LopHocs
-                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
+                        .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
                         .Select(lh => new StudyClassListManagementDto
                         {
                             Id = lh.MaLopHoc,
@@ -321,7 +321,7 @@ namespace uef_diem_danh.Controllers
 
             }
 
-            return View();
+            return View("~/Views/StudyClasses/ListView.cshtml", studyClasses);
         }
 
         [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-hoc-vien/tim-kiem-sap-xep")]
