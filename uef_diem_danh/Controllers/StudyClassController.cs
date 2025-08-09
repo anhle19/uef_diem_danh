@@ -1028,18 +1028,28 @@ namespace uef_diem_danh.Controllers
         }
 
 
-        [Route("xoa-lop-hoc/{study_class_id}")]
-        [HttpDelete]
-        public async Task<IActionResult> Delete(int study_class_id)
+        [Route("xoa-lop-hoc")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete([FromForm] StudyClassDeleteRequest request)
         {
+            try
+            {
+                LopHoc studyClass = await context.LopHocs
+                    .FirstOrDefaultAsync(lh => lh.MaLopHoc == request.Id);
 
-            LopHoc studyClass = await context.LopHocs
-                .FirstOrDefaultAsync(lh => lh.MaLopHoc == study_class_id);
+                context.LopHocs.Remove(studyClass);
+                await context.SaveChangesAsync();
 
-            context.LopHocs.Remove(studyClass);
-            await context.SaveChangesAsync();
-
-            return Ok("Xóa một lớp học thành công");
+                TempData["StudyClassSuccessMessage"] = "Xóa lớp học thành công!";
+                return RedirectToAction("GetListManagementPage");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["StudyClassErrorMessage"] = "Có lỗi xảy ra khi xóa lớp học: " + ex.Message;
+                return RedirectToAction("GetListManagementPage");
+            }
         }
 
     }
