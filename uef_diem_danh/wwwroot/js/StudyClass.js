@@ -101,17 +101,25 @@
 //}
 
 // ================== SEARCH ==================
-document.getElementById("btnSearch").addEventListener("click", () => {
-    const kw = document.getElementById("kw").value.trim().toLowerCase();
-    if (!kw) {
-        renderTable(classesData);
+function updateSearchOrderType() {
+    const searchOrderTypeInput = document.getElementById("searchOrderType");
+    searchOrderTypeInput.value = "SEARCH_ONLY";
+}
+
+function searchStudyClass() {
+    const searchOrderStudyClassForm = document.getElementById("searchOrderStudyClassForm");
+    const studyClassSearchInput = document
+        .getElementById("studyClassSearchInput")
+        .value
+        .trim()
+        .toLowerCase();
+    if (!studyClassSearchInput) {
         return;
     }
-    const filtered = classesData.filter((c) =>
-        c.tenLop.toLowerCase().includes(kw)
-    );
-    renderTable(filtered);
-});
+
+    searchOrderStudyClassForm.requestSubmit();
+}
+
 
 // ================== ADD STUDY CLASS ==================
 function addStudyClass() {
