@@ -71,6 +71,14 @@ namespace uef_diem_danh.Controllers
             return View("", students);
         }
 
+        [Route("api/lay-chi-tiet-lop-hoc/{study_class_id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetDetailForUpdate(int study_class_id)
+        {
+            LopHoc studyClass = await context.LopHocs.FindAsync(study_class_id);
+
+            return Ok(studyClass);
+        }
 
 
         [Route("quan-ly-danh-sach-lop-hoc/tim-kiem-sap-xep")]
@@ -827,13 +835,13 @@ namespace uef_diem_danh.Controllers
                 context.LopHocs.Add(studyClass);
                 await context.SaveChangesAsync();
 
-                TempData["CreateStudyClassSuccessMessage"] = "Thêm lớp học thành công!";
+                TempData["StudyClassSuccessMessage"] = "Thêm lớp học thành công!";
                 return RedirectToAction("GetListManagementPage");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                TempData["CreateStudyClassErrorMessage"] = "Có lỗi xảy ra khi thêm lớp học: " + ex.Message;
+                TempData["StudyClassErrorMessage"] = "Có lỗi xảy ra khi thêm lớp học: " + ex.Message;
                 return RedirectToAction("GetListManagementPage");
             }
 
@@ -841,21 +849,33 @@ namespace uef_diem_danh.Controllers
 
 
 
-        [Route("cap-nhat-lop-hoc/{study_class_id}")]
+        [Route("cap-nhat-lop-hoc")]
         [HttpPost]
-        public async Task<IActionResult> Update(int study_class_id, StudyClassCreateRequest request)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(int study_class_id, [FromForm] StudyClassUpdateRequest request)
         {
 
-            LopHoc studyClass = await context.LopHocs
-                .FirstOrDefaultAsync(lh => lh.MaLopHoc == study_class_id);
+            try
+            {
+                LopHoc studyClass = await context.LopHocs
+                    .FirstOrDefaultAsync(lh => lh.MaLopHoc == request.Id);
 
-            studyClass.TenLopHoc = request.StudyClassName;
-            studyClass.ThoiGianBatDau = DateOnly.ParseExact(request.StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-            studyClass.ThoiGianKetThuc = DateOnly.ParseExact(request.EndDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                studyClass.TenLopHoc = request.StudyClassName;
+                studyClass.ThoiGianBatDau = DateOnly.Parse(request.StartDate, CultureInfo.InvariantCulture);
+                studyClass.ThoiGianKetThuc = DateOnly.Parse(request.EndDate, CultureInfo.InvariantCulture);
 
-            await context.SaveChangesAsync();
+                await context.SaveChangesAsync();
 
-            return View("~/Views/StudyClasses/ListView.cshtml");
+                TempData["StudyClassSuccessMessage"] = "Cập nhật lớp học thành công!";
+                return RedirectToAction("GetListManagementPage");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["StudyClassErrorMessage"] = "Có lỗi xảy ra khi cập nhật lớp học: " + ex.Message;
+                return RedirectToAction("GetListManagementPage");
+            }
+
         }
 
 
