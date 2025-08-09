@@ -18,14 +18,14 @@ namespace uef_diem_danh.Controllers
             this.context = context;
         }
 
-        [Route("quan-ly-danh-sach-lop-hoc")]
+        [Route("")]
         [HttpGet]
         public async Task<IActionResult> GetListManagementPage([FromQuery] int pageNumber = 1)
         {
             int pageSize = 10;
 
-            List<StudyClassListManagementDto> studyClasses = await context.LopHocs
-                .Select(lh => new StudyClassListManagementDto
+            List<StudyClassListData> studyClasses = await context.LopHocs
+                .Select(lh => new StudyClassListData
                 {
                     Id = lh.MaLopHoc,
                     StudyClassName = lh.TenLopHoc,
@@ -38,8 +38,15 @@ namespace uef_diem_danh.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
+            StudyClassListManagementResponse studyClassResponse = new StudyClassListManagementResponse
+            {
+                TotalPages = (int)Math.Ceiling((double)context.LopHocs.Count() / pageSize),
+                StudyClasses = studyClasses
+            };
 
-            return View("~/Views/StudyClasses/ListView.cshtml", studyClasses);
+
+
+            return View("~/Views/StudyClasses/ListView.cshtml", studyClassResponse);
         }
 
         [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-hoc-vien")]
@@ -71,9 +78,17 @@ namespace uef_diem_danh.Controllers
             return View("", students);
         }
 
+        [Route("api/lay-chi-tiet-lop-hoc/{study_class_id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetDetailForUpdate(int study_class_id)
+        {
+            LopHoc studyClass = await context.LopHocs.FindAsync(study_class_id);
+
+            return Ok(studyClass);
+        }
 
 
-        [Route("quan-ly-danh-sach-lop-hoc/tim-kiem-sap-xep")]
+        [Route("api/quan-ly-danh-sach-lop-hoc/tim-kiem-sap-xep")]
         [HttpPost]
         public async Task<IActionResult> SearchSortStudyClass(
             [FromBody] StudyClassSearchSortRequest request, 
@@ -81,13 +96,15 @@ namespace uef_diem_danh.Controllers
         )
         {
             int pageSize = 10;
-            List<StudyClassListManagementDto> studyClasses = new List<StudyClassListManagementDto>();
+            StudyClassListManagementResponse studyClassResponse = new StudyClassListManagementResponse();
+            List<StudyClassListData> studyClasses = new List<StudyClassListData>();
 
             if (request.Type == "SEARCH_ONLY")
             {
+
                 studyClasses = await context.LopHocs
-                    .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
-                    .Select(lh => new StudyClassListManagementDto
+                    .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
+                    .Select(lh => new StudyClassListData
                     {
                         Id = lh.MaLopHoc,
                         StudyClassName = lh.TenLopHoc,
@@ -95,17 +112,31 @@ namespace uef_diem_danh.Controllers
                         EndDate = lh.ThoiGianKetThuc,
                         CreatedAt = lh.CreatedAt
                     })
+                    .OrderBy(lh => lh.CreatedAt)
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync();
+
+                studyClassResponse = new StudyClassListManagementResponse
+                {
+                    TotalPages = (int)Math.Ceiling(
+                        (double)context.LopHocs
+                            .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
+                            .Count() / pageSize
+                    ),
+                    StudyClasses = studyClasses
+                };
+
+
             }
 
             if (request.Type == "SORT_ONLY")
             {
                 if (request.SortType == "ASC" && request.SortField == "CreatedAt")
                 {
+
                     studyClasses = await context.LopHocs
-                        .Select(lh => new StudyClassListManagementDto
+                        .Select(lh => new StudyClassListData
                         {
                             Id = lh.MaLopHoc,
                             StudyClassName = lh.TenLopHoc,
@@ -117,11 +148,21 @@ namespace uef_diem_danh.Controllers
                         .Skip((pageNumber - 1) * pageSize)
                         .Take(pageSize)
                         .ToListAsync();
+
+                    studyClassResponse = new StudyClassListManagementResponse
+                    {
+                        TotalPages = (int)Math.Ceiling(
+                            (double)context.LopHocs.Count() / pageSize
+                        ),
+                        StudyClasses = studyClasses
+                    };
+
                 }
                 if (request.SortType == "DESC" && request.SortField == "CreatedAt")
                 {
+
                     studyClasses = await context.LopHocs
-                        .Select(lh => new StudyClassListManagementDto
+                        .Select(lh => new StudyClassListData
                         {
                             Id = lh.MaLopHoc,
                             StudyClassName = lh.TenLopHoc,
@@ -133,12 +174,22 @@ namespace uef_diem_danh.Controllers
                         .Skip((pageNumber - 1) * pageSize)
                         .Take(pageSize)
                         .ToListAsync();
+
+                    studyClassResponse = new StudyClassListManagementResponse
+                    {
+                        TotalPages = (int)Math.Ceiling(
+                            (double)context.LopHocs.Count() / pageSize
+                        ),
+                        StudyClasses = studyClasses
+                    };
+
                 }
 
                 if (request.SortType == "ASC" && request.SortField == "StartDate")
                 {
+
                     studyClasses = await context.LopHocs
-                        .Select(lh => new StudyClassListManagementDto
+                        .Select(lh => new StudyClassListData
                         {
                             Id = lh.MaLopHoc,
                             StudyClassName = lh.TenLopHoc,
@@ -150,11 +201,21 @@ namespace uef_diem_danh.Controllers
                         .Skip((pageNumber - 1) * pageSize)
                         .Take(pageSize)
                         .ToListAsync();
+
+                    studyClassResponse = new StudyClassListManagementResponse
+                    {
+                        TotalPages = (int)Math.Ceiling(
+                            (double)context.LopHocs.Count() / pageSize
+                        ),
+                        StudyClasses = studyClasses
+                    };
+
                 }
                 if (request.SortType == "DESC" && request.SortField == "StartDate")
                 {
+
                     studyClasses = await context.LopHocs
-                        .Select(lh => new StudyClassListManagementDto
+                        .Select(lh => new StudyClassListData
                         {
                             Id = lh.MaLopHoc,
                             StudyClassName = lh.TenLopHoc,
@@ -166,12 +227,22 @@ namespace uef_diem_danh.Controllers
                         .Skip((pageNumber - 1) * pageSize)
                         .Take(pageSize)
                         .ToListAsync();
+
+                    studyClassResponse = new StudyClassListManagementResponse
+                    {
+                        TotalPages = (int)Math.Ceiling(
+                            (double)context.LopHocs.Count() / pageSize
+                        ),
+                        StudyClasses = studyClasses
+                    };
+
                 }
 
                 if (request.SortType == "ASC" && request.SortField == "EndDate")
                 {
+
                     studyClasses = await context.LopHocs
-                        .Select(lh => new StudyClassListManagementDto
+                        .Select(lh => new StudyClassListData
                         {
                             Id = lh.MaLopHoc,
                             StudyClassName = lh.TenLopHoc,
@@ -183,11 +254,21 @@ namespace uef_diem_danh.Controllers
                         .Skip((pageNumber - 1) * pageSize)
                         .Take(pageSize)
                         .ToListAsync();
+
+                    studyClassResponse = new StudyClassListManagementResponse
+                    {
+                        TotalPages = (int)Math.Ceiling(
+                            (double)context.LopHocs.Count() / pageSize
+                        ),
+                        StudyClasses = studyClasses
+                    };
+
                 }
                 if (request.SortType == "DESC" && request.SortField == "EndDate")
                 {
+
                     studyClasses = await context.LopHocs
-                        .Select(lh => new StudyClassListManagementDto
+                        .Select(lh => new StudyClassListData
                         {
                             Id = lh.MaLopHoc,
                             StudyClassName = lh.TenLopHoc,
@@ -199,6 +280,15 @@ namespace uef_diem_danh.Controllers
                         .Skip((pageNumber - 1) * pageSize)
                         .Take(pageSize)
                         .ToListAsync();
+
+                    studyClassResponse = new StudyClassListManagementResponse
+                    {
+                        TotalPages = (int)Math.Ceiling(
+                            (double)context.LopHocs.Count() / pageSize
+                        ),
+                        StudyClasses = studyClasses
+                    };
+
                 }
 
             }
@@ -208,9 +298,10 @@ namespace uef_diem_danh.Controllers
 
                 if (request.SortType == "ASC" && request.SortField == "CreatedAt")
                 {
+
                     studyClasses = await context.LopHocs
-                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
-                        .Select(lh => new StudyClassListManagementDto
+                        .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
+                        .Select(lh => new StudyClassListData
                         {
                             Id = lh.MaLopHoc,
                             StudyClassName = lh.TenLopHoc,
@@ -222,12 +313,24 @@ namespace uef_diem_danh.Controllers
                         .Skip((pageNumber - 1) * pageSize)
                         .Take(pageSize)
                         .ToListAsync();
+
+                    studyClassResponse = new StudyClassListManagementResponse
+                    {
+                        TotalPages = (int)Math.Ceiling(
+                            (double)context.LopHocs
+                                .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
+                                .Count() / pageSize
+                        ),
+                        StudyClasses = studyClasses
+                    };
+
                 }
                 if (request.SortType == "DESC" && request.SortField == "CreatedAt")
                 {
+
                     studyClasses = await context.LopHocs
-                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
-                        .Select(lh => new StudyClassListManagementDto
+                        .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
+                        .Select(lh => new StudyClassListData
                         {
                             Id = lh.MaLopHoc,
                             StudyClassName = lh.TenLopHoc,
@@ -239,13 +342,25 @@ namespace uef_diem_danh.Controllers
                         .Skip((pageNumber - 1) * pageSize)
                         .Take(pageSize)
                         .ToListAsync();
+
+                    studyClassResponse = new StudyClassListManagementResponse
+                    {
+                        TotalPages = (int)Math.Ceiling(
+                            (double)context.LopHocs
+                                .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
+                                .Count() / pageSize
+                        ),
+                        StudyClasses = studyClasses
+                    };
+
                 }
 
                 if (request.SortType == "ASC" && request.SortField == "StartDate")
                 {
+
                     studyClasses = await context.LopHocs
-                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
-                        .Select(lh => new StudyClassListManagementDto
+                        .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
+                        .Select(lh => new StudyClassListData
                         {
                             Id = lh.MaLopHoc,
                             StudyClassName = lh.TenLopHoc,
@@ -257,12 +372,23 @@ namespace uef_diem_danh.Controllers
                         .Skip((pageNumber - 1) * pageSize)
                         .Take(pageSize)
                         .ToListAsync();
+
+                    studyClassResponse = new StudyClassListManagementResponse
+                    {
+                        TotalPages = (int)Math.Ceiling(
+                            (double)context.LopHocs
+                                .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
+                                .Count() / pageSize
+                        ),
+                        StudyClasses = studyClasses
+                    };
+
                 }
                 if (request.SortType == "DESC" && request.SortField == "StartDate")
                 {
                     studyClasses = await context.LopHocs
-                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
-                        .Select(lh => new StudyClassListManagementDto
+                        .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
+                        .Select(lh => new StudyClassListData
                         {
                             Id = lh.MaLopHoc,
                             StudyClassName = lh.TenLopHoc,
@@ -274,46 +400,77 @@ namespace uef_diem_danh.Controllers
                         .Skip((pageNumber - 1) * pageSize)
                         .Take(pageSize)
                         .ToListAsync();
+
+                    studyClassResponse = new StudyClassListManagementResponse
+                    {
+                        TotalPages = (int)Math.Ceiling(
+                            (double)context.LopHocs
+                                .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
+                                .Count() / pageSize
+                        ),
+                        StudyClasses = studyClasses
+                    };
                 }
 
                 if (request.SortType == "ASC" && request.SortField == "EndDate")
                 {
                     studyClasses = await context.LopHocs
-                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
-                        .Select(lh => new StudyClassListManagementDto
-                        {
-                            Id = lh.MaLopHoc,
-                            StudyClassName = lh.TenLopHoc,
-                            StartDate = lh.ThoiGianBatDau,
-                            EndDate = lh.ThoiGianKetThuc,
-                            CreatedAt = lh.CreatedAt
-                        })
-                        .OrderBy(lh => lh.EndDate)
-                        .Skip((pageNumber - 1) * pageSize)
-                        .Take(pageSize)
-                        .ToListAsync();
+                       .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
+                       .Select(lh => new StudyClassListData
+                       {
+                           Id = lh.MaLopHoc,
+                           StudyClassName = lh.TenLopHoc,
+                           StartDate = lh.ThoiGianBatDau,
+                           EndDate = lh.ThoiGianKetThuc,
+                           CreatedAt = lh.CreatedAt
+                       })
+                       .OrderBy(lh => lh.EndDate)
+                       .Skip((pageNumber - 1) * pageSize)
+                       .Take(pageSize)
+                       .ToListAsync();
+
+                    studyClassResponse = new StudyClassListManagementResponse
+                    {
+                        TotalPages = (int)Math.Ceiling(
+                            (double)context.LopHocs
+                                .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
+                                .Count() / pageSize
+                        ),
+                        StudyClasses = studyClasses
+                    };
                 }
                 if (request.SortType == "DESC" && request.SortField == "EndDate")
                 {
                     studyClasses = await context.LopHocs
-                        .Where(lh => lh.TenLopHoc.Contains(request.TenLopHoc))
-                        .Select(lh => new StudyClassListManagementDto
-                        {
-                            Id = lh.MaLopHoc,
-                            StudyClassName = lh.TenLopHoc,
-                            StartDate = lh.ThoiGianBatDau,
-                            EndDate = lh.ThoiGianKetThuc,
-                            CreatedAt = lh.CreatedAt
-                        })
-                        .OrderByDescending(lh => lh.EndDate)
-                        .Skip((pageNumber - 1) * pageSize)
-                        .Take(pageSize)
-                        .ToListAsync();
+                       .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
+                       .Select(lh => new StudyClassListData
+                       {
+                           Id = lh.MaLopHoc,
+                           StudyClassName = lh.TenLopHoc,
+                           StartDate = lh.ThoiGianBatDau,
+                           EndDate = lh.ThoiGianKetThuc,
+                           CreatedAt = lh.CreatedAt
+                       })
+                       .OrderByDescending(lh => lh.EndDate)
+                       .Skip((pageNumber - 1) * pageSize)
+                       .Take(pageSize)
+                       .ToListAsync();
+
+                    studyClassResponse = new StudyClassListManagementResponse
+                    {
+                        TotalPages = (int)Math.Ceiling(
+                            (double)context.LopHocs
+                                .Where(lh => lh.TenLopHoc.Contains(request.StudyClassName))
+                                .Count() / pageSize
+                        ),
+                        StudyClasses = studyClasses
+                    };
                 }
 
             }
 
-            return View();
+            return Ok(studyClassResponse);
+            //return View("~/Views/StudyClasses/ListView.cshtml", studyClasses);
         }
 
         [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-hoc-vien/tim-kiem-sap-xep")]
@@ -807,40 +964,67 @@ namespace uef_diem_danh.Controllers
 
         [Route("tao-moi-lop-hoc")]
         [HttpPost]
-        public async Task<IActionResult> Create(StudyClassCreateRequest request)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([FromForm] StudyClassCreateRequest request)
         {
 
-            LopHoc studyClass = new LopHoc
+            try
             {
-                TenLopHoc = request.StudyClassName,
-                ThoiGianBatDau = DateOnly.ParseExact(request.StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture),
-                ThoiGianKetThuc = DateOnly.ParseExact(request.EndDate, "dd/MM/yyyy", CultureInfo.InvariantCulture),
-            };
+                Console.WriteLine($"StudyClassName: {request.StudyClassName}");
+                Console.WriteLine($"StartDate: {request.StartDate}");
+                Console.WriteLine($"EndDate: {request.EndDate}");
 
-            context.LopHocs.Add(studyClass);
-            await context.SaveChangesAsync();
+                LopHoc studyClass = new LopHoc
+                {
+                    TenLopHoc = request.StudyClassName,
+                    ThoiGianBatDau = DateOnly.Parse(request.StartDate, CultureInfo.InvariantCulture),
+                    ThoiGianKetThuc = DateOnly.Parse(request.EndDate, CultureInfo.InvariantCulture),
+                };
 
-            return View("~/Views/StudyClasses/ListView.cshtml");
+                context.LopHocs.Add(studyClass);
+                await context.SaveChangesAsync();
+
+                TempData["StudyClassSuccessMessage"] = "Thêm lớp học thành công!";
+                return RedirectToAction("GetListManagementPage");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["StudyClassErrorMessage"] = "Có lỗi xảy ra khi thêm lớp học: " + ex.Message;
+                return RedirectToAction("GetListManagementPage");
+            }
 
         }
 
 
 
-        [Route("cap-nhat-lop-hoc/{study_class_id}")]
+        [Route("cap-nhat-lop-hoc")]
         [HttpPost]
-        public async Task<IActionResult> Update(int study_class_id, StudyClassCreateRequest request)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(int study_class_id, [FromForm] StudyClassUpdateRequest request)
         {
 
-            LopHoc studyClass = await context.LopHocs
-                .FirstOrDefaultAsync(lh => lh.MaLopHoc == study_class_id);
+            try
+            {
+                LopHoc studyClass = await context.LopHocs
+                    .FirstOrDefaultAsync(lh => lh.MaLopHoc == request.Id);
 
-            studyClass.TenLopHoc = request.StudyClassName;
-            studyClass.ThoiGianBatDau = DateOnly.ParseExact(request.StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-            studyClass.ThoiGianKetThuc = DateOnly.ParseExact(request.EndDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                studyClass.TenLopHoc = request.StudyClassName;
+                studyClass.ThoiGianBatDau = DateOnly.Parse(request.StartDate, CultureInfo.InvariantCulture);
+                studyClass.ThoiGianKetThuc = DateOnly.Parse(request.EndDate, CultureInfo.InvariantCulture);
 
-            await context.SaveChangesAsync();
+                await context.SaveChangesAsync();
 
-            return View("~/Views/StudyClasses/ListView.cshtml");
+                TempData["StudyClassSuccessMessage"] = "Cập nhật lớp học thành công!";
+                return RedirectToAction("GetListManagementPage");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["StudyClassErrorMessage"] = "Có lỗi xảy ra khi cập nhật lớp học: " + ex.Message;
+                return RedirectToAction("GetListManagementPage");
+            }
+
         }
 
 

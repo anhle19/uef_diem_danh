@@ -2,9 +2,9 @@
 {
     public class StudyClassSearchSortRequest
     {
-        public string Type { get; set; }
+        public string Type { get; set; } // SEARCH_ONLY || SORT_ONLY || SEARCH_AND_SORT
 
-        public string? TenLopHoc { get; set; }
+        public string? StudyClassName { get; set; }
 
         public string? SortField { get; set; }
 
