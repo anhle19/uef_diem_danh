@@ -106,18 +106,104 @@ function updateSearchOrderType() {
     searchOrderTypeInput.value = "SEARCH_ONLY";
 }
 
-function searchStudyClass() {
+async function searchStudyClass() {
+    const searchResultLabel = document.getElementById("searchResultLabel");
+    const studyClassesTableBody = document.getElementById("classesTableBody");
     const searchOrderStudyClassForm = document.getElementById("searchOrderStudyClassForm");
     const studyClassSearchInput = document
         .getElementById("studyClassSearchInput")
         .value
-        .trim()
-        .toLowerCase();
-    if (!studyClassSearchInput) {
-        return;
+        .trim();
+
+    try {
+
+        if (!studyClassSearchInput) {
+            return;
+        } else {
+            const searchOrderTypeInput = document.getElementById("searchOrderType");
+
+            const searchOrderRequest = {
+                Type: searchOrderTypeInput.value,
+                StudyClassName: studyClassSearchInput
+            };
+            const response = await axios.post(`https://localhost:7045/api/quan-ly-danh-sach-lop-hoc/tim-kiem-sap-xep`, searchOrderRequest);
+            const searchResult = response.data;
+            const totalPages = searchResult.totalPages;
+            const studyClasses = searchResult.studyClasses;
+
+            if (studyClasses.length > 0) {
+                searchResultLabel.style.display = "block";
+
+                studyClassesTableBody.innerHTML = '';
+
+                studyClasses.forEach(studyClass => {
+                    studyClassesTableBody.innerHTML +=
+                    `
+                        <tr>
+						    <td>${studyClass.id}</td>
+                            <td>${studyClass.studyClassName}</td>
+						    <td>${studyClass.startDate}</td>
+						    <td>${studyClass.endDate}</td>
+						    <td>
+							    <button
+								    class="btn btn-outline-secondary btn-sm btn-import"
+								    data-id="${studyClass.id}"
+								    data-bs-toggle="modal"
+								    data-bs-target="#popupImport"
+							    >
+								    Import
+							    </button>
+						    </td>
+						    <td>
+							    <button
+								    class="btn btn-outline-primary btn-sm btn-view-students"
+								    data-id="${studyClass.id}"
+								    data-bs-toggle="modal"
+								    data-bs-target="#popupHocVien"
+							    >
+								    Xem
+							    </button>
+						    </td>
+						    <td>
+							    <a
+								    class="action-link"
+								    href="/html/layout/main.html?page=classes&classId=${studyClass.id}"
+							    >
+								    Quản lý buổi học
+							    </a>
+						    </td>
+						    <td>
+							    <button
+								    class="btn btn-outline-secondary btn-sm btn-edit"
+								    data-id="${studyClass.id}"
+								    data-bs-toggle="modal"
+								    data-bs-target="#popupSuaLop"
+								    onclick="initUpdateStudyClassFields(${studyClass.id})">
+								    Sửa
+							    </button>
+						    </td>
+						    <td>
+							    <button
+								    class="btn btn-outline-danger btn-sm btn-delete"
+								    data-id="${studyClass.id}"
+								    data-bs-toggle="modal"
+								    data-bs-target="#popupXoaLop"
+							    >
+								    Xoá
+							    </button>
+						    </td>
+					    </tr>
+                    `;
+                })
+            }
+
+        }
+
+    } catch (ex) {
+        console.error(ex);
     }
 
-    searchOrderStudyClassForm.requestSubmit();
+//    searchOrderStudyClassForm.requestSubmit();
 }
 
 
