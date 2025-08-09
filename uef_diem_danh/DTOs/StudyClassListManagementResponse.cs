@@ -1,6 +1,14 @@
 ﻿namespace uef_diem_danh.DTOs
 {
-    public class StudyClassListManagementDto
+    public class StudyClassListManagementResponse
+    {
+        public int TotalPages { get; set; }
+
+        public List<StudyClassListData> StudyClasses { get; set; }
+
+    }
+
+    public class StudyClassListData
     {
         public int Id { get; set; }
 
