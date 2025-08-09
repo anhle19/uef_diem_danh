@@ -113,49 +113,55 @@ document.getElementById("btnSearch").addEventListener("click", () => {
     renderTable(filtered);
 });
 
-// ================== ADD CLASS ==================
-(function setupAdd() {
+// ================== ADD STUDY CLASS ==================
+function addStudyClass() {
+    const createStudyClassForm = document.getElementById("createStudyClassForm");
     const popup = document.getElementById("popupThemLop");
-    const ten = popup.querySelector("#themTenLop");
-    const bd = popup.querySelector("#themNgayBD");
-    const kt = popup.querySelector("#themNgayKT");
-    const btn = document.getElementById("btnLuuLopMoi");
+    const studyClassNameInput = popup.querySelector("#themTenLop");
+    const studyClassStartDayInput = popup.querySelector("#themNgayBD");
+    const studyClassEndDayInput = popup.querySelector("#themNgayKT");
 
-    btn.addEventListener("click", () => {
-        const name = ten.value.trim();
-        const start = bd.value;
-        const end = kt.value;
-        if (!name || !start || !end) {
-            Swal.fire(
-                "Lỗi",
-                "Vui lòng nhập đầy đủ Tên lớp, Ngày bắt đầu và Ngày kết thúc",
-                "warning"
-            );
-            return;
-        }
-        if (new Date(start) > new Date(end)) {
-            Swal.fire(
-                "Lỗi",
-                "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc",
-                "warning"
-            );
-            return;
-        }
-        const newItem = {
-            id: Date.now(),
-            tenLop: name,
-            ngayBD: start,
-            ngayKT: end,
-            createdAt: new Date().toISOString(),
-        };
-        classesData.push(newItem);
-        renderTable(classesData);
-        bootstrap.Modal.getInstance(popup)?.hide();
-        ten.value = "";
-        bd.value = "";
-        kt.value = "";
-    });
-})();
+    const studyClassName = studyClassNameInput.value.trim();
+    const studyClassStartDay = studyClassStartDayInput.value;
+    const studyClassEndDay = studyClassEndDayInput.value;
+
+    // Validate inputs
+    if (!studyClassName || !studyClassStartDay || !studyClassEndDay) {
+        Swal.fire(
+            "Lỗi",
+            "Vui lòng nhập đầy đủ Tên lớp, Ngày bắt đầu và Ngày kết thúc",
+            "warning"
+        );
+        return;
+    }
+    if (studyClassName && !studyClassStartDay && studyClassEndDay) {
+        Swal.fire(
+            "Lỗi",
+            "Vui lòng nhập đầy đủ Ngày bắt đầu",
+            "warning"
+        );
+        return;
+    }
+    if (studyClassName && studyClassStartDay && !studyClassEndDay) {
+        Swal.fire(
+            "Lỗi",
+            "Vui lòng nhập đầy đủ Ngày kết thúc",
+            "warning"
+        );
+        return;
+    }
+    if (new Date(studyClassStartDay) > new Date(studyClassEndDay)) {
+        Swal.fire(
+            "Lỗi",
+            "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc",
+            "warning"
+        );
+        return;
+    }
+
+    // Submit form
+    createStudyClassForm.requestSubmit();
+};
 
 // ================== EDIT CLASS ==================
 (function setupEdit() {
@@ -344,5 +350,5 @@ document.getElementById("btnSearch").addEventListener("click", () => {
     });
 })();
 
-// ================== INIT ==================
-renderTable(classesData);
+//// ================== INIT ==================
+//renderTable(classesData);
