@@ -807,20 +807,35 @@ namespace uef_diem_danh.Controllers
 
         [Route("tao-moi-lop-hoc")]
         [HttpPost]
-        public async Task<IActionResult> Create(StudyClassCreateRequest request)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([FromForm] StudyClassCreateRequest request)
         {
 
-            LopHoc studyClass = new LopHoc
+            try
             {
-                TenLopHoc = request.StudyClassName,
-                ThoiGianBatDau = DateOnly.ParseExact(request.StartDate, "dd/MM/yyyy", CultureInfo.InvariantCulture),
-                ThoiGianKetThuc = DateOnly.ParseExact(request.EndDate, "dd/MM/yyyy", CultureInfo.InvariantCulture),
-            };
+                Console.WriteLine($"StudyClassName: {request.StudyClassName}");
+                Console.WriteLine($"StartDate: {request.StartDate}");
+                Console.WriteLine($"EndDate: {request.EndDate}");
 
-            context.LopHocs.Add(studyClass);
-            await context.SaveChangesAsync();
+                LopHoc studyClass = new LopHoc
+                {
+                    TenLopHoc = request.StudyClassName,
+                    ThoiGianBatDau = DateOnly.Parse(request.StartDate, CultureInfo.InvariantCulture),
+                    ThoiGianKetThuc = DateOnly.Parse(request.EndDate, CultureInfo.InvariantCulture),
+                };
 
-            return View("~/Views/StudyClasses/ListView.cshtml");
+                context.LopHocs.Add(studyClass);
+                await context.SaveChangesAsync();
+
+                TempData["CreateStudyClassSuccessMessage"] = "Thêm lớp học thành công!";
+                return RedirectToAction("GetListManagementPage");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["CreateStudyClassErrorMessage"] = "Có lỗi xảy ra khi thêm lớp học: " + ex.Message;
+                return RedirectToAction("GetListManagementPage");
+            }
 
         }
 

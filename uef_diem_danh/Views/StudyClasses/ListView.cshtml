@@ -8,6 +8,18 @@
 }
 
 <div>
+	@if (TempData["CreateStudyClassSuccessMessage"] != null)
+	{
+		<div class="bg-success p-2 text-white">
+			@TempData["CreateStudyClassSuccessMessage"]
+		</div>
+	}
+	@if (TempData["CreateStudyClassErrorMessage"] != null)
+	{
+		<div class="bg-danger">
+			@TempData["CreateStudyClassErrorMessage"]
+		</div>
+	}
 	<div class="d-flex justify-content-between align-items-start mb-3">
 		<div>
 			<h2 class="table-title">Quản lý lớp học</h2>
@@ -109,7 +121,7 @@
 </div>
 
 <!-- Modal: Thêm lớp -->
-<div class="modal fade"
+@* <div class="modal fade"
 	 id="popupThemLop"
 	 tabindex="-1"
 	 aria-labelledby="popupThemLopLabel"
@@ -124,23 +136,25 @@
 						aria-label="Đóng"></button>
 			</div>
 			<div class="modal-body">
-				<div class="mb-2">
-					<label class="form-label">Tên lớp <span class="text-danger">*</span></label>
-					<input type="text"
-						   id="themTenLop"
-						   class="form-control"
-						   placeholder="VD: Lịch sử Đảng" />
-				</div>
-				<div class="row g-2">
-					<div class="col-6">
-						<label class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
-						<input type="date" id="themNgayBD" class="form-control" />
+				<form method="POST" action="">
+					<div class="mb-2">
+						<label class="form-label">Tên lớp <span class="text-danger">*</span></label>
+						<input type="text"
+							   id="themTenLop"
+							   class="form-control"
+							   placeholder="VD: Lịch sử Đảng" />
 					</div>
-					<div class="col-6">
-						<label class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
-						<input type="date" id="themNgayKT" class="form-control" />
+					<div class="row g-2">
+						<div class="col-6">
+							<label class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
+							<input type="date" id="themNgayBD" class="form-control" />
+						</div>
+						<div class="col-6">
+							<label class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
+							<input type="date" id="themNgayKT" class="form-control" />
+						</div>
 					</div>
-				</div>
+				</form>
 			</div>
 			<div class="modal-footer">
 				<button type="button"
@@ -154,7 +168,8 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div> *@
+@await Html.PartialAsync("/Views/Component/CreateStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassCreateRequest())
 
 <!-- Modal: Sửa lớp -->
 <div class="modal fade"
