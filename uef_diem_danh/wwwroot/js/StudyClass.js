@@ -163,56 +163,80 @@ function addStudyClass() {
     createStudyClassForm.requestSubmit();
 };
 
+
 // ================== EDIT CLASS ==================
-(function setupEdit() {
-    const popup = document.getElementById("popupSuaLop");
-    const ten = popup.querySelector("#suaTenLop");
-    const bd = popup.querySelector("#suaNgayBD");
-    const kt = popup.querySelector("#suaNgayKT");
-    const btn = document.getElementById("btnLuuSuaLop");
+async function initUpdateStudyClassFields(id) {
 
-    let currentId = null;
-    popup.addEventListener("show.bs.modal", (ev) => {
-        const id = Number(ev.relatedTarget.getAttribute("data-id"));
-        currentId = id;
-        const item = classesData.find((x) => x.id === id);
-        if (item) {
-            ten.value = item.tenLop;
-            bd.value = item.ngayBD;
-            kt.value = item.ngayKT;
-        }
-    });
+    // Call API to get study class detail
+    try {
+        const studyClassIdInput = document.getElementById("suaMaLop");
+        const studyClassNameInput = document.getElementById("suaTenLop");
+        const studyClassStartDayInput = document.getElementById("suaNgayBD");
+        const studyClassEndDayInput = document.getElementById("suaNgayKT");
 
-    btn.addEventListener("click", () => {
-        const name = ten.value.trim();
-        const start = bd.value;
-        const end = kt.value;
-        if (!name || !start || !end) {
-            Swal.fire(
-                "Lỗi",
-                "Vui lòng nhập đầy đủ Tên lớp, Ngày bắt đầu và Ngày kết thúc",
-                "warning"
-            );
-            return;
-        }
-        if (new Date(start) > new Date(end)) {
-            Swal.fire(
-                "Lỗi",
-                "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc",
-                "warning"
-            );
-            return;
-        }
-        const idx = classesData.findIndex((x) => x.id === currentId);
-        if (idx > -1) {
-            classesData[idx].tenLop = name;
-            classesData[idx].ngayBD = start;
-            classesData[idx].ngayKT = end;
-            renderTable(classesData);
-        }
-        bootstrap.Modal.getInstance(popup)?.hide();
-    });
-})();
+        const response = await axios.get(`https://localhost:7045/api/lay-chi-tiet-lop-hoc/${id}`)
+        const fetchedStudyClass = response.data;
+
+        studyClassIdInput.value = fetchedStudyClass.maLopHoc;
+        studyClassNameInput.value = fetchedStudyClass.tenLopHoc;
+        studyClassStartDayInput.value = fetchedStudyClass.thoiGianBatDau;
+        studyClassEndDayInput.value = fetchedStudyClass.thoiGianKetThuc;
+
+        console.log(response)
+    } catch (ex) {
+        console.log(ex);
+    }
+
+}
+
+function updateStudyClass() {
+    const updateStudyClassForm = document.getElementById("updateStudyClassForm");
+    const studyClassNameInput = document.getElementById("suaTenLop");
+    const studyClassStartDayInput = document.getElementById("suaNgayBD");
+    const studyClassEndDayInput = document.getElementById("suaNgayKT");
+
+    const studyClassName = studyClassNameInput.value.trim();
+    const studyClassStartDay = studyClassStartDayInput.value;
+    const studyClassEndDay = studyClassEndDayInput.value;
+
+    // Validate inputs
+    if (!studyClassName || !studyClassStartDay || !studyClassEndDay) {
+        Swal.fire(
+            "Lỗi",
+            "Vui lòng nhập đầy đủ Tên lớp, Ngày bắt đầu và Ngày kết thúc",
+            "warning"
+        );
+        return;
+    }
+    if (studyClassName && !studyClassStartDay && studyClassEndDay) {
+        Swal.fire(
+            "Lỗi",
+            "Vui lòng nhập đầy đủ Ngày bắt đầu",
+            "warning"
+        );
+        return;
+    }
+    if (studyClassName && studyClassStartDay && !studyClassEndDay) {
+        Swal.fire(
+            "Lỗi",
+            "Vui lòng nhập đầy đủ Ngày kết thúc",
+            "warning"
+        );
+        return;
+    }
+    if (new Date(studyClassStartDay) > new Date(studyClassEndDay)) {
+        Swal.fire(
+            "Lỗi",
+            "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc",
+            "warning"
+        );
+        return;
+    }
+
+    // Submit form
+    updateStudyClassForm.requestSubmit();
+};
+
 
 // ================== DELETE CLASS ==================
 (function setupDelete() {
