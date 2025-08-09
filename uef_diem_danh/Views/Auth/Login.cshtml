@@ -1,0 +1,181 @@
+﻿@using uef_diem_danh.DTOs
+@model LoginRequest
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập</title>
+    <style>
+        :root {
+            --color-bg: #f4f6fb;
+            --color-card: #ffffff;
+            --color-accent: #2563eb;
+            --color-text: #1f2937;
+            --color-border: #d1d5db;
+            --color-input-bg: #f9fafb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-bg);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--color-text);
+        }
+
+        .login-container {
+            display: flex;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            background-color: var(--color-card);
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 420px;
+        }
+
+            .login-box h2 {
+                margin-bottom: 30px;
+                text-align: center;
+                color: var(--color-text);
+            }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+            .form-group label {
+                display: block;
+                font-weight: 600;
+                margin-bottom: 8px;
+                color: #374151;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 12px;
+                background-color: var(--color-input-bg);
+                border: 1px solid var(--color-border);
+                border-radius: 10px;
+                color: var(--color-text);
+                font-size: 15px;
+            }
+
+                .form-group input:focus {
+                    border-color: var(--color-accent);
+                    outline: none;
+                    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+                }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--color-accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            .login-btn:hover {
+                background-color: #1d4ed8;
+            }
+
+        .login-footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+            .login-footer a {
+                color: var(--color-accent);
+                text-decoration: none;
+                font-weight: 500;
+            }
+
+                .login-footer a:hover {
+                    text-decoration: underline;
+                }
+    </style>
+    <link rel="stylesheet" href="~/css/login.css" />
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h2>Admin</h2>
+            @* <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Tên đăng nhập</label>
+                    <input asp-for=@Model.Email id="email" placeholder="Nhập tên đăng nhập" />
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input asp-for="Password" id="password" placeholder="Nhập mật khẩu" type="password" />
+                </div>
+                <button type="submit" class="login-btn">Đăng nhập</button>
+            </form> *@
+            <form asp-controller="Auth" asp-action="Login" method="post">
+                <div class="form-group">
+                    <label for="email">Tên đăng nhập</label>
+                    <input asp-for="Username" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input asp-for="Password" type="password" class="form-control" />
+                </div>
+                <button type="submit" class="login-btn">Đăng nhập</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @* <script>
+        document.getElementById("login-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            if (!email || !password) {
+                Swal.fire({ icon: "warning", title: "Thiếu thông tin", text: "Vui lòng nhập đầy đủ!" });
+                return;
+            }
+
+            Swal.fire({ title: "Đang xử lý...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            const res = await fetch("/Auth/Login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ Email: email, Password: password, RememberMe: true })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                Swal.fire({ icon: "success", title: `Chào mừng, ${data.email}!`, timer: 1500, showConfirmButton: false })
+                .then(() => window.location.href = "/Home/Index");
+            } else {
+                Swal.fire({ icon: "error", title: "Lỗi đăng nhập", text: data.message });
+            }
+        });
+    </script> *@
+</body>
+</html>
