@@ -21,15 +21,32 @@
 		</div>
 	}
 	<div class="d-flex justify-content-between align-items-start mb-3">
-		<div>
+		<div style="width: 20rem">
 			<h2 class="table-title">Quản lý lớp học</h2>
 			<div class="d-flex search-row">
-				<input id="kw"
-					   class="form-control form-control-sm"
-					   placeholder="Tìm theo tên lớp..." />
-				<button class="btn-next-secondary btn-sm" id="btnSearch">
-					Tìm
-				</button>
+				<form 
+					method="POST" 
+					action="/quan-ly-danh-sach-lop-hoc/tim-kiem-sap-xep" 
+					id="searchOrderStudyClassForm"
+					style="width: 100%">
+					@Html.AntiForgeryToken()
+
+                    <input type="hidden" name="Type" id="searchOrderType" />
+
+					<input id="studyClassSearchInput"
+						   class="form-control form-control-sm" 
+						   name="StudyClassName"
+						   placeholder="Tìm theo tên lớp..." 
+						   onchange="updateSearchOrderType()" 
+						   style="width: 70%; display: inline"/>
+					<button 
+						class="btn-next-secondary btn-sm" 
+						id="btnSearch" 
+						onclick="searchStudyClass()"
+						form="searchOrderStudyClassForm">
+						Tìm
+					</button>
+				</form>
 			</div>
 		</div>
 		<div>
