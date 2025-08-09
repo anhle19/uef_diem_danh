@@ -333,26 +333,32 @@ function updateStudyClass() {
 
 
 // ================== DELETE CLASS ==================
-(function setupDelete() {
-    const popup = document.getElementById("popupXoaLop");
-    const btn = document.getElementById("btnXacNhanXoaLop");
-    let currentId = null;
-    popup.addEventListener("show.bs.modal", (ev) => {
-        currentId = Number(ev.relatedTarget.getAttribute("data-id"));
-        const item = classesData.find((x) => x.id === currentId);
-        popup.querySelector(
-            ".modal-body"
-        ).textContent = `Bạn có chắc chắn muốn xoá "${item?.tenLop}" không?`;
-    });
-    btn.addEventListener("click", () => {
-        const idx = classesData.findIndex((x) => x.id === currentId);
-        if (idx > -1) {
-            classesData.splice(idx, 1);
-        }
-        renderTable(classesData);
-        bootstrap.Modal.getInstance(popup)?.hide();
-    });
-})();
+async function initDeleteStudyClassField(id) {
+    const studyClassIdInput = document.getElementById("xoaMaLop");
+
+    studyClassIdInput.value = id;
+}
+
+//(function setupDelete() {
+//    const popup = document.getElementById("popupXoaLop");
+//    const btn = document.getElementById("btnXacNhanXoaLop");
+//    let currentId = null;
+//    popup.addEventListener("show.bs.modal", (ev) => {
+//        currentId = Number(ev.relatedTarget.getAttribute("data-id"));
+//        const item = classesData.find((x) => x.id === currentId);
+//        popup.querySelector(
+//            ".modal-body"
+//        ).textContent = `Bạn có chắc chắn muốn xoá "${item?.tenLop}" không?`;
+//    });
+//    btn.addEventListener("click", () => {
+//        const idx = classesData.findIndex((x) => x.id === currentId);
+//        if (idx > -1) {
+//            classesData.splice(idx, 1);
+//        }
+//        renderTable(classesData);
+//        bootstrap.Modal.getInstance(popup)?.hide();
+//    });
+//})();
 
 // ================== IMPORT STUDENTS ==================
 (function setupImport() {
