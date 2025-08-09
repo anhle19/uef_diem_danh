@@ -127,8 +127,8 @@
 								class="btn btn-outline-danger btn-sm btn-delete" 
 								data-id="@studyClass.Id" 
 								data-bs-toggle="modal" 
-								data-bs-target="#popupXoaLop"
-							>
+								data-bs-target="#popupXoaLop" 
+								onclick="initDeleteStudyClassField(@studyClass.Id)">
 								Xoá
 							</button>
 						</td>
@@ -238,7 +238,7 @@
 
 
 <!-- Modal: Xoá lớp -->
-<div class="modal fade"
+@* <div class="modal fade"
 	 id="popupXoaLop"
 	 tabindex="-1"
 	 aria-labelledby="popupXoaLopLabel"
@@ -267,7 +267,9 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div> *@
+@await Html.PartialAsync("/Views/Component/DeleteStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassDeleteRequest())
+
 
 <!-- Modal: Import học viên -->
 <div class="modal fade"
