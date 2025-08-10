@@ -365,12 +365,6 @@ namespace uef_diem_danh.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("HocVienMaHocVien")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LopHocMaLopHoc")
-                        .HasColumnType("int");
-
                     b.Property<int>("MaHocVien")
                         .HasColumnType("int");
 
@@ -379,9 +373,9 @@ namespace uef_diem_danh.Migrations
 
                     b.HasKey("MaThamGia");
 
-                    b.HasIndex("HocVienMaHocVien");
+                    b.HasIndex("MaHocVien");
 
-                    b.HasIndex("LopHocMaLopHoc");
+                    b.HasIndex("MaLopHoc");
 
                     b.ToTable("ThamGia");
                 });
@@ -471,13 +465,13 @@ namespace uef_diem_danh.Migrations
                 {
                     b.HasOne("uef_diem_danh.Models.HocVien", "HocVien")
                         .WithMany("ThamGias")
-                        .HasForeignKey("HocVienMaHocVien")
+                        .HasForeignKey("MaHocVien")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("uef_diem_danh.Models.LopHoc", "LopHoc")
                         .WithMany("ThamGias")
-                        .HasForeignKey("LopHocMaLopHoc")
+                        .HasForeignKey("MaLopHoc")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
