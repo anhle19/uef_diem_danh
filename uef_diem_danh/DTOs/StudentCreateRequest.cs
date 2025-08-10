@@ -6,7 +6,7 @@
 
         public string Ten { get; set; }
 
-        public string MaBarCode { get; set; }
+        //public string MaBarCode { get; set; }
 
         public string NgaySinh { get; set; }
 

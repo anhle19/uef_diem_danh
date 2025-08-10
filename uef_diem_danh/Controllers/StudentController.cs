@@ -26,6 +26,15 @@ namespace uef_diem_danh.Controllers
             return View(students);
         }
 
+        [Route("api/lay-chi-tiet-hoc-vien/{student_id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetDetailForUpdate(int student_id)
+        {
+            HocVien studyClass = await context.HocViens.FindAsync(student_id);
+
+            return Ok(studyClass);
+        }
+
         [HttpPost]
         [Route("student/excel-import")]
         public async Task<IActionResult> ImportFromExcel([FromForm] ImportStudentExcelRequest request)
@@ -182,6 +191,7 @@ namespace uef_diem_danh.Controllers
                     Ten = request.Ten,
                     NgaySinh = DateOnly.Parse(request.NgaySinh, CultureInfo.InvariantCulture),
                     DiaChi = request.DiaChi,
+                    MaBarCode = request.SoDienThoai, 
                     Email = request.Email,
                     SoDienThoai = request.SoDienThoai,
                 };
@@ -239,6 +249,7 @@ namespace uef_diem_danh.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete([FromForm] StudentDeleteRequest request)
         {
+            Console.WriteLine("Delete student with ID: " + request.MaHocVien);
             try
             {
                 HocVien student = await context.HocViens
@@ -248,13 +259,13 @@ namespace uef_diem_danh.Controllers
                 await context.SaveChangesAsync();
 
                 TempData["StudentSuccessMessage"] = "Xóa học viên thành công!";
-                return RedirectToAction("hoc-vien/danh-sach");
+                return Redirect("hoc-vien/danh-sach");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 TempData["StudentSuccessMessage"] = "Có lỗi xảy ra khi xóa học viên: " + ex.Message;
-                return RedirectToAction("hoc-vien/danh-sach");
+                return Redirect("hoc-vien/danh-sach");
             }
         }
     }

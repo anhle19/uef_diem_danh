@@ -23,7 +23,8 @@
 			<h2 class="table-title">Quản lý học viên</h2>
 			<div class="d-flex search-row">
 				<form id="searchOrderStudentForm"
-					  style="width: 100%">
+					  style="width: 100%"
+					  onsubmit="return preventSearchStudentSubmit()">
 
 					<input id="studentSearchInput"
 						   class="form-control form-control-sm"
@@ -99,7 +100,7 @@
 									data-id="@student.MaHocVien"
 									data-bs-toggle="modal"
 									data-bs-target="#popupXoaHocVien"
-									onclick="initDeleteStudyClassField(@student.MaHocVien)">
+									onclick="initDeleteStudentField(@student.MaHocVien)">
 								Xoá
 							</button>
 						</td>
@@ -115,5 +116,7 @@
 @await Html.PartialAsync("/Views/Component/UpdateStudentModal.cshtml", new uef_diem_danh.DTOs.StudentUpdateRequest())
 
 @await Html.PartialAsync("/Views/Component/DeleteStudentModal.cshtml", new uef_diem_danh.DTOs.StudentDeleteRequest())
+
+
 
 <script src="~/js/Student.js"></script>

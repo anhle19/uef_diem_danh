@@ -1,312 +1,312 @@
-﻿$(document).ready(function () {
+﻿
+$(document).ready(function () {
     //// ================== INIT ==================
     $.fn.dataTable.moment('DD/MM/YYYY');
 
-    let studyClassTable = new DataTable('#studyClassTable', {
-        dom: 'lrtp'    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
-        // Notice no "f" here, which is the default filter/search box
-    });
+})
 
-    // ================== SEARCH ==================
-    function updateSearchOrderType() {
-        const searchOrderTypeInput = document.getElementById("searchOrderType");
-        searchOrderTypeInput.value = "SEARCH_ONLY";
+
+// ================== DATA TABLE ==================
+let studyClassTable = new DataTable('#studyClassTable', {
+    dom: 'lrtp'    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
+    // Notice no "f" here, which is the default filter/search box
+});
+// ================== SEARCH ==================
+function updateSearchOrderType() {
+    const searchOrderTypeInput = document.getElementById("searchOrderType");
+    searchOrderTypeInput.value = "SEARCH_ONLY";
+}
+
+async function searchStudyClass() {
+    const searchResultLabel = document.getElementById("searchResultLabel");
+    const studyClassesTableBody = document.getElementById("classesTableBody");
+    const searchOrderStudyClassForm = document.getElementById("searchOrderStudyClassForm");
+    const studyClassSearchInputValue = document
+        .getElementById("studyClassSearchInput")
+        .value
+        .trim();
+    console.log(studyClassSearchInputValue);
+    try {
+
+        if (!studyClassSearchInputValue) {
+            return;
+        } else {
+
+            studyClassTable.search(studyClassSearchInputValue).draw();
+
+        }
+
+    } catch (ex) {
+        console.error(ex);
     }
 
-    async function searchStudyClass() {
-        const searchResultLabel = document.getElementById("searchResultLabel");
-        const studyClassesTableBody = document.getElementById("classesTableBody");
-        const searchOrderStudyClassForm = document.getElementById("searchOrderStudyClassForm");
-        const studyClassSearchInputValue = document
-            .getElementById("studyClassSearchInput")
-            .value
-            .trim();
-        console.log(studyClassSearchInputValue);
-        try {
+    //    searchOrderStudyClassForm.requestSubmit();
+}
 
-            if (!studyClassSearchInputValue) {
-                return;
-            } else {
 
-                studyClassTable.search(studyClassSearchInputValue).draw();
+// ================== ADD STUDY CLASS ==================
+function addStudyClass() {
+    const createStudyClassForm = document.getElementById("createStudyClassForm");
+    const popup = document.getElementById("popupThemLop");
+    const studyClassNameInput = popup.querySelector("#themTenLop");
+    const studyClassStartDayInput = popup.querySelector("#themNgayBD");
+    const studyClassEndDayInput = popup.querySelector("#themNgayKT");
 
-            }
+    const studyClassName = studyClassNameInput.value.trim();
+    const studyClassStartDay = studyClassStartDayInput.value;
+    const studyClassEndDay = studyClassEndDayInput.value;
 
-        } catch (ex) {
-            console.error(ex);
-        }
-
-        //    searchOrderStudyClassForm.requestSubmit();
+    // Validate inputs
+    if (!studyClassName || !studyClassStartDay || !studyClassEndDay) {
+        Swal.fire(
+            "Lỗi",
+            "Vui lòng nhập đầy đủ Tên lớp, Ngày bắt đầu và Ngày kết thúc",
+            "warning"
+        );
+        return;
+    }
+    if (studyClassName && !studyClassStartDay && studyClassEndDay) {
+        Swal.fire(
+            "Lỗi",
+            "Vui lòng nhập đầy đủ Ngày bắt đầu",
+            "warning"
+        );
+        return;
+    }
+    if (studyClassName && studyClassStartDay && !studyClassEndDay) {
+        Swal.fire(
+            "Lỗi",
+            "Vui lòng nhập đầy đủ Ngày kết thúc",
+            "warning"
+        );
+        return;
+    }
+    if (new Date(studyClassStartDay) > new Date(studyClassEndDay)) {
+        Swal.fire(
+            "Lỗi",
+            "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc",
+            "warning"
+        );
+        return;
     }
 
-
-    // ================== ADD STUDY CLASS ==================
-    function addStudyClass() {
-        const createStudyClassForm = document.getElementById("createStudyClassForm");
-        const popup = document.getElementById("popupThemLop");
-        const studyClassNameInput = popup.querySelector("#themTenLop");
-        const studyClassStartDayInput = popup.querySelector("#themNgayBD");
-        const studyClassEndDayInput = popup.querySelector("#themNgayKT");
-
-        const studyClassName = studyClassNameInput.value.trim();
-        const studyClassStartDay = studyClassStartDayInput.value;
-        const studyClassEndDay = studyClassEndDayInput.value;
-
-        // Validate inputs
-        if (!studyClassName || !studyClassStartDay || !studyClassEndDay) {
-            Swal.fire(
-                "Lỗi",
-                "Vui lòng nhập đầy đủ Tên lớp, Ngày bắt đầu và Ngày kết thúc",
-                "warning"
-            );
-            return;
-        }
-        if (studyClassName && !studyClassStartDay && studyClassEndDay) {
-            Swal.fire(
-                "Lỗi",
-                "Vui lòng nhập đầy đủ Ngày bắt đầu",
-                "warning"
-            );
-            return;
-        }
-        if (studyClassName && studyClassStartDay && !studyClassEndDay) {
-            Swal.fire(
-                "Lỗi",
-                "Vui lòng nhập đầy đủ Ngày kết thúc",
-                "warning"
-            );
-            return;
-        }
-        if (new Date(studyClassStartDay) > new Date(studyClassEndDay)) {
-            Swal.fire(
-                "Lỗi",
-                "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc",
-                "warning"
-            );
-            return;
-        }
-
-        // Submit form
-        createStudyClassForm.requestSubmit();
-    };
+    // Submit form
+    createStudyClassForm.requestSubmit();
+};
 
 
-    // ================== EDIT CLASS ==================
-    async function initUpdateStudyClassFields(id) {
+// ================== EDIT CLASS ==================
+async function initUpdateStudyClassFields(id) {
 
-        // Call API to get study class detail
-        try {
-            const studyClassIdInput = document.getElementById("suaMaLop");
-            const studyClassNameInput = document.getElementById("suaTenLop");
-            const studyClassStartDayInput = document.getElementById("suaNgayBD");
-            const studyClassEndDayInput = document.getElementById("suaNgayKT");
-
-            const response = await axios.get(`https://localhost:7045/api/lay-chi-tiet-lop-hoc/${id}`)
-            const fetchedStudyClass = response.data;
-
-            studyClassIdInput.value = fetchedStudyClass.maLopHoc;
-            studyClassNameInput.value = fetchedStudyClass.tenLopHoc;
-            studyClassStartDayInput.value = fetchedStudyClass.thoiGianBatDau;
-            studyClassEndDayInput.value = fetchedStudyClass.thoiGianKetThuc;
-
-            console.log(response)
-        } catch (ex) {
-            console.log(ex);
-        }
-
-    }
-
-    function updateStudyClass() {
-        const updateStudyClassForm = document.getElementById("updateStudyClassForm");
+    // Call API to get study class detail
+    try {
+        const studyClassIdInput = document.getElementById("suaMaLop");
         const studyClassNameInput = document.getElementById("suaTenLop");
         const studyClassStartDayInput = document.getElementById("suaNgayBD");
         const studyClassEndDayInput = document.getElementById("suaNgayKT");
 
-        const studyClassName = studyClassNameInput.value.trim();
-        const studyClassStartDay = studyClassStartDayInput.value;
-        const studyClassEndDay = studyClassEndDayInput.value;
+        const response = await axios.get(`https://localhost:7045/api/lay-chi-tiet-lop-hoc/${id}`)
+        const fetchedStudyClass = response.data;
 
-        // Validate inputs
-        if (!studyClassName || !studyClassStartDay || !studyClassEndDay) {
-            Swal.fire(
-                "Lỗi",
-                "Vui lòng nhập đầy đủ Tên lớp, Ngày bắt đầu và Ngày kết thúc",
-                "warning"
-            );
-            return;
-        }
-        if (studyClassName && !studyClassStartDay && studyClassEndDay) {
-            Swal.fire(
-                "Lỗi",
-                "Vui lòng nhập đầy đủ Ngày bắt đầu",
-                "warning"
-            );
-            return;
-        }
-        if (studyClassName && studyClassStartDay && !studyClassEndDay) {
-            Swal.fire(
-                "Lỗi",
-                "Vui lòng nhập đầy đủ Ngày kết thúc",
-                "warning"
-            );
-            return;
-        }
-        if (new Date(studyClassStartDay) > new Date(studyClassEndDay)) {
-            Swal.fire(
-                "Lỗi",
-                "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc",
-                "warning"
-            );
-            return;
-        }
+        studyClassIdInput.value = fetchedStudyClass.maLopHoc;
+        studyClassNameInput.value = fetchedStudyClass.tenLopHoc;
+        studyClassStartDayInput.value = fetchedStudyClass.thoiGianBatDau;
+        studyClassEndDayInput.value = fetchedStudyClass.thoiGianKetThuc;
 
-        // Submit form
-        updateStudyClassForm.requestSubmit();
-    };
-
-
-    // ================== DELETE CLASS ==================
-    async function initDeleteStudyClassField(id) {
-        const studyClassIdInput = document.getElementById("xoaMaLop");
-
-        studyClassIdInput.value = id;
+        console.log(response)
+    } catch (ex) {
+        console.log(ex);
     }
 
-    //(function setupDelete() {
-    //    const popup = document.getElementById("popupXoaLop");
-    //    const btn = document.getElementById("btnXacNhanXoaLop");
-    //    let currentId = null;
-    //    popup.addEventListener("show.bs.modal", (ev) => {
-    //        currentId = Number(ev.relatedTarget.getAttribute("data-id"));
-    //        const item = classesData.find((x) => x.id === currentId);
-    //        popup.querySelector(
-    //            ".modal-body"
-    //        ).textContent = `Bạn có chắc chắn muốn xoá "${item?.tenLop}" không?`;
-    //    });
-    //    btn.addEventListener("click", () => {
-    //        const idx = classesData.findIndex((x) => x.id === currentId);
-    //        if (idx > -1) {
-    //            classesData.splice(idx, 1);
-    //        }
-    //        renderTable(classesData);
-    //        bootstrap.Modal.getInstance(popup)?.hide();
-    //    });
-    //})();
+}
 
-    // ================== IMPORT STUDENTS ==================
-    (function setupImport() {
-        const popup = document.getElementById("popupImport");
-        const btnDownload = document.getElementById("btnDownloadTemplate");
-        const fileInput = document.getElementById("fileImport");
-        const btnImport = document.getElementById("btnThucHienImport");
-        let currentClassId = null;
+function updateStudyClass() {
+    const updateStudyClassForm = document.getElementById("updateStudyClassForm");
+    const studyClassNameInput = document.getElementById("suaTenLop");
+    const studyClassStartDayInput = document.getElementById("suaNgayBD");
+    const studyClassEndDayInput = document.getElementById("suaNgayKT");
 
-        popup.addEventListener("show.bs.modal", (ev) => {
-            currentClassId = Number(ev.relatedTarget.getAttribute("data-id"));
-            fileInput.value = "";
-        });
+    const studyClassName = studyClassNameInput.value.trim();
+    const studyClassStartDay = studyClassStartDayInput.value;
+    const studyClassEndDay = studyClassEndDayInput.value;
 
-        // Tải file mẫu
-        btnDownload.addEventListener("click", () => {
-            const csvHeader = "lastName,firstName,email\n";
-            const csvSample =
-                csvHeader + "Nguyen,An,an@example.com\nTran,Binh,binh@example.com\n";
-            const blob = new Blob([csvSample], { type: "text/csv;charset=utf-8;" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "mau_import_hoc_vien.csv";
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
-        });
+    // Validate inputs
+    if (!studyClassName || !studyClassStartDay || !studyClassEndDay) {
+        Swal.fire(
+            "Lỗi",
+            "Vui lòng nhập đầy đủ Tên lớp, Ngày bắt đầu và Ngày kết thúc",
+            "warning"
+        );
+        return;
+    }
+    if (studyClassName && !studyClassStartDay && studyClassEndDay) {
+        Swal.fire(
+            "Lỗi",
+            "Vui lòng nhập đầy đủ Ngày bắt đầu",
+            "warning"
+        );
+        return;
+    }
+    if (studyClassName && studyClassStartDay && !studyClassEndDay) {
+        Swal.fire(
+            "Lỗi",
+            "Vui lòng nhập đầy đủ Ngày kết thúc",
+            "warning"
+        );
+        return;
+    }
+    if (new Date(studyClassStartDay) > new Date(studyClassEndDay)) {
+        Swal.fire(
+            "Lỗi",
+            "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc",
+            "warning"
+        );
+        return;
+    }
 
-        btnImport.addEventListener("click", () => {
-            const file = fileInput.files?.[0];
-            if (!file) {
-                Swal.fire("Thông báo", "Vui lòng chọn file trước khi import", "info");
+    // Submit form
+    updateStudyClassForm.requestSubmit();
+};
+
+
+// ================== DELETE CLASS ==================
+async function initDeleteStudyClassField(id) {
+    const studyClassIdInput = document.getElementById("xoaMaLop");
+
+    studyClassIdInput.value = id;
+}
+
+//(function setupDelete() {
+//    const popup = document.getElementById("popupXoaLop");
+//    const btn = document.getElementById("btnXacNhanXoaLop");
+//    let currentId = null;
+//    popup.addEventListener("show.bs.modal", (ev) => {
+//        currentId = Number(ev.relatedTarget.getAttribute("data-id"));
+//        const item = classesData.find((x) => x.id === currentId);
+//        popup.querySelector(
+//            ".modal-body"
+//        ).textContent = `Bạn có chắc chắn muốn xoá "${item?.tenLop}" không?`;
+//    });
+//    btn.addEventListener("click", () => {
+//        const idx = classesData.findIndex((x) => x.id === currentId);
+//        if (idx > -1) {
+//            classesData.splice(idx, 1);
+//        }
+//        renderTable(classesData);
+//        bootstrap.Modal.getInstance(popup)?.hide();
+//    });
+//})();
+
+// ================== IMPORT STUDENTS ==================
+(function setupImport() {
+    const popup = document.getElementById("popupImport");
+    const btnDownload = document.getElementById("btnDownloadTemplate");
+    const fileInput = document.getElementById("fileImport");
+    const btnImport = document.getElementById("btnThucHienImport");
+    let currentClassId = null;
+
+    popup.addEventListener("show.bs.modal", (ev) => {
+        currentClassId = Number(ev.relatedTarget.getAttribute("data-id"));
+        fileInput.value = "";
+    });
+
+    // Tải file mẫu
+    btnDownload.addEventListener("click", () => {
+        const csvHeader = "lastName,firstName,email\n";
+        const csvSample =
+            csvHeader + "Nguyen,An,an@example.com\nTran,Binh,binh@example.com\n";
+        const blob = new Blob([csvSample], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "mau_import_hoc_vien.csv";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    });
+
+    btnImport.addEventListener("click", () => {
+        const file = fileInput.files?.[0];
+        if (!file) {
+            Swal.fire("Thông báo", "Vui lòng chọn file trước khi import", "info");
+            return;
+        }
+        if (!file.name.endsWith(".csv")) {
+            Swal.fire("Thông báo", "Demo này chỉ đọc nhanh", "info");
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const text = e.target.result;
+            const lines = String(text).split(/\r?\n/).filter(Boolean);
+            if (lines.length <= 1) {
+                Swal.fire("Lỗi", "File trống hoặc sai định dạng", "error");
                 return;
             }
-            if (!file.name.endsWith(".csv")) {
-                Swal.fire("Thông báo", "Demo này chỉ đọc nhanh", "info");
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const text = e.target.result;
-                const lines = String(text).split(/\r?\n/).filter(Boolean);
-                if (lines.length <= 1) {
-                    Swal.fire("Lỗi", "File trống hoặc sai định dạng", "error");
-                    return;
-                }
-                const rows = lines.slice(1).map((l) => l.split(","));
-                const toAdd = rows.map((r, i) => ({
-                    id: Date.now() + i,
-                    lastName: r[0]?.trim() || "",
-                    firstName: r[1]?.trim() || "",
-                    email: r[2]?.trim() || "",
-                }));
-                if (!studentsByClass[currentClassId])
-                    studentsByClass[currentClassId] = [];
-                studentsByClass[currentClassId].push(...toAdd);
-                Swal.fire(
-                    "Thành công",
-                    `Đã import ${toAdd.length} học viên vào lớp`,
-                    "success"
-                );
-                bootstrap.Modal.getInstance(popup)?.hide();
-            };
-            reader.readAsText(file, "utf-8");
-        });
-    })();
+            const rows = lines.slice(1).map((l) => l.split(","));
+            const toAdd = rows.map((r, i) => ({
+                id: Date.now() + i,
+                lastName: r[0]?.trim() || "",
+                firstName: r[1]?.trim() || "",
+                email: r[2]?.trim() || "",
+            }));
+            if (!studentsByClass[currentClassId])
+                studentsByClass[currentClassId] = [];
+            studentsByClass[currentClassId].push(...toAdd);
+            Swal.fire(
+                "Thành công",
+                `Đã import ${toAdd.length} học viên vào lớp`,
+                "success"
+            );
+            bootstrap.Modal.getInstance(popup)?.hide();
+        };
+        reader.readAsText(file, "utf-8");
+    });
+})();
 
-    // ================== VIEW/REMOVE STUDENTS ==================
-    (function setupViewStudents() {
-        const popup = document.getElementById("popupHocVien");
-        const tbody = popup.querySelector(".studentsTableBody");
-        let currentClassId = null;
+// ================== VIEW/REMOVE STUDENTS ==================
+(function setupViewStudents() {
+    const popup = document.getElementById("popupHocVien");
+    const tbody = popup.querySelector(".studentsTableBody");
+    let currentClassId = null;
 
-        function renderStudents() {
-            const list = studentsByClass[currentClassId] || [];
-            tbody.innerHTML = "";
-            list.forEach((st, idx) => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
+    function renderStudents() {
+        const list = studentsByClass[currentClassId] || [];
+        tbody.innerHTML = "";
+        list.forEach((st, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
         <td>${idx + 1}</td>
         <td>${st.lastName}</td>
         <td>${st.firstName}</td>
         <td>${st.email}</td>
         <td><button class="btn btn-outline-danger btn-sm btn-remove-student" data-id="${st.id
-                    }">Xoá</button></td>
+                }">Xoá</button></td>
     `;
-                tbody.appendChild(tr);
-            });
-            if (list.length === 0) {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `<td colspan="5">Chưa có học viên</td>`;
-                tbody.appendChild(tr);
-            }
+            tbody.appendChild(tr);
+        });
+        if (list.length === 0) {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td colspan="5">Chưa có học viên</td>`;
+            tbody.appendChild(tr);
         }
+    }
 
-        popup.addEventListener("show.bs.modal", (ev) => {
-            currentClassId = Number(ev.relatedTarget.getAttribute("data-id"));
+    popup.addEventListener("show.bs.modal", (ev) => {
+        currentClassId = Number(ev.relatedTarget.getAttribute("data-id"));
+        renderStudents();
+    });
+
+    popup.addEventListener("click", (e) => {
+        const btn = e.target.closest(".btn-remove-student");
+        if (!btn) return;
+        const stId = Number(btn.getAttribute("data-id"));
+        const arr = studentsByClass[currentClassId] || [];
+        const idx = arr.findIndex((x) => x.id === stId);
+        if (idx > -1) {
+            arr.splice(idx, 1);
             renderStudents();
-        });
-
-        popup.addEventListener("click", (e) => {
-            const btn = e.target.closest(".btn-remove-student");
-            if (!btn) return;
-            const stId = Number(btn.getAttribute("data-id"));
-            const arr = studentsByClass[currentClassId] || [];
-            const idx = arr.findIndex((x) => x.id === stId);
-            if (idx > -1) {
-                arr.splice(idx, 1);
-                renderStudents();
-            }
-        });
-    })();
-
-
-})
-
+        }
+    });
+})();
