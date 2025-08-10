@@ -10,7 +10,7 @@
 
         public string MaBarCode { get; set; }
 
-        public DateOnly NgaySinh { get; set; }
+        public string NgaySinh { get; set; }
 
         public string DiaChi { get; set; }
 

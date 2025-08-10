@@ -1,5 +1,6 @@
 ﻿using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Text;
 using uef_diem_danh.Database;
@@ -198,6 +199,63 @@ namespace uef_diem_danh.Controllers
                 return Redirect("hoc-vien/danh-sach");
             }
 
+        }
+
+        [Route("cap-nhat-hoc-vien")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(int student_id, [FromForm] StudentUpdateRequest request)
+        {
+
+            try
+            {
+                HocVien student = await context.HocViens
+                    .FirstOrDefaultAsync(lh => lh.MaHocVien == request.MaHocVien);
+
+                student.Ho = request.Ho;
+                student.Ten = request.Ten;
+                student.NgaySinh = DateOnly.Parse(request.NgaySinh, CultureInfo.InvariantCulture);
+                student.DiaChi = request.DiaChi;
+                student.Email = request.Email;
+                student.SoDienThoai = request.SoDienThoai;
+
+                await context.SaveChangesAsync();
+
+                TempData["StudentSuccessMessage"] = "Cập nhật học viên thành công!";
+                return Redirect("hoc-vien/danh-sach");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["StudentSuccessMessage"] = "Có lỗi xảy ra khi cập nhật học viên: " + ex.Message;
+                return Redirect("hoc-vien/danh-sach");
+            }
+
+        }
+
+
+        [Route("xoa-hoc-vien")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete([FromForm] StudentDeleteRequest request)
+        {
+            try
+            {
+                HocVien student = await context.HocViens
+                    .FirstOrDefaultAsync(lh => lh.MaHocVien == request.MaHocVien);
+
+                context.HocViens.Remove(student);
+                await context.SaveChangesAsync();
+
+                TempData["StudentSuccessMessage"] = "Xóa học viên thành công!";
+                return RedirectToAction("hoc-vien/danh-sach");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["StudentSuccessMessage"] = "Có lỗi xảy ra khi xóa học viên: " + ex.Message;
+                return RedirectToAction("hoc-vien/danh-sach");
+            }
         }
     }
 }
