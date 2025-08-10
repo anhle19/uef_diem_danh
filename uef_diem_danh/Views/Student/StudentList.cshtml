@@ -5,90 +5,115 @@
     ViewData["Title"] = "Quản lý học viên";
 }
 
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<div>
+	@if (TempData["StudentSuccessMessage"] != null)
+	{
+		<div class="bg-success p-2 text-white">
+			@TempData["StudentSuccessMessage"]
+		</div>
+	}
+	@if (TempData["StudentErrorMessage"] != null)
+	{
+		<div class="bg-danger">
+			@TempData["StudentErrorMessage"]
+		</div>
+	}
+	<div class="d-flex justify-content-between align-items-start mb-3">
+		<div style="width: 20rem">
+			<h2 class="table-title">Quản lý học viên</h2>
+			<div class="d-flex search-row">
+				<form id="searchOrderStudentForm"
+					  style="width: 100%">
 
-<!-- DataTables CSS & JS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+					<input id="studentSearchInput"
+						   class="form-control form-control-sm"
+						   name="StudentName"
+						   placeholder="Tìm theo tên học viên..."
+						   style="width: 70%; display: inline" />
+					<button type="button"
+							class="btn-next-secondary btn-sm"
+							id="btnSearch"
+							onclick="searchStudent()">
+						Tìm
+					</button>
+				</form>
+			</div>
+		</div>
+		<div>
+			<button type="button"
+					class="btn-next-secondary btn -sm btn-add"
+					data-bs-toggle="modal"
+					data-bs-target="#popupThemHocVien">
+				Thêm Học Viên
+			</button>
+		</div>
+	</div>
 
-<!-- Buttons extension CSS & JS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
-<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.flash.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+	<div class="table-wrapper">
+		<div id="searchResultLabel" style="display: none">Kết quả tìm kiếm: </div>
+		<table id="studentTable" class="fl-table">
+			<thead>
+				<tr>
+					<th>Mã học viên</th>
+					<th>Họ</th>
+					<th>Tên</th>
+					<th>Ngày sinh</th>
+					<th>Địa chỉ</th>
+					<th>Email</th>
+					<th>Số điện thoại</th>
+					<th>Lớp tham gia</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody id="studentsTableBody">
+				@foreach (var student in Model)
+				{
+					<tr>
+						<td>@student.MaHocVien</td>
+						<td>@student.Ho</td>
+						<td>@student.Ten</td>
+						<td>@student.NgaySinh.ToString("dd/MM/yyyy")</td>
+						<td>@student.DiaChi</td>
+						<td>@student.Email</td>
+						<td>@student.SoDienThoai</td>
+						<td>
+							<button class="btn btn-outline-primary btn-sm btn-view-students"
+									data-id="@student.MaHocVien"
+									data-bs-toggle="modal"
+									data-bs-target="#popupLopHoc">
+								Xem
+							</button>
+						</td>
+						<td>
+							<button class="btn btn-outline-secondary btn-sm btn-edit"
+									data-id="@student.MaHocVien"
+									data-bs-toggle="modal"
+									data-bs-target="#popupSuaHocVien"
+									onclick="initUpdateStudentFields(@student.MaHocVien)">
+								Sửa
+							</button>
+						</td>
+						<td>
+							<button class="btn btn-outline-danger btn-sm btn-delete"
+									data-id="@student.MaHocVien"
+									data-bs-toggle="modal"
+									data-bs-target="#popupXoaHocVien"
+									onclick="initDeleteStudyClassField(@student.MaHocVien)">
+								Xoá
+							</button>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
 
-<!-- Responsive extension -->
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css">
-<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+@await Html.PartialAsync("/Views/Component/CreateStudentModal.cshtml", new uef_diem_danh.DTOs.StudentCreateRequest())
 
-<table id="students" class="display nowrap" style="width:100%">
-    <thead>
-        <tr>
-            <th>Mã học viên</th>
-            <th>Họ</th>
-            <th>Tên</th>
-            <th>Ngày sinh</th>
-            <th>SĐT</th>
-            <th>Email</th>
-            <th>Địa chỉ</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var student in Model)
-        {
-            <tr>
-                <td>@student.MaHocVien</td>
-                <td>@student.Ho</td>
-                <td>@student.Ten</td>
-                <td>@student.NgaySinh.ToString("dd/MM/yyyy")</td>
-                <td>@student.SoDienThoai</td>
-                <td>@student.Email</td>
-                <td>@student.DiaChi</td>
-            </tr>
-        }
-    </tbody>
-    <tfoot>
-        <tr>
-            <th>Mã học viên</th>
-            <th>Họ</th>
-            <th>Tên</th>
-            <th>Ngày sinh</th>
-            <th>SĐT</th>
-            <th>Email</th>
-            <th>Địa chỉ</th>
-        </tr>
-    </tfoot>
-</table>
+@await Html.PartialAsync("/Views/Component/UpdateStudentModal.cshtml", new uef_diem_danh.DTOs.StudentUpdateRequest())
 
-<script>
-    $(document).ready(function () {
-        $('#students').DataTable({
-            paging: true,            // phân trang
-            searching: true,         // tìm kiếm
-            ordering: true,          // sắp xếp
-            lengthChange: true,      // chọn số dòng hiển thị
-            info: true,              // hiển thị thông tin tổng
-            responsive: true,        // co giãn theo màn hình
-            dom: 'Bfrtip',           // thêm nút (B) trước bảng
-            buttons: [               // nút thao tác
-                'copy', 'csv', 'excel', 'pdf', 'print', 'colvis'
-            ],
-            language: {
-                url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json"
-            },
-            columnDefs: [
-                { targets: [0, 1, 3, 5, 6], searchable: false } // Cột 0 và 2 không tìm kiếm
-            ],
-            initComplete: function () {
-                $('#students_filter input')
-                    .attr('placeholder', 'Nhập tên hoặc sđt...')
-                    .css({ 'width': '250px', 'display': 'inline-block' });
-            }
-        });
-    });
-</script>
+@await Html.PartialAsync("/Views/Component/DeleteStudentModal.cshtml", new uef_diem_danh.DTOs.StudentDeleteRequest())
+
+<script src="~/js/Student.js"></script>

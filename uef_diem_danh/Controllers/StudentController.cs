@@ -166,6 +166,38 @@ namespace uef_diem_danh.Controllers
 
         }
 
+        [Route("tao-hoc-vien")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([FromForm] StudentCreateRequest request)
+        {
 
+            try
+            {
+
+                HocVien student = new HocVien
+                {
+                    Ho = request.Ho,
+                    Ten = request.Ten,
+                    NgaySinh = DateOnly.Parse(request.NgaySinh, CultureInfo.InvariantCulture),
+                    DiaChi = request.DiaChi,
+                    Email = request.Email,
+                    SoDienThoai = request.SoDienThoai,
+                };
+
+                context.HocViens.Add(student);
+                await context.SaveChangesAsync();
+
+                TempData["StudentSuccessMessage"] = "Thêm học viên thành công!";
+                return Redirect("hoc-vien/danh-sach");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["StudentErrorMessage"] = "Có lỗi xảy ra khi thêm học viên: " + ex.Message;
+                return Redirect("hoc-vien/danh-sach");
+            }
+
+        }
     }
 }
