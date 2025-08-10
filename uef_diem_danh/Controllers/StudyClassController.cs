@@ -41,31 +41,27 @@ namespace uef_diem_danh.Controllers
 
         [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-hoc-vien")]
         [HttpGet]
-        public async Task<IActionResult> GetListOfStudentsManagementPage(int study_class_id, [FromQuery] int pageNumber = 1)
+        public async Task<IActionResult> GetListOfStudentsManagementPage(int study_class_id)
         {
-            int pageSize = 10;
 
-            List<StudyClassStudentListManagementDto> students = await context.ThamGias
+            List<StudyClassStudentListManagementResponse> students = await context.ThamGias
                 .Where(tg => tg.MaLopHoc == study_class_id)
-                .Select(tg => new StudyClassStudentListManagementDto
+                .Select(tg => new StudyClassStudentListManagementResponse
                 {
-                    MaHocVien = tg.HocVien.MaHocVien,
-                    Ho = tg.HocVien.Ho,
-                    Ten = tg.HocVien.Ten,
+                    Id = tg.HocVien.MaHocVien,
+                    LastName = tg.HocVien.Ho,
+                    FirstName = tg.HocVien.Ten,
                     Email = tg.HocVien.Email,
-                    SoDienThoai = tg.HocVien.SoDienThoai,
-                    MaBarCode = tg.HocVien.MaBarCode,
-                    DiaChi = tg.HocVien.DiaChi,
-                    NgaySinh = tg.HocVien.NgaySinh,
-                    CreatedAt = tg.HocVien.CreatedAt
+                    PhoneNumber = tg.HocVien.SoDienThoai,
+                    BarCode = tg.HocVien.MaBarCode,
+                    Address = tg.HocVien.DiaChi,
+                    DateOfBirth = tg.HocVien.NgaySinh,
                 })
-                .OrderBy(hv => hv.Ten)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+                .OrderBy(hv => hv.FirstName)
                 .ToListAsync();
 
 
-            return View("", students);
+            return View("~/Views/StudyClasses/StudentListView.cshtml", students);
         }
 
         [Route("api/quan-ly-danh-sach-lop-hoc/danh-sach-hoc-vien-con-trong")]
