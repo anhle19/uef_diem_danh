@@ -21,27 +21,8 @@ namespace uef_diem_danh.Controllers
         [HttpGet("hoc-vien/danh-sach")]
         public IActionResult StudentList()
         {
-            var students = context.HocViens.Select(s => new
-            {
-                id = s.MaHocVien,
-                lastName = s.Ho,
-                firstName = s.Ten,
-                email = s.Email,
-                phone = s.SoDienThoai,
-                dob = s.NgaySinh.ToString("dd/MM/yyyy"),
-                address = s.DiaChi,
-                createdAt = s.CreatedAt,
-                classes = s.ThamGias
-                    .Select(sc => new
-                    {
-                        id = sc.LopHoc.MaLopHoc,
-                        name = sc.LopHoc.TenLopHoc,
-                    })
-                    .ToList()
-            }).ToList();
-
-            //return Json(students);
-            return View();
+            var students = context.HocViens.ToList();
+            return View(students);
         }
 
         [HttpPost]

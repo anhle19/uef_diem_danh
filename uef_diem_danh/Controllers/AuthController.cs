@@ -41,36 +41,19 @@ namespace uef_diem_danh.Controllers
         public async Task<IActionResult> Login( LoginRequest model)
         {
             if (!ModelState.IsValid) return View(model);
+            Console.WriteLine("Login for user: " + model.Username);
 
             var result = await this.signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
             if (result.Succeeded)
             {
                 Console.WriteLine("Login successful for user: " + model.Username);
-                return RedirectToAction("Index", "Home");
+                return Redirect("/");
             }
 
             ModelState.AddModelError("", "Invalid login attempt");
             return View(model);
         }
 
-        //[Route("login")]
-        //[HttpPost]
-        //public async Task<IActionResult> Login([FromBody] LoginRequest model)
-        //{
-        //    Console.WriteLine("Login request received with email: " + model.Email);
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return Json(new { success = false, message = "Dữ liệu không hợp lệ" });
-        //    }
-
-        //    var result = await this.signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-        //    if (result.Succeeded)
-        //    {
-        //        return Json(new { success = true, email = model.Email });
-        //    }
-
-        //    return Json(new { success = false, message = "Sai email hoặc mật khẩu" });
-        //}
 
         //[Route("register")]
         //[HttpPost]

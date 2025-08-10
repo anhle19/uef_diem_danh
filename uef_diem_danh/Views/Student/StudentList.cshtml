@@ -1,234 +1,94 @@
-﻿<div>
-    <div class="d-flex justify-content-between align-items-start mb-3">
-        <div>
-            <h2 class="table-title">Quản lý học viên</h2>
-            <div class="d-flex search-row">
-                <input id="kw" class="form-control form-control-sm" placeholder="Tìm theo tên hoặc SĐT..." />
-                <button class="btn-next-secondary btn-sm" id="btnSearch">Tìm</button>
-            </div>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <div class="form-text">Sắp xếp:</div>
-            <select id="sortBy" class="form-select form-select-sm" style="width:auto">
-                <option value="name">Tên (A→Z)</option>
-                <option value="name_desc">Tên (Z→A)</option>
-                <option value="dob">Ngày sinh (lớn→nhỏ)</option>
-                <option value="dob_desc">Ngày sinh (nhỏ→lớn)</option>
-            </select>
-        </div>
-    </div>
+﻿@model IEnumerable<uef_diem_danh.Models.HocVien>
 
-    <div class="table-wrapper">
-        <table class="fl-table">
-            <thead>
-                <tr>
-                    <th>STT</th>
-                    <th>Họ</th>
-                    <th>Tên</th>
-                    <th class="sortable" id="thDob">Ngày sinh <span class="dir" id="dobDir"></span></th>
-                    <th>SĐT</th>
-                    <th>Email</th>
-                    <th>Địa chỉ</th>
-                    <th>Ngày tạo</th>
-                    <th>Lớp đã tham gia</th>
-                    <th>Liên kết</th>
-                </tr>
-            </thead>
-            <tbody class="studentsTableBody"></tbody>
-        </table>
-    </div>
-</div>
+@{
+    Layout = "~/Views/Layout/Main.cshtml";
+    ViewData["Title"] = "Quản lý học viên";
+}
 
-<!-- Modal: Lớp học của học viên -->
-<div class="modal fade" id="popupLopHoc" tabindex="-1" aria-labelledby="popupLopHocLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="popupLopHocLabel">Lớp học đã tham gia</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-            </div>
-            <div class="modal-body">
-                <ul class="list-group" id="studentClassesList"></ul>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-next-secondary" data-bs-dismiss="modal">Đóng</button>
-            </div>
-        </div>
-    </div>
-</div>
-@* <script>
-        let students = [];
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    async function loadStudents() {
-        try {
-            const res = await fetch('/hoc-vien/danh-sach');
-            if (!res.ok) throw new Error('Network response was not ok');
-            students = await res.json();
-            refresh(); // Gọi lại hàm render của bạn
-        } catch (err) {
-            console.error("Error loading students:", err);
+<!-- DataTables CSS & JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<!-- Buttons extension CSS & JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+
+<!-- Responsive extension -->
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css">
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+
+<table id="students" class="display nowrap" style="width:100%">
+    <thead>
+        <tr>
+            <th>Mã học viên</th>
+            <th>Họ</th>
+            <th>Tên</th>
+            <th>Ngày sinh</th>
+            <th>SĐT</th>
+            <th>Email</th>
+            <th>Địa chỉ</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in Model)
+        {
+            <tr>
+                <td>@student.MaHocVien</td>
+                <td>@student.Ho</td>
+                <td>@student.Ten</td>
+                <td>@student.NgaySinh.ToString("dd/MM/yyyy")</td>
+                <td>@student.SoDienThoai</td>
+                <td>@student.Email</td>
+                <td>@student.DiaChi</td>
+            </tr>
         }
-    }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th>Mã học viên</th>
+            <th>Họ</th>
+            <th>Tên</th>
+            <th>Ngày sinh</th>
+            <th>SĐT</th>
+            <th>Email</th>
+            <th>Địa chỉ</th>
+        </tr>
+    </tfoot>
+</table>
 
-    // Gọi khi trang load
-    document.addEventListener("DOMContentLoaded", loadStudents);
-
-    const tbody = document.querySelector(".studentsTableBody");
-    const sortSel = document.getElementById("sortBy");
-    const searchBtn = document.getElementById("btnSearch");
-    const kwInput = document.getElementById("kw");
-
-    function fullName(st) {
-      return `${st.lastName} ${st.firstName}`.trim();
-    }
-
-    // Bỏ dấu + lowercase để so sánh công bằng
-    function normalize(str) {
-      return (str || "")
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/\p{Diacritic}/gu, "");
-    }
-
-    // Parse dob an toàn: hỗ trợ dd-mm-yyyy (mặc định của bạn), yyyy-mm-dd, dd/mm/yyyy
-    function parseDob(d) {
-      if (!d) return null;
-      if (/^\d{1,2}-\d{1,2}-\d{4}$/.test(d)) {
-        const [dd, mm, yyyy] = d.split("-").map(Number);
-        return new Date(yyyy, mm - 1, dd);
-      }
-      if (/^\d{4}-\d{2}-\d{2}$/.test(d)) {
-        return new Date(d + "T00:00:00");
-      }
-      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(d)) {
-        const [dd, mm, yyyy] = d.split("/").map(Number);
-        return new Date(yyyy, mm - 1, dd);
-      }
-      const dt = new Date(d);
-      return isNaN(dt) ? null : dt;
-    }
-
-    // So sánh tên: ưu tiên firstName, tie-break bằng lastName
-    function compareName(a, b, dir = "asc") {
-      const af = normalize(a.firstName);
-      const bf = normalize(b.firstName);
-      if (af !== bf)
-        return dir === "asc" ? af.localeCompare(bf) : bf.localeCompare(af);
-
-      const al = normalize(a.lastName);
-      const bl = normalize(b.lastName);
-      return dir === "asc" ? al.localeCompare(bl) : bl.localeCompare(al);
-    }
-
-    // So sánh ngày sinh (cũ→mới là asc)
-    function compareDob(a, b, dir = "asc") {
-      const da = parseDob(a.dob);
-      const db = parseDob(b.dob);
-      const at = da ? da.getTime() : -Infinity; // thiếu dob → đầu danh sách khi asc
-      const bt = db ? db.getTime() : -Infinity;
-      return dir === "asc" ? at - bt : bt - at;
-    }
-
-    // === FIXED: sort đúng theo yêu cầu ===
-    function sortData(data) {
-      const val = sortSel.value;
-      const copy = [...data];
-
-      switch (val) {
-        case "name":
-          copy.sort((a, b) => compareName(a, b, "asc"));
-          break;
-        case "name_desc":
-          copy.sort((a, b) => compareName(a, b, "desc"));
-          break;
-        case "dob": // cũ → mới
-          copy.sort((a, b) => compareDob(a, b, "asc"));
-          break;
-        case "dob_desc": // mới → cũ
-          copy.sort((a, b) => compareDob(a, b, "desc"));
-          break;
-      }
-      return copy;
-    }
-
-    // === FIXED: search chỉ theo firstName + phone ===
-    function searchFilter(list) {
-      const kw = normalize(kwInput.value.trim());
-      if (!kw) return list;
-      return list.filter((st) => {
-        const inFirstName = normalize(st.firstName).includes(kw);
-        const inPhone = normalize(st.phone).includes(kw);
-        return inFirstName || inPhone;
-      });
-    }
-
-    function render(list) {
-      tbody.innerHTML = "";
-      if (list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8">Không có dữ liệu</td></tr>';
-        return;
-      }
-      list.forEach((st, idx) => {
-        const tr = document.createElement("tr");
-        const link = `/html/layout/main.html?page=student-classes&studentId=${st.id}`;
-        const joinedCount = st.classes.length;
-        tr.innerHTML = `
-          <td>${idx + 1}</td>
-          <td>${st.lastName}</td>
-          <td>${st.firstName}</td>
-          <td>${st.dob}</td>
-          <td>${st.phone}</td>
-          <td>${st.email}</td>
-          <td>${st.address}</td>
-          <td>${st.createdAt}</td>
-          <td><button class="btn btn-outline-primary btn-sm btn-show-classes" data-id="${
-            st.id
-          }" data-bs-toggle="modal" data-bs-target="#popupLopHoc">${joinedCount} lớp</button></td>
-          <td><a class="action-link" href="${link}">Mở màn hình lớp của học viên</a></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function refresh() {
-      const filtered = searchFilter(students);
-      const sorted = sortData(filtered);
-      render(sorted);
-    }
-
-    searchBtn.addEventListener("click", refresh);
-    sortSel.addEventListener("change", refresh);
-    kwInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") refresh();
-    });
-
-    // Modal xem các lớp đã tham gia
-    (function setupStudentClassesModal() {
-      const popup = document.getElementById("popupLopHoc");
-      const listEl = document.getElementById("studentClassesList");
-      let currentId = null;
-      popup.addEventListener("show.bs.modal", (ev) => {
-        currentId = Number(ev.relatedTarget.getAttribute("data-id"));
-        const st = students.find((s) => s.id === currentId);
-        const classes = st?.classes || [];
-        listEl.innerHTML = "";
-        if (classes.length === 0) {
-          listEl.innerHTML =
-            '<li class="list-group-item">Chưa tham gia lớp nào</li>';
-          return;
-        }
-        classes.forEach((c) => {
-          const li = document.createElement("li");
-          li.className =
-            "list-group-item d-flex justify-content-between align-items-center";
-          const href = `/html/layout/main.html?page=classes&classId=${c.id}`;
-          li.innerHTML = `<span>${c.name}</span><a class="btn btn-sm btn-outline-secondary" href="${href}">Quản lý buổi học</a>`;
-          listEl.appendChild(li);
+<script>
+    $(document).ready(function () {
+        $('#students').DataTable({
+            paging: true,            // phân trang
+            searching: true,         // tìm kiếm
+            ordering: true,          // sắp xếp
+            lengthChange: true,      // chọn số dòng hiển thị
+            info: true,              // hiển thị thông tin tổng
+            responsive: true,        // co giãn theo màn hình
+            dom: 'Bfrtip',           // thêm nút (B) trước bảng
+            buttons: [               // nút thao tác
+                'copy', 'csv', 'excel', 'pdf', 'print', 'colvis'
+            ],
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json"
+            },
+            columnDefs: [
+                { targets: [0, 1, 3, 5, 6], searchable: false } // Cột 0 và 2 không tìm kiếm
+            ],
+            initComplete: function () {
+                $('#students_filter input')
+                    .attr('placeholder', 'Nhập tên hoặc sđt...')
+                    .css({ 'width': '250px', 'display': 'inline-block' });
+            }
         });
-      });
-    })();
-
-    // init
-    refresh();
-
-</script> *@
+    });
+</script>
