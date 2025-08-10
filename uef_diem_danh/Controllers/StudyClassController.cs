@@ -20,12 +20,11 @@ namespace uef_diem_danh.Controllers
 
         [Route("")]
         [HttpGet]
-        public async Task<IActionResult> GetListManagementPage([FromQuery] int pageNumber = 1)
+        public async Task<IActionResult> GetListManagementPage()
         {
-            int pageSize = 10;
 
-            List<StudyClassListData> studyClasses = await context.LopHocs
-                .Select(lh => new StudyClassListData
+            List<StudyClassListManagementResponse> studyClasses = await context.LopHocs
+                .Select(lh => new StudyClassListManagementResponse
                 {
                     Id = lh.MaLopHoc,
                     StudyClassName = lh.TenLopHoc,
@@ -34,16 +33,7 @@ namespace uef_diem_danh.Controllers
                     CreatedAt = lh.CreatedAt
                 })
                 .OrderBy(lh => lh.CreatedAt)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
                 .ToListAsync();
-
-            StudyClassListManagementResponse studyClassResponse = new StudyClassListManagementResponse
-            {
-                TotalPages = (int)Math.Ceiling((double)context.LopHocs.Count() / pageSize),
-                StudyClasses = studyClasses
-            };
-
 
 
             return View("~/Views/StudyClasses/ListView.cshtml", studyClasses);
@@ -76,6 +66,39 @@ namespace uef_diem_danh.Controllers
 
 
             return View("", students);
+        }
+
+        [Route("api/quan-ly-danh-sach-lop-hoc/danh-sach-hoc-vien-con-trong")]
+        [HttpGet]
+        public async Task<IActionResult> GetListOfAvailableStudents()
+        {
+
+            List<StudyClassAvailableStudentListResponse> students = await context.HocViens
+                .GroupJoin(
+                    context.ThamGias,
+                    hv => hv.MaHocVien,
+                    tg => tg.MaHocVien,
+                    (hv, tg) => new
+                    {
+                        hv,
+                        tg
+                    }
+                )
+                .Where(joined => joined.tg.Count() == 0) // Filter out students who are already in the study class
+                .Select(joined => new StudyClassAvailableStudentListResponse
+                {
+                    MaHocVien = joined.hv.MaHocVien,
+                    Ho = joined.hv.Ho,
+                    Ten = joined.hv.Ten,
+                    Email = joined.hv.Email,
+                    SoDienThoai = joined.hv.SoDienThoai,
+                    MaBarCode = joined.hv.MaBarCode,
+                    DiaChi = joined.hv.DiaChi,
+                    NgaySinh = joined.hv.NgaySinh
+                })
+                .ToListAsync();
+
+            return Ok(students);
         }
 
         [Route("api/lay-chi-tiet-lop-hoc/{study_class_id}")]
