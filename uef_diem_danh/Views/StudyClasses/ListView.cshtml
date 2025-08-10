@@ -88,14 +88,11 @@
 							</button>
 						</td>
 						<td>
-							<button 
+							<a 
 								class="btn btn-outline-primary btn-sm btn-view-students" 
-								data-id="@studyClass.Id"
-								data-bs-toggle="modal" 
-								data-bs-target="#popupHocVien"
-							>
+								href="quan-ly-danh-sach-lop-hoc/@studyClass.Id/quan-ly-danh-sach-hoc-vien">
 								Xem
-							</button>
+							</a>
 						</td>
 						<td>
 							<a
@@ -305,48 +302,6 @@
 						class="btn-next-primary"
 						id="btnThucHienImport">
 					Import
-				</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Modal: Danh sách học viên của lớp -->
-<div class="modal fade"
-	 id="popupHocVien"
-	 tabindex="-1"
-	 aria-labelledby="popupHocVienLabel"
-	 aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="popupHocVienLabel">Học viên của lớp</h5>
-				<button type="button"
-						class="btn-close"
-						data-bs-dismiss="modal"
-						aria-label="Đóng"></button>
-			</div>
-			<div class="modal-body">
-				<div class="table-wrapper">
-					<table class="fl-table">
-						<thead>
-							<tr>
-								<th>STT</th>
-								<th>Họ</th>
-								<th>Tên</th>
-								<th>Email</th>
-								<th></th>
-							</tr>
-						</thead>
-						<tbody class="studentsTableBody"></tbody>
-					</table>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button"
-						class="btn-next-secondary"
-						data-bs-dismiss="modal">
-					Đóng
 				</button>
 			</div>
 		</div>

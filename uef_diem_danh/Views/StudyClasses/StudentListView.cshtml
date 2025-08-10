@@ -1,26 +1,27 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model List<uef_diem_danh.DTOs.StudyClassStudentListManagementResponse>
 @{
 	Layout = "~/Views/Layout/Main.cshtml";
 	ViewData["Title"] = "Quản lý học viên của lớp học";
 }
 
 <div>
-	@if (TempData["StudyClassSuccessMessage"] != null)
+	@if (TempData["StudentIdStudyClassSuccessMessage"] != null)
 	{
 		<div class="bg-success p-2 text-white">
-			@TempData["StudyClassSuccessMessage"]
+			@TempData["StudentIdStudyClassSuccessMessage"]
 		</div>
 	}
-	@if (TempData["StudyClassErrorMessage"] != null)
+	@if (TempData["StudentInStudyClassErrorMessage"] != null)
 	{
 		<div class="bg-danger">
-			@TempData["StudyClassErrorMessage"]
+			@TempData["StudentInStudyClassErrorMessage"]
 		</div>
 	}
 	<div class="d-flex justify-content-between align-items-start mb-3">
-		<div style="width: 20rem">
+		<div style="width: 30rem">
 			<h2 class="table-title">Quản lý học viên của lớp học</h2>
 			<div class="d-flex search-row">
 				<form id="searchOrderStudyClassForm"
@@ -29,7 +30,7 @@
 					<input id="studyClassSearchInput"
 						   class="form-control form-control-sm"
 						   name="StudyClassName"
-						   placeholder="Tìm theo tên lớp..."
+						   placeholder="Tìm theo tên họ tên, email, sđt..."
 						   style="width: 70%; display: inline" />
 					<button type="button"
 							class="btn-next-secondary btn-sm"
@@ -45,7 +46,7 @@
 					class="btn-next-secondary btn -sm btn-add"
 					data-bs-toggle="modal"
 					data-bs-target="#popupThemLop">
-				Thêm lớp học
+				Thêm học viên
 			</button>
 		</div>
 	</div>
@@ -55,62 +56,33 @@
 		<table id="studyClassTable" class="fl-table">
 			<thead>
 				<tr>
-					<th>Mã lớp</th>
-					<th>Tên lớp</th>
-					<th>Ngày bắt đầu</th>
-					<th>Ngày kết thúc</th>
-					<th>Import</th>
-					<th>Học viên</th>
-					<th>Buổi học</th>
-					<th></th>
+					<th>Mã học viên</th>
+					<th>Họ và tên</th>
+					<th>Email</th>
+					<th>Số điện thoại</th>
+					<th>Mã Bar Code</th>
+					<th>Địa chỉ</th>
+					<th>Ngày sinh</th>
 					<th></th>
 				</tr>
 			</thead>
 			<tbody id="classesTableBody">
-				@foreach (var studyClass in Model)
+				@foreach (var student in Model)
 				{
 					<tr>
-						<td>@studyClass.Id</td>
-						<td>@studyClass.StudyClassName</td>
-						<td>@studyClass.StartDate.ToString("dd/MM/yyyy")</td>
-						<td>@studyClass.EndDate.ToString("dd/MM/yyyy")</td>
-						<td>
-							<button class="btn btn-outline-secondary btn-sm btn-import"
-									data-id="@studyClass.Id"
-									data-bs-toggle="modal"
-									data-bs-target="#popupImport">
-								Import
-							</button>
-						</td>
-						<td>
-							<button class="btn btn-outline-primary btn-sm btn-view-students"
-									data-id="@studyClass.Id"
-									data-bs-toggle="modal"
-									data-bs-target="#popupHocVien">
-								Xem
-							</button>
-						</td>
-						<td>
-							<a class="action-link"
-							   href="/html/layout/main.html?page=classes&classId=@studyClass.Id">
-								Quản lý buổi học
-							</a>
-						</td>
-						<td>
-							<button class="btn btn-outline-secondary btn-sm btn-edit"
-									data-id="@studyClass.Id"
-									data-bs-toggle="modal"
-									data-bs-target="#popupSuaLop"
-									onclick="initUpdateStudyClassFields(@studyClass.Id)">
-								Sửa
-							</button>
-						</td>
+						<td>@student.Id</td>
+						<td>@student.LastName @student.FirstName</td>
+						<td>@student.Email</td>
+						<td>@student.PhoneNumber</td>
+						<td>@student.BarCode</td>
+						<td>@student.Address</td>
+						<td>@student.DateOfBirth.ToString("dd/MM/yyyy")</td>
 						<td>
 							<button class="btn btn-outline-danger btn-sm btn-delete"
-									data-id="@studyClass.Id"
+									data-id="@student.Id"
 									data-bs-toggle="modal"
 									data-bs-target="#popupXoaLop"
-									onclick="initDeleteStudyClassField(@studyClass.Id)">
+									onclick="initDeleteStudyClassField(@student.Id)">
 								Xoá
 							</button>
 						</td>
