@@ -1,7 +1,7 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@model uef_diem_danh.DTOs.StudyClassListManagementResponse
+@model List<uef_diem_danh.DTOs.StudyClassListManagementResponse>
 @{
 	Layout = "~/Views/Layout/Main.cshtml";
 	ViewData["Title"] = "Quản lý lớp học";
@@ -24,27 +24,20 @@
 		<div style="width: 20rem">
 			<h2 class="table-title">Quản lý lớp học</h2>
 			<div class="d-flex search-row">
-				<form 
-@* 					method="POST"  *@
-@* 					action="/quan-ly-danh-sach-lop-hoc/tim-kiem-sap-xep"  *@
+				<form
 					id="searchOrderStudyClassForm"
 					style="width: 100%">
-@* 					@Html.AntiForgeryToken()
- *@
-                    <input type="hidden" name="Type" id="searchOrderType" />
 
 					<input id="studyClassSearchInput"
 						   class="form-control form-control-sm" 
 						   name="StudyClassName"
-						   placeholder="Tìm theo tên lớp..." 
-						   onchange="updateSearchOrderType()" 
+						   placeholder="Tìm theo tên lớp..."
 						   style="width: 70%; display: inline"/>
 					<button 
 						type="button"
 						class="btn-next-secondary btn-sm" 
 						id="btnSearch" 
-						onclick="searchStudyClass()"
-						@* form="searchOrderStudyClassForm" *@>
+						onclick="searchStudyClass()">
 						Tìm
 					</button>
 				</form>
@@ -62,7 +55,7 @@
 
 	<div class="table-wrapper">
 		<div id="searchResultLabel" style="display: none">Kết quả tìm kiếm: </div>
-		<table class="fl-table">
+		<table id="studyClassTable" class="fl-table">
 			<thead>
 				<tr>
                     <th>Mã lớp</th>
@@ -77,7 +70,7 @@
 				</tr>
 			</thead>
 			<tbody id="classesTableBody">
-				@foreach (var studyClass in Model.StudyClasses)
+				@foreach (var studyClass in Model)
 				{
 					<tr>
 						<td>@studyClass.Id</td>
@@ -127,8 +120,8 @@
 								class="btn btn-outline-danger btn-sm btn-delete" 
 								data-id="@studyClass.Id" 
 								data-bs-toggle="modal" 
-								data-bs-target="#popupXoaLop"
-							>
+								data-bs-target="#popupXoaLop" 
+								onclick="initDeleteStudyClassField(@studyClass.Id)">
 								Xoá
 							</button>
 						</td>
@@ -238,7 +231,7 @@
 
 
 <!-- Modal: Xoá lớp -->
-<div class="modal fade"
+@* <div class="modal fade"
 	 id="popupXoaLop"
 	 tabindex="-1"
 	 aria-labelledby="popupXoaLopLabel"
@@ -267,7 +260,9 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div> *@
+@await Html.PartialAsync("/Views/Component/DeleteStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassDeleteRequest())
+
 
 <!-- Modal: Import học viên -->
 <div class="modal fade"
