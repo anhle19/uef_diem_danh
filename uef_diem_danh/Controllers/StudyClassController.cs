@@ -46,7 +46,7 @@ namespace uef_diem_danh.Controllers
 
 
 
-            return View("~/Views/StudyClasses/ListView.cshtml", studyClassResponse);
+            return View("~/Views/StudyClasses/ListView.cshtml", studyClasses);
         }
 
         [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-hoc-vien")]
