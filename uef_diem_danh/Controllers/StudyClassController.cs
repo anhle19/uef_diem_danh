@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ExcelDataReader;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.Text;
 using uef_diem_danh.Database;
 using uef_diem_danh.DTOs;
 using uef_diem_danh.Models;
@@ -171,6 +173,151 @@ namespace uef_diem_danh.Controllers
             {
                 Console.WriteLine(ex.Message);
                 return BadRequest("Thêm học viên vào lớp học thất bại");
+            }
+
+        }
+
+        [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/them-hoc-vien-vao-lop-hoc-bang-excel")]
+        [HttpPost]
+        public async Task<IActionResult> ImportStudentsFromExcel(int study_class_id, [FromForm] ImportStudentToStudyClassByExcelRequest request)
+        {
+            List<HocVien> creatingStudents = new List<HocVien>();
+            List<HocVien> existedStudents = new List<HocVien>();
+
+            LopHoc studyClass = new LopHoc();
+            string fileExtension = Path.GetExtension(request.ExcelFile.FileName);
+            string excelFileName = $"student_excel_{Guid.NewGuid()}.{fileExtension}";
+
+            // Validate file extension
+            if (fileExtension != ".xlsx" && fileExtension != ".xls")
+            {
+                return BadRequest("File không hợp lệ. Vui lòng tải lên file Excel (.xlsx hoặc .xls).");
+            }
+
+            studyClass = context.LopHocs.FirstOrDefault(lh => lh.MaLopHoc == study_class_id);
+
+            try
+            {
+                var filePath = Path.Combine("UploadExcels", excelFileName);
+
+                // Save the uploaded excel file
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    request.ExcelFile.CopyTo(stream);
+                }
+
+                // Fix Unsupported Encoding Issue
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                var config = new ExcelReaderConfiguration
+                {
+                    FallbackEncoding = Encoding.UTF8
+                };
+
+                // Read excel file
+                using (var readExcelStream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    using (var excelReader = ExcelReaderFactory.CreateReader(readExcelStream, config))
+                    {
+
+                        int currentRow = 0; // Current row (starting at first row)
+
+                        const int LAST_NAME_COLUMN_INDEX = 1;
+                        const int FIRST_NAME_COLUMN_INDEX = 2;
+                        const int EMAIL_COLUMN_INDEX = 3;
+                        const int PHONE_NUMBER_COLUMN_INDEX = 4;
+                        const int DOB_COLUMN_INDEX = 5;
+                        const int ADDRESS_COLUMN_INDEX = 6;
+
+
+                        // Read each row
+                        while (excelReader.Read())
+                        {
+                            // Jump to next row
+                            currentRow++;
+                            // Extract data
+                            if (currentRow >= 4)
+                            {
+                                HocVien student = new HocVien
+                                {
+                                    Ho = excelReader.GetValue(LAST_NAME_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    Ten = excelReader.GetValue(FIRST_NAME_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    Email = excelReader.GetValue(EMAIL_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    SoDienThoai = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    NgaySinh = DateOnly
+                                        .ParseExact(
+                                            excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? "01/01/1900",
+                                            "dd/MM/yyyy",
+                                            CultureInfo.InvariantCulture
+                                    ),
+                                    DiaChi = excelReader.GetValue(ADDRESS_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    MaBarCode = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    CreatedAt = DateTime.UtcNow
+                                };
+
+
+                                // If student not exists by phone number
+                                if (!context.HocViens.Any(hv => hv.SoDienThoai == student.SoDienThoai))
+                                {
+                                    // If study class is provided, then save student with study class
+                                    if (studyClass != null)
+                                    {
+                                        student.ThamGias = new List<ThamGia>
+                                        {
+                                            new ThamGia
+                                            {
+                                                MaLopHoc = studyClass.MaLopHoc,
+                                                CreatedAt = DateTime.UtcNow
+                                            }
+                                        };
+                                        creatingStudents.Add(student);
+                                    }
+                                    // If study class is not provided, then just save student
+                                    else
+                                    {
+                                        creatingStudents.Add(student);
+                                    }
+                                }
+                                // If student already existed by phone number
+                                else
+                                {
+                                    if (studyClass != null)
+                                    {
+                                        // If student not participated in study class yet
+                                        if (!context.ThamGias.Any(tg => tg.MaHocVien == student.MaHocVien && tg.MaLopHoc == studyClass.MaLopHoc)) {
+                                            student.ThamGias = new List<ThamGia>
+                                            {
+                                                new ThamGia
+                                                {
+                                                    MaLopHoc = studyClass.MaLopHoc,
+                                                    CreatedAt = DateTime.UtcNow
+                                                }
+                                            };
+
+                                            await context.SaveChangesAsync();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Delete excel file after processing
+                System.IO.File.Delete(filePath);
+
+                // Save students to database
+                context.HocViens.AddRange(creatingStudents);
+                await context.SaveChangesAsync();
+
+                TempData["StudentInStudyClassSuccessMessage"] = "Nhập học viên vào lớp học từ file excel thành công!";
+                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                TempData["StudentInStudyClassErrorMessage"] = "Nhập học viên vào lớp học từ file excel không thành công " + ex.Message;
+                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
             }
 
         }
