@@ -21,6 +21,7 @@ namespace uef_diem_danh.Controllers
         {
 
             List<AttendanceListManagementResponse> attendances = await context.BuoiHocs
+                .Where(bh => bh.TrangThai == false)
                 .Select(bh => new AttendanceListManagementResponse
                 {
                     Id = bh.MaBuoiHoc,
