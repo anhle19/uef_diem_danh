@@ -1,4 +1,5 @@
-﻿$(document).ready(function () {
+﻿
+$(document).ready(function () {
     //// ================== INIT ==================
     $.fn.dataTable.moment('DD/MM/YYYY');
 
@@ -86,6 +87,7 @@ async function initUpdateStudyClassFields(id) {
         console.log(ex);
     }
 
+
 }
 
 function updateStudyClass() {
@@ -131,6 +133,7 @@ function updateStudyClass() {
         );
         return;
     }
+
 
     // Submit form
     updateStudyClassForm.requestSubmit();
@@ -182,6 +185,7 @@ async function initDeleteStudyClassField(id) {
         }
         if (!file.name.endsWith(".csv")) {
             Swal.fire("Thông báo", "Demo này chỉ đọc nhanh", "info");
+
             return;
         }
         const reader = new FileReader();
@@ -292,3 +296,15 @@ async function searchStudyClass() {
 //    });
 //})();
 
+    popup.addEventListener("click", (e) => {
+        const btn = e.target.closest(".btn-remove-student");
+        if (!btn) return;
+        const stId = Number(btn.getAttribute("data-id"));
+        const arr = studentsByClass[currentClassId] || [];
+        const idx = arr.findIndex((x) => x.id === stId);
+        if (idx > -1) {
+            arr.splice(idx, 1);
+            renderStudents();
+        }
+    });
+})();

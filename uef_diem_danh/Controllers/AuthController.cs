@@ -1,18 +1,19 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using uef_diem_danh.DTOs;
+using uef_diem_danh.Models;
 
 namespace uef_diem_danh.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly UserManager<IdentityUser> userManager;
-        private readonly SignInManager<IdentityUser> signInManager;
+        private readonly UserManager<NguoiDungUngDung> userManager;
+        private readonly SignInManager<NguoiDungUngDung> signInManager;
 
 
         public AuthController(
-            UserManager<IdentityUser> userManager, 
-            SignInManager<IdentityUser> signInManager
+            UserManager<NguoiDungUngDung> userManager, 
+            SignInManager<NguoiDungUngDung> signInManager
         )
         {
             this.userManager = userManager;
@@ -29,44 +30,53 @@ namespace uef_diem_danh.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
         [Route("login")]
         [HttpPost]
-        public async Task<IActionResult> Login(LoginRequest model)
+        public async Task<IActionResult> Login( LoginRequest model)
         {
             if (!ModelState.IsValid) return View(model);
+            Console.WriteLine("Login for user: " + model.Username);
 
-            var result = await this.signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+            var result = await this.signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Home");
+                Console.WriteLine("Login successful for user: " + model.Username);
+                return Redirect("/");
             }
 
             ModelState.AddModelError("", "Invalid login attempt");
             return View(model);
         }
 
-        [Route("register")]
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterRequest model)
-        {
-            if (!ModelState.IsValid) return View(model);
 
-            var user = new IdentityUser { UserName = model.Email, Email = model.Email };
-            var result = await this.userManager.CreateAsync(user, model.Password);
+        //[Route("register")]
+        //[HttpPost]
+        //public async Task<IActionResult> Register(RegisterRequest model)
+        //{
+        //    if (!ModelState.IsValid) return View(model);
 
-            if (result.Succeeded)
-            {
-                await this.signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "Home");
-            }
+        //    var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+        //    var result = await this.userManager.CreateAsync(user, model.Password);
 
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError("", error.Description);
-            }
+        //    if (result.Succeeded)
+        //    {
+        //        await this.signInManager.SignInAsync(user, isPersistent: false);
+        //        return RedirectToAction("Index", "Home");
+        //    }
 
-            return View(model);
-        }
+        //    foreach (var error in result.Errors)
+        //    {
+        //        ModelState.AddModelError("", error.Description);
+        //    }
+
+        //    return View(model);
+        //}
 
         // POST: /Account/Logout
         [Route("logout")]
