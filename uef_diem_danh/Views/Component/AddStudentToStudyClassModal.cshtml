@@ -1,0 +1,72 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model uef_diem_danh.DTOs.StudyClassAddStudentRequest
+@{
+}
+
+<div class="modal fade"
+	 id="popupHocVienCuaLopHoc"
+	 tabindex="-1"
+	 aria-labelledby="popupHocVienCuaLopHocLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-xl">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="popupHocVienCuaLopHocLabel">Thêm học viên vào lớp học</h5>
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Đóng"></button>
+			</div>
+			<div class="modal-body">
+
+				<!-- Study Class Id -->
+				<input type="hidden" id="studyClassId" name="studyClassId" value="@ViewBag.StudyClassId" />
+
+				<!-- Search Form -->
+				<form
+					style="width: 100%; margin-top: 10px; margin-bottom: 20px"
+					onsubmit="return preventSearchAvailableStudentInputSubmit()">
+
+					<input id="searchAvailableStudentInput"
+						   class="form-control form-control-sm"
+						   name="StudyClassName"
+						   placeholder="Tìm theo tên họ tên, email"
+						   style="width: 70%; display: inline"/>
+					<button type="button"
+							class="btn-next-secondary btn-sm"
+							id="btnSearch"
+							onclick="searchAvailableStudent()">
+						Tìm
+					</button>
+				</form>
+
+				<div class="table-wrapper">
+					<table id="addStudentToStudyClassTable" class="fl-table">
+						<thead>
+							<tr>
+								<th>Mã học viên</th>
+								<th>Họ và tên</th>
+								<th>Email</th>
+								<th>Số điện thoại</th>
+								<th>Mã Bar Code</th>
+@* 								<th>Địa chỉ</th>
+								<th>Ngày sinh</th> *@
+								<th></th>
+							</tr>
+						</thead>
+						<tbody id="addStudentToStudyClassTableBody"></tbody>
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button"
+						class="btn-next-secondary"
+						data-bs-dismiss="modal">
+					Đóng
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
