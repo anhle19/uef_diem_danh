@@ -45,11 +45,20 @@
 			<button type="button"
 					class="btn-next-secondary btn -sm btn-add"
 					data-bs-toggle="modal"
+					data-bs-target="#popupThemHocVienCuaLopHocTuFileExcel">
+				Thêm học viên từ file Excel
+			</button>
+			<button type="button"
+					class="btn-next-secondary btn -sm btn-add"
+					data-bs-toggle="modal"
 					data-bs-target="#popupHocVienCuaLopHoc">
 				Thêm học viên
 			</button>
 		</div>
 	</div>
+
+	<!-- Study Class Id -->
+	<input type="hidden" id="studyClassId" name="studyClassId" value="@ViewBag.StudyClassId" />
 
 	<div class="table-wrapper">
 		<div id="searchResultLabel" style="display: none">Kết quả tìm kiếm: </div>
@@ -96,6 +105,9 @@
 
 <!-- Modal: Thêm học viên vào lớp học -->
 @await Html.PartialAsync("/Views/Component/AddStudentToStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassAddStudentRequest())
+
+<!-- Modal: Thêm học viên vào lớp học từ file Excel -->
+@await Html.PartialAsync("/Views/Component/AddStudentFromExcelToStudyClassModal.cshtml", new uef_diem_danh.DTOs.ImportStudentToStudyClassByExcelRequest())
 
 <!-- Modal: Xóa học viên khỏi lớp học -->
 @await Html.PartialAsync("/Views/Component/DeleteStudentFromStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassRemoveStudentRequest())
