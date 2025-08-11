@@ -18,6 +18,7 @@ namespace uef_diem_danh.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // relationships
+        [ForeignKey("LopHoc")]
         public int MaLopHoc { get; set; }
         public LopHoc LopHoc { get; set; }
 
