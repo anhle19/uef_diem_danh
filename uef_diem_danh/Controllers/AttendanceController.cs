@@ -25,10 +25,7 @@ namespace uef_diem_danh.Controllers
                 {
                     Id = bh.MaBuoiHoc,
                     StudyClassName = bh.LopHoc.TenLopHoc,
-                    ClassSessionNumber = bh.TietHoc,
-                    NumberOfStudents = bh.LopHoc.ThamGias.Count,
-                    NumberOfStudentsPresent = bh.DiemDanhs.Count(dd => dd.TrangThai == true),
-                    StudyDate = bh.NgayHoc
+                    ClassSessionNumber = bh.TietHoc
                 })
                 .ToListAsync();
 

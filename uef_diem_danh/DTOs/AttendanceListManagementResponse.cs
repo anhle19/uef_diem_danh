@@ -8,11 +8,5 @@
 
         public int ClassSessionNumber { get; set; }
 
-        public int NumberOfStudents { get; set; }
-
-        public int NumberOfStudentsPresent { get; set; }
-
-        public DateOnly StudyDate { get; set; }
-
     }
 }
