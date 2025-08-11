@@ -230,5 +230,31 @@ namespace uef_diem_danh.Controllers
             }
         }
 
+        [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/xoa-hoc-vien-khoi-lop-hoc")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteStudent(int study_class_id, [FromForm] StudyClassRemoveStudentRequest request)
+        {
+            try
+            {
+                Console.WriteLine("REMOVE STUDENT FROM STUDY CLASSS");
+                Console.WriteLine(request.StudentId);
+                ThamGia studentParticipateStudyClass = await context.ThamGias
+                    .FirstOrDefaultAsync(tg => tg.MaLopHoc == study_class_id && tg.MaHocVien == request.StudentId);
+
+                context.ThamGias.Remove(studentParticipateStudyClass);
+                await context.SaveChangesAsync();
+
+                TempData["StudentInStudyClassSuccessMessage"] = "Xóa học viên khỏi lớp học thành công!";
+                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["StudentInStudyClassErrorMessage"] = "Có lỗi xảy ra khi xóa học viên khỏi lớp học: " + ex.Message;
+                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+            }
+        }
+
     }
 }
