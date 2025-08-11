@@ -24,28 +24,28 @@
 		<div style="width: 30rem">
 			<h2 class="table-title">Quản lý học viên của lớp học</h2>
 			<div class="d-flex search-row">
-				<form id="searchOrderStudyClassForm"
+				<div id="searchOrderStudyClassForm"
 					  style="width: 100%">
 
 					<input id="studyClassSearchInput"
 						   class="form-control form-control-sm"
 						   name="StudyClassName"
 						   placeholder="Tìm theo tên họ tên, email, sđt..."
-						   style="width: 70%; display: inline" />
+						   style="width: 70%; display: inline"/>
 					<button type="button"
 							class="btn-next-secondary btn-sm"
 							id="btnSearch"
-							onclick="searchStudyClass()">
+							onclick="searchStudentsInStudyClass()">
 						Tìm
 					</button>
-				</form>
+				</div>
 			</div>
 		</div>
 		<div>
 			<button type="button"
 					class="btn-next-secondary btn -sm btn-add"
 					data-bs-toggle="modal"
-					data-bs-target="#popupThemLop">
+					data-bs-target="#popupHocVienCuaLopHoc">
 				Thêm học viên
 			</button>
 		</div>
@@ -92,3 +92,11 @@
 		</table>
 	</div>
 </div>
+
+
+<!-- Modal: Thêm học viên vào lớp học -->
+@await Html.PartialAsync("/Views/Component/AddStudentToStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassAddStudentRequest())
+
+
+
+<script src="~/js/StudentInStudyClass.js"></script>

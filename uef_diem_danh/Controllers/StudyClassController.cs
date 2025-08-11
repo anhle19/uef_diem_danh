@@ -60,6 +60,8 @@ namespace uef_diem_danh.Controllers
                 .OrderBy(hv => hv.FirstName)
                 .ToListAsync();
 
+            // Set study_class_id in View
+            ViewBag.StudyClassId = study_class_id;
 
             return View("~/Views/StudyClasses/StudentListView.cshtml", students);
         }
@@ -83,14 +85,14 @@ namespace uef_diem_danh.Controllers
                 .Where(joined => joined.tg.Count() == 0) // Filter out students who are already in the study class
                 .Select(joined => new StudyClassAvailableStudentListResponse
                 {
-                    MaHocVien = joined.hv.MaHocVien,
-                    Ho = joined.hv.Ho,
-                    Ten = joined.hv.Ten,
+                    Id = joined.hv.MaHocVien,
+                    LastName = joined.hv.Ho,
+                    FirstName = joined.hv.Ten,
                     Email = joined.hv.Email,
-                    SoDienThoai = joined.hv.SoDienThoai,
-                    MaBarCode = joined.hv.MaBarCode,
-                    DiaChi = joined.hv.DiaChi,
-                    NgaySinh = joined.hv.NgaySinh
+                    PhoneNumber = joined.hv.SoDienThoai,
+                    BarCode = joined.hv.MaBarCode,
+                    Address = joined.hv.DiaChi,
+                    DateOfBirth = joined.hv.NgaySinh
                 })
                 .ToListAsync();
 
@@ -142,34 +144,33 @@ namespace uef_diem_danh.Controllers
 
         }
 
-        [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/them-hoc-vien-vao-lop-hoc")]
+        [Route("api/quan-ly-danh-sach-lop-hoc/{study_class_id}/them-hoc-vien-vao-lop-hoc")]
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddStudent(int study_class_id, [FromForm] StudyClassAddStudentRequest request)
+        public async Task<IActionResult> AddStudent(int study_class_id, [FromBody] StudyClassAddStudentRequest request)
         {
             try
             {
                 LopHoc studyClass = await context.LopHocs
+                    .Include(lh => lh.ThamGias)
                     .FirstOrDefaultAsync(lh => lh.MaLopHoc == study_class_id);
 
-                studyClass.ThamGias.Add(
-                    new ThamGia
-                    {
-                        MaHocVien = request.StudentId,
-                        CreatedAt = DateTime.UtcNow
-                    }
-                );
+                ThamGia studentParticipateStudyClass = new ThamGia
+                {
+                    LopHoc = studyClass,
+                    MaHocVien = request.StudentId,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                studyClass.ThamGias.Add(studentParticipateStudyClass);
 
                 await context.SaveChangesAsync();
 
-                TempData["StudentInStudyClassSuccessfulMessage"] = "Thêm học viên vào lớp học thành công";
-                return RedirectToAction("");
+                return Ok("Thêm học viên vào lớp học thành công");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                TempData["StudentInStudyClassErrorMessage"] = "Có lỗi xảy ra khi thêm lớp học: " + ex.Message;
-                return RedirectToAction("");
+                return BadRequest("Thêm học viên vào lớp học thất bại");
             }
 
         }
