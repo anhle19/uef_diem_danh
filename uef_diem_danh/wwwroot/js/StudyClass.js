@@ -2,46 +2,17 @@
     //// ================== INIT ==================
     $.fn.dataTable.moment('DD/MM/YYYY');
 
-    let studyClassTable = new DataTable('#studyClassTable', {
-        dom: 'lrtp'    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
-        // Notice no "f" here, which is the default filter/search box
-    });
-
-    // ================== SEARCH ==================
-    function updateSearchOrderType() {
-        const searchOrderTypeInput = document.getElementById("searchOrderType");
-        searchOrderTypeInput.value = "SEARCH_ONLY";
-    }
-
-    async function searchStudyClass() {
-        const searchResultLabel = document.getElementById("searchResultLabel");
-        const studyClassesTableBody = document.getElementById("classesTableBody");
-        const searchOrderStudyClassForm = document.getElementById("searchOrderStudyClassForm");
-        const studyClassSearchInputValue = document
-            .getElementById("studyClassSearchInput")
-            .value
-            .trim();
-        console.log(studyClassSearchInputValue);
-        try {
-
-            if (!studyClassSearchInputValue) {
-                return;
-            } else {
-
-                studyClassTable.search(studyClassSearchInputValue).draw();
-
-            }
-
-        } catch (ex) {
-            console.error(ex);
-        }
-
-        //    searchOrderStudyClassForm.requestSubmit();
-    }
 
 })
 
+
+let studyClassTable = new DataTable('#studyClassTable', {
+    dom: 'lrtp'    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
+    // Notice no "f" here, which is the default filter/search box
+});
+
 // ================== ADD STUDY CLASS ==================
+
 function addStudyClass() {
     const createStudyClassForm = document.getElementById("createStudyClassForm");
     const popup = document.getElementById("popupThemLop");
@@ -241,6 +212,39 @@ async function initDeleteStudyClassField(id) {
         reader.readAsText(file, "utf-8");
     });
 })();
+
+// ================== SEARCH ==================
+function preventSearchStudyClassSubmit() {
+    searchStudyClass();
+
+    return false;
+}
+
+async function searchStudyClass() {
+    const searchResultLabel = document.getElementById("searchResultLabel");
+    const studyClassesTableBody = document.getElementById("classesTableBody");
+    const searchOrderStudyClassForm = document.getElementById("searchOrderStudyClassForm");
+    const studyClassSearchInputValue = document
+        .getElementById("studyClassSearchInput")
+        .value
+        .trim();
+    console.log(studyClassSearchInputValue);
+    try {
+
+        if (!studyClassSearchInputValue) {
+            return;
+        } else {
+
+            studyClassTable.search(studyClassSearchInputValue).draw();
+
+        }
+
+    } catch (ex) {
+        console.error(ex);
+    }
+
+    //    searchOrderStudyClassForm.requestSubmit();
+}
 
 // ================== VIEW/REMOVE STUDENTS ==================
 //(function setupViewStudents() {
