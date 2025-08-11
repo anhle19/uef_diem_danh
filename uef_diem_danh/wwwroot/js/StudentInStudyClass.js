@@ -91,6 +91,15 @@ async function addStudentToStudyClass(studentId) {
     }
 }
 
+function enableSubmitButton() {
+    const studentExcelFileInput = document.getElementById("ExcelFile");
+    const uploadedExcelFileName = document.getElementById("uploadedExcelFileName");
+    const submitImportingStudentBtn = document.getElementById("submitImportingStudent");
+
+    uploadedExcelFileName.innerText = `Đã tải lên tệp excel: ${studentExcelFileInput.files[0].name}`;
+
+    submitImportingStudentBtn.style.display = "block"
+}
 
 
 // ================== DELETE ==================

@@ -1,0 +1,77 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model uef_diem_danh.DTOs.ImportStudentToStudyClassByExcelRequest
+
+<div class="modal fade"
+	 id="popupThemHocVienCuaLopHocTuFileExcel"
+	 tabindex="-1"
+	 aria-labelledby="popupThemHocVienCuaLopHocTuFileExcelLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-xl">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Thêm học viên vào lớp học từ file Excel</h5>
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Đóng">
+				</button>
+			</div>
+			<div class="modal-body">
+
+				<!-- Sample Excel file-->
+				<div>
+					<h6>Nhấn vào đây để tải xuống mẫu Excel: </h6>
+					<a 
+						href="/download-excel-file-importing-student-to-study-class"
+						class="btn-next-secondary btn-sm" 
+					>
+						Tải về mẫu Excel
+					</a>
+				</div>
+
+				<!-- Upload Excel Form -->
+				<form 
+					style="width: 100%; margin-top: 40px; margin-bottom: 20px;"
+					method="POST"
+					action="/quan-ly-danh-sach-lop-hoc/@ViewBag.StudyClassId/them-hoc-vien-vao-lop-hoc-bang-excel"
+					enctype="multipart/form-data"
+					id="importStudentToStudyClassFromExcelForm">
+					<h6>Nhấn vào đây để tải lên tệp Excel đã nhập: </h6>
+
+					<div style="display: flex; justify-content: center">
+						<label for="ExcelFile" class="btn-next-secondary btn-sm">
+							<input type="file" name="ExcelFile" id="ExcelFile" style="display: none" onchange="enableSubmitButton()" />
+							<span>
+								Tải lên file Excel
+							</span>
+						</label>
+					</div>
+
+					<div style="text-align: center">
+						<span id="uploadedExcelFileName"></span>
+					</div>
+				</form>
+
+				
+			</div>
+			<div class="modal-footer">
+				<button type="submit"
+						class="btn-next-secondary"
+						id="submitImportingStudent"
+						form="importStudentToStudyClassFromExcelForm" 
+						style="display: none">
+					Nhập học sinh từ file Excel
+				</button>
+				<button type="button"
+						class="btn-next-secondary"
+						data-bs-dismiss="modal">
+					Đóng
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
