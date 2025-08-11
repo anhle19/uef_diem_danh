@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ExcelDataReader;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.Text;
 using uef_diem_danh.Database;
 using uef_diem_danh.DTOs;
 using uef_diem_danh.Models;
@@ -41,31 +43,29 @@ namespace uef_diem_danh.Controllers
 
         [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-hoc-vien")]
         [HttpGet]
-        public async Task<IActionResult> GetListOfStudentsManagementPage(int study_class_id, [FromQuery] int pageNumber = 1)
+        public async Task<IActionResult> GetListOfStudentsManagementPage(int study_class_id)
         {
-            int pageSize = 10;
 
-            List<StudyClassStudentListManagementDto> students = await context.ThamGias
+            List<StudyClassStudentListManagementResponse> students = await context.ThamGias
                 .Where(tg => tg.MaLopHoc == study_class_id)
-                .Select(tg => new StudyClassStudentListManagementDto
+                .Select(tg => new StudyClassStudentListManagementResponse
                 {
-                    MaHocVien = tg.HocVien.MaHocVien,
-                    Ho = tg.HocVien.Ho,
-                    Ten = tg.HocVien.Ten,
+                    Id = tg.HocVien.MaHocVien,
+                    LastName = tg.HocVien.Ho,
+                    FirstName = tg.HocVien.Ten,
                     Email = tg.HocVien.Email,
-                    SoDienThoai = tg.HocVien.SoDienThoai,
-                    MaBarCode = tg.HocVien.MaBarCode,
-                    DiaChi = tg.HocVien.DiaChi,
-                    NgaySinh = tg.HocVien.NgaySinh,
-                    CreatedAt = tg.HocVien.CreatedAt
+                    PhoneNumber = tg.HocVien.SoDienThoai,
+                    BarCode = tg.HocVien.MaBarCode,
+                    Address = tg.HocVien.DiaChi,
+                    DateOfBirth = tg.HocVien.NgaySinh,
                 })
-                .OrderBy(hv => hv.Ten)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+                .OrderBy(hv => hv.FirstName)
                 .ToListAsync();
 
+            // Set study_class_id in View
+            ViewBag.StudyClassId = study_class_id;
 
-            return View("", students);
+            return View("~/Views/StudyClasses/StudentListView.cshtml", students);
         }
 
         [Route("api/quan-ly-danh-sach-lop-hoc/danh-sach-hoc-vien-con-trong")]
@@ -87,14 +87,14 @@ namespace uef_diem_danh.Controllers
                 .Where(joined => joined.tg.Count() == 0) // Filter out students who are already in the study class
                 .Select(joined => new StudyClassAvailableStudentListResponse
                 {
-                    MaHocVien = joined.hv.MaHocVien,
-                    Ho = joined.hv.Ho,
-                    Ten = joined.hv.Ten,
+                    Id = joined.hv.MaHocVien,
+                    LastName = joined.hv.Ho,
+                    FirstName = joined.hv.Ten,
                     Email = joined.hv.Email,
-                    SoDienThoai = joined.hv.SoDienThoai,
-                    MaBarCode = joined.hv.MaBarCode,
-                    DiaChi = joined.hv.DiaChi,
-                    NgaySinh = joined.hv.NgaySinh
+                    PhoneNumber = joined.hv.SoDienThoai,
+                    BarCode = joined.hv.MaBarCode,
+                    Address = joined.hv.DiaChi,
+                    DateOfBirth = joined.hv.NgaySinh
                 })
                 .ToListAsync();
 
@@ -146,34 +146,178 @@ namespace uef_diem_danh.Controllers
 
         }
 
-        [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/them-hoc-vien-vao-lop-hoc")]
+        [Route("api/quan-ly-danh-sach-lop-hoc/{study_class_id}/them-hoc-vien-vao-lop-hoc")]
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddStudent(int study_class_id, [FromForm] StudyClassAddStudentRequest request)
+        public async Task<IActionResult> AddStudent(int study_class_id, [FromBody] StudyClassAddStudentRequest request)
         {
             try
             {
                 LopHoc studyClass = await context.LopHocs
+                    .Include(lh => lh.ThamGias)
                     .FirstOrDefaultAsync(lh => lh.MaLopHoc == study_class_id);
 
-                studyClass.ThamGias.Add(
-                    new ThamGia
-                    {
-                        MaHocVien = request.StudentId,
-                        CreatedAt = DateTime.UtcNow
-                    }
-                );
+                ThamGia studentParticipateStudyClass = new ThamGia
+                {
+                    LopHoc = studyClass,
+                    MaHocVien = request.StudentId,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                studyClass.ThamGias.Add(studentParticipateStudyClass);
 
                 await context.SaveChangesAsync();
 
-                TempData["StudentInStudyClassSuccessfulMessage"] = "Thêm học viên vào lớp học thành công";
-                return RedirectToAction("");
+                return Ok("Thêm học viên vào lớp học thành công");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                TempData["StudentInStudyClassErrorMessage"] = "Có lỗi xảy ra khi thêm lớp học: " + ex.Message;
-                return RedirectToAction("");
+                return BadRequest("Thêm học viên vào lớp học thất bại");
+            }
+
+        }
+
+        [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/them-hoc-vien-vao-lop-hoc-bang-excel")]
+        [HttpPost]
+        public async Task<IActionResult> ImportStudentsFromExcel(int study_class_id, [FromForm] ImportStudentToStudyClassByExcelRequest request)
+        {
+            List<HocVien> creatingStudents = new List<HocVien>();
+            List<HocVien> existedStudents = new List<HocVien>();
+
+            LopHoc studyClass = new LopHoc();
+            string fileExtension = Path.GetExtension(request.ExcelFile.FileName);
+            string excelFileName = $"student_excel_{Guid.NewGuid()}.{fileExtension}";
+
+            // Validate file extension
+            if (fileExtension != ".xlsx" && fileExtension != ".xls")
+            {
+                return BadRequest("File không hợp lệ. Vui lòng tải lên file Excel (.xlsx hoặc .xls).");
+            }
+
+            studyClass = context.LopHocs.FirstOrDefault(lh => lh.MaLopHoc == study_class_id);
+
+            try
+            {
+                var filePath = Path.Combine("UploadExcels", excelFileName);
+
+                // Save the uploaded excel file
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    request.ExcelFile.CopyTo(stream);
+                }
+
+                // Fix Unsupported Encoding Issue
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                var config = new ExcelReaderConfiguration
+                {
+                    FallbackEncoding = Encoding.UTF8
+                };
+
+                // Read excel file
+                using (var readExcelStream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    using (var excelReader = ExcelReaderFactory.CreateReader(readExcelStream, config))
+                    {
+
+                        int currentRow = 0; // Current row (starting at first row)
+
+                        const int LAST_NAME_COLUMN_INDEX = 1;
+                        const int FIRST_NAME_COLUMN_INDEX = 2;
+                        const int EMAIL_COLUMN_INDEX = 3;
+                        const int PHONE_NUMBER_COLUMN_INDEX = 4;
+                        const int DOB_COLUMN_INDEX = 5;
+                        const int ADDRESS_COLUMN_INDEX = 6;
+
+
+                        // Read each row
+                        while (excelReader.Read())
+                        {
+                            // Jump to next row
+                            currentRow++;
+                            // Extract data
+                            if (currentRow >= 4)
+                            {
+                                HocVien student = new HocVien
+                                {
+                                    Ho = excelReader.GetValue(LAST_NAME_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    Ten = excelReader.GetValue(FIRST_NAME_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    Email = excelReader.GetValue(EMAIL_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    SoDienThoai = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    NgaySinh = DateOnly
+                                        .ParseExact(
+                                            excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? "01/01/1900",
+                                            "dd/MM/yyyy",
+                                            CultureInfo.InvariantCulture
+                                    ),
+                                    DiaChi = excelReader.GetValue(ADDRESS_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    MaBarCode = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
+                                    CreatedAt = DateTime.UtcNow
+                                };
+
+
+                                // If student not exists by phone number
+                                if (!context.HocViens.Any(hv => hv.SoDienThoai == student.SoDienThoai))
+                                {
+                                    // If study class is provided, then save student with study class
+                                    if (studyClass != null)
+                                    {
+                                        student.ThamGias = new List<ThamGia>
+                                        {
+                                            new ThamGia
+                                            {
+                                                MaLopHoc = studyClass.MaLopHoc,
+                                                CreatedAt = DateTime.UtcNow
+                                            }
+                                        };
+                                        creatingStudents.Add(student);
+                                    }
+                                    // If study class is not provided, then just save student
+                                    else
+                                    {
+                                        creatingStudents.Add(student);
+                                    }
+                                }
+                                // If student already existed by phone number
+                                else
+                                {
+                                    if (studyClass != null)
+                                    {
+                                        // If student not participated in study class yet
+                                        if (!context.ThamGias.Any(tg => tg.MaHocVien == student.MaHocVien && tg.MaLopHoc == studyClass.MaLopHoc)) {
+                                            student.ThamGias = new List<ThamGia>
+                                            {
+                                                new ThamGia
+                                                {
+                                                    MaLopHoc = studyClass.MaLopHoc,
+                                                    CreatedAt = DateTime.UtcNow
+                                                }
+                                            };
+
+                                            await context.SaveChangesAsync();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Delete excel file after processing
+                System.IO.File.Delete(filePath);
+
+                // Save students to database
+                context.HocViens.AddRange(creatingStudents);
+                await context.SaveChangesAsync();
+
+                TempData["StudentInStudyClassSuccessMessage"] = "Nhập học viên vào lớp học từ file excel thành công!";
+                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                TempData["StudentInStudyClassErrorMessage"] = "Nhập học viên vào lớp học từ file excel không thành công " + ex.Message;
+                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
             }
 
         }
@@ -230,6 +374,32 @@ namespace uef_diem_danh.Controllers
                 Console.WriteLine(ex.Message);
                 TempData["StudyClassErrorMessage"] = "Có lỗi xảy ra khi xóa lớp học: " + ex.Message;
                 return RedirectToAction("GetListManagementPage");
+            }
+        }
+
+        [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/xoa-hoc-vien-khoi-lop-hoc")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteStudent(int study_class_id, [FromForm] StudyClassRemoveStudentRequest request)
+        {
+            try
+            {
+                Console.WriteLine("REMOVE STUDENT FROM STUDY CLASSS");
+                Console.WriteLine(request.StudentId);
+                ThamGia studentParticipateStudyClass = await context.ThamGias
+                    .FirstOrDefaultAsync(tg => tg.MaLopHoc == study_class_id && tg.MaHocVien == request.StudentId);
+
+                context.ThamGias.Remove(studentParticipateStudyClass);
+                await context.SaveChangesAsync();
+
+                TempData["StudentInStudyClassSuccessMessage"] = "Xóa học viên khỏi lớp học thành công!";
+                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["StudentInStudyClassErrorMessage"] = "Có lỗi xảy ra khi xóa học viên khỏi lớp học: " + ex.Message;
+                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
             }
         }
 

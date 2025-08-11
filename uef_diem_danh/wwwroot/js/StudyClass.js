@@ -3,48 +3,17 @@ $(document).ready(function () {
     //// ================== INIT ==================
     $.fn.dataTable.moment('DD/MM/YYYY');
 
+
 })
 
 
-// ================== DATA TABLE ==================
 let studyClassTable = new DataTable('#studyClassTable', {
     dom: 'lrtp'    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
     // Notice no "f" here, which is the default filter/search box
 });
-// ================== SEARCH ==================
-function updateSearchOrderType() {
-    const searchOrderTypeInput = document.getElementById("searchOrderType");
-    searchOrderTypeInput.value = "SEARCH_ONLY";
-}
-
-async function searchStudyClass() {
-    const searchResultLabel = document.getElementById("searchResultLabel");
-    const studyClassesTableBody = document.getElementById("classesTableBody");
-    const searchOrderStudyClassForm = document.getElementById("searchOrderStudyClassForm");
-    const studyClassSearchInputValue = document
-        .getElementById("studyClassSearchInput")
-        .value
-        .trim();
-    console.log(studyClassSearchInputValue);
-    try {
-
-        if (!studyClassSearchInputValue) {
-            return;
-        } else {
-
-            studyClassTable.search(studyClassSearchInputValue).draw();
-
-        }
-
-    } catch (ex) {
-        console.error(ex);
-    }
-
-    //    searchOrderStudyClassForm.requestSubmit();
-}
-
 
 // ================== ADD STUDY CLASS ==================
+
 function addStudyClass() {
     const createStudyClassForm = document.getElementById("createStudyClassForm");
     const popup = document.getElementById("popupThemLop");
@@ -118,6 +87,7 @@ async function initUpdateStudyClassFields(id) {
         console.log(ex);
     }
 
+
 }
 
 function updateStudyClass() {
@@ -164,6 +134,7 @@ function updateStudyClass() {
         return;
     }
 
+
     // Submit form
     updateStudyClassForm.requestSubmit();
 };
@@ -176,26 +147,6 @@ async function initDeleteStudyClassField(id) {
     studyClassIdInput.value = id;
 }
 
-//(function setupDelete() {
-//    const popup = document.getElementById("popupXoaLop");
-//    const btn = document.getElementById("btnXacNhanXoaLop");
-//    let currentId = null;
-//    popup.addEventListener("show.bs.modal", (ev) => {
-//        currentId = Number(ev.relatedTarget.getAttribute("data-id"));
-//        const item = classesData.find((x) => x.id === currentId);
-//        popup.querySelector(
-//            ".modal-body"
-//        ).textContent = `Bạn có chắc chắn muốn xoá "${item?.tenLop}" không?`;
-//    });
-//    btn.addEventListener("click", () => {
-//        const idx = classesData.findIndex((x) => x.id === currentId);
-//        if (idx > -1) {
-//            classesData.splice(idx, 1);
-//        }
-//        renderTable(classesData);
-//        bootstrap.Modal.getInstance(popup)?.hide();
-//    });
-//})();
 
 // ================== IMPORT STUDENTS ==================
 (function setupImport() {
@@ -234,6 +185,7 @@ async function initDeleteStudyClassField(id) {
         }
         if (!file.name.endsWith(".csv")) {
             Swal.fire("Thông báo", "Demo này chỉ đọc nhanh", "info");
+
             return;
         }
         const reader = new FileReader();
@@ -265,38 +217,84 @@ async function initDeleteStudyClassField(id) {
     });
 })();
 
-// ================== VIEW/REMOVE STUDENTS ==================
-(function setupViewStudents() {
-    const popup = document.getElementById("popupHocVien");
-    const tbody = popup.querySelector(".studentsTableBody");
-    let currentClassId = null;
+// ================== SEARCH ==================
+function preventSearchStudyClassSubmit() {
+    searchStudyClass();
 
-    function renderStudents() {
-        const list = studentsByClass[currentClassId] || [];
-        tbody.innerHTML = "";
-        list.forEach((st, idx) => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-        <td>${idx + 1}</td>
-        <td>${st.lastName}</td>
-        <td>${st.firstName}</td>
-        <td>${st.email}</td>
-        <td><button class="btn btn-outline-danger btn-sm btn-remove-student" data-id="${st.id
-                }">Xoá</button></td>
-    `;
-            tbody.appendChild(tr);
-        });
-        if (list.length === 0) {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td colspan="5">Chưa có học viên</td>`;
-            tbody.appendChild(tr);
+    return false;
+}
+
+async function searchStudyClass() {
+    const searchResultLabel = document.getElementById("searchResultLabel");
+    const studyClassesTableBody = document.getElementById("classesTableBody");
+    const searchOrderStudyClassForm = document.getElementById("searchOrderStudyClassForm");
+    const studyClassSearchInputValue = document
+        .getElementById("studyClassSearchInput")
+        .value
+        .trim();
+    console.log(studyClassSearchInputValue);
+    try {
+
+        if (!studyClassSearchInputValue) {
+            return;
+        } else {
+
+            studyClassTable.search(studyClassSearchInputValue).draw();
+
         }
+
+    } catch (ex) {
+        console.error(ex);
     }
 
-    popup.addEventListener("show.bs.modal", (ev) => {
-        currentClassId = Number(ev.relatedTarget.getAttribute("data-id"));
-        renderStudents();
-    });
+    //    searchOrderStudyClassForm.requestSubmit();
+}
+
+// ================== VIEW/REMOVE STUDENTS ==================
+//(function setupViewStudents() {
+//    const popup = document.getElementById("popupHocVien");
+//    const tbody = popup.querySelector(".studentsTableBody");
+//    let currentClassId = null;
+
+//    function renderStudents() {
+//        const list = studentsByClass[currentClassId] || [];
+//        tbody.innerHTML = "";
+//        list.forEach((st, idx) => {
+//            const tr = document.createElement("tr");
+//            tr.innerHTML = `
+//    <td>${idx + 1}</td>
+//    <td>${st.lastName}</td>
+//    <td>${st.firstName}</td>
+//    <td>${st.email}</td>
+//    <td><button class="btn btn-outline-danger btn-sm btn-remove-student" data-id="${st.id
+//                }">Xoá</button></td>
+//`;
+//            tbody.appendChild(tr);
+//        });
+//        if (list.length === 0) {
+//            const tr = document.createElement("tr");
+//            tr.innerHTML = `<td colspan="5">Chưa có học viên</td>`;
+//            tbody.appendChild(tr);
+//        }
+//    }
+
+//    popup.addEventListener("show.bs.modal", (ev) => {
+//        currentClassId = Number(ev.relatedTarget.getAttribute("data-id"));
+//        renderStudents();
+//    });
+
+//    popup.addEventListener("click", (e) => {
+//        const btn = e.target.closest(".btn-remove-student");
+//        if (!btn) return;
+//        const stId = Number(btn.getAttribute("data-id"));
+//        const arr = studentsByClass[currentClassId] || [];
+//        const idx = arr.findIndex((x) => x.id === stId);
+//        if (idx > -1) {
+//            arr.splice(idx, 1);
+//            renderStudents();
+//        }
+//    });
+//})();
 
     popup.addEventListener("click", (e) => {
         const btn = e.target.closest(".btn-remove-student");

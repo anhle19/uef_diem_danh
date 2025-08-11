@@ -223,22 +223,20 @@ namespace uef_diem_danh.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     MaHocVien = table.Column<int>(type: "int", nullable: false),
-                    HocVienMaHocVien = table.Column<int>(type: "int", nullable: false),
-                    MaLopHoc = table.Column<int>(type: "int", nullable: false),
-                    LopHocMaLopHoc = table.Column<int>(type: "int", nullable: false)
+                    MaLopHoc = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ThamGia", x => x.MaThamGia);
                     table.ForeignKey(
-                        name: "FK_ThamGia_HocVien_HocVienMaHocVien",
-                        column: x => x.HocVienMaHocVien,
+                        name: "FK_ThamGia_HocVien_MaHocVien",
+                        column: x => x.MaHocVien,
                         principalTable: "HocVien",
                         principalColumn: "MaHocVien",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ThamGia_LopHoc_LopHocMaLopHoc",
-                        column: x => x.LopHocMaLopHoc,
+                        name: "FK_ThamGia_LopHoc_MaLopHoc",
+                        column: x => x.MaLopHoc,
                         principalTable: "LopHoc",
                         principalColumn: "MaLopHoc",
                         onDelete: ReferentialAction.Cascade);
@@ -329,14 +327,14 @@ namespace uef_diem_danh.Migrations
                 column: "HocVienMaHocVien");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ThamGia_HocVienMaHocVien",
+                name: "IX_ThamGia_MaHocVien",
                 table: "ThamGia",
-                column: "HocVienMaHocVien");
+                column: "MaHocVien");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ThamGia_LopHocMaLopHoc",
+                name: "IX_ThamGia_MaLopHoc",
                 table: "ThamGia",
-                column: "LopHocMaLopHoc");
+                column: "MaLopHoc");
         }
 
         /// <inheritdoc />
