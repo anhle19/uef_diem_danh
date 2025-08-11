@@ -30,7 +30,7 @@ namespace uef_diem_danh.Controllers
                 })
                 .ToListAsync();
 
-            return View();
+            return View("~/Views/Attendances/ListView.cshtml", attendances);
         }
 
     }

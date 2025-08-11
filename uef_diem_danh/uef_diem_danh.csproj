@@ -23,7 +23,6 @@
   <ItemGroup>
     <Folder Include="Migrations\" />
     <Folder Include="Views\Layout\" />
-    <Folder Include="Views\Attendances\" />
   </ItemGroup>
 
 </Project>
