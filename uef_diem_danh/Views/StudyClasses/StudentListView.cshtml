@@ -8,10 +8,10 @@
 }
 
 <div>
-	@if (TempData["StudentIdStudyClassSuccessMessage"] != null)
+	@if (TempData["StudentInStudyClassSuccessMessage"] != null)
 	{
 		<div class="bg-success p-2 text-white">
-			@TempData["StudentIdStudyClassSuccessMessage"]
+			@TempData["StudentInStudyClassSuccessMessage"]
 		</div>
 	}
 	@if (TempData["StudentInStudyClassErrorMessage"] != null)
@@ -81,8 +81,8 @@
 							<button class="btn btn-outline-danger btn-sm btn-delete"
 									data-id="@student.Id"
 									data-bs-toggle="modal"
-									data-bs-target="#popupXoaLop"
-									onclick="initDeleteStudyClassField(@student.Id)">
+									data-bs-target="#popupXoaHocVienCuaLopHoc"
+									onclick="initDeleteStudentInStudyClassField(@student.Id)">
 								Xoá
 							</button>
 						</td>
@@ -97,6 +97,8 @@
 <!-- Modal: Thêm học viên vào lớp học -->
 @await Html.PartialAsync("/Views/Component/AddStudentToStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassAddStudentRequest())
 
+<!-- Modal: Xóa học viên khỏi lớp học -->
+@await Html.PartialAsync("/Views/Component/DeleteStudentFromStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassRemoveStudentRequest())
 
 
 <script src="~/js/StudentInStudyClass.js"></script>

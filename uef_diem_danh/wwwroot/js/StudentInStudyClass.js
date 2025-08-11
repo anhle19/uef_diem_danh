@@ -90,3 +90,12 @@ async function addStudentToStudyClass(studentId) {
         console.log(ex);
     }
 }
+
+
+
+// ================== DELETE ==================
+function initDeleteStudentInStudyClassField(studentId) {
+    const removeStudentIdInput = document.getElementById("removeStudentIdInput");
+
+    removeStudentIdInput.value = studentId;
+}
