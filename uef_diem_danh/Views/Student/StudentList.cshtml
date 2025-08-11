@@ -1,0 +1,122 @@
+﻿@model IEnumerable<uef_diem_danh.Models.HocVien>
+
+@{
+    Layout = "~/Views/Layout/Main.cshtml";
+    ViewData["Title"] = "Quản lý học viên";
+}
+
+<div>
+	@if (TempData["StudentSuccessMessage"] != null)
+	{
+		<div class="bg-success p-2 text-white">
+			@TempData["StudentSuccessMessage"]
+		</div>
+	}
+	@if (TempData["StudentErrorMessage"] != null)
+	{
+		<div class="bg-danger">
+			@TempData["StudentErrorMessage"]
+		</div>
+	}
+	<div class="d-flex justify-content-between align-items-start mb-3">
+		<div style="width: 20rem">
+			<h2 class="table-title">Quản lý học viên</h2>
+			<div class="d-flex search-row">
+				<form id="searchOrderStudentForm"
+					  style="width: 100%"
+					  onsubmit="return preventSearchStudentSubmit()">
+
+					<input id="studentSearchInput"
+						   class="form-control form-control-sm"
+						   name="StudentName"
+						   placeholder="Tìm theo tên học viên..."
+						   style="width: 70%; display: inline" />
+					<button type="button"
+							class="btn-next-secondary btn-sm"
+							id="btnSearch"
+							onclick="searchStudent()">
+						Tìm
+					</button>
+				</form>
+			</div>
+		</div>
+		<div>
+			<button type="button"
+					class="btn-next-secondary btn -sm btn-add"
+					data-bs-toggle="modal"
+					data-bs-target="#popupThemHocVien">
+				Thêm Học Viên
+			</button>
+		</div>
+	</div>
+
+	<div class="table-wrapper">
+		<div id="searchResultLabel" style="display: none">Kết quả tìm kiếm: </div>
+		<table id="studentTable" class="fl-table">
+			<thead>
+				<tr>
+					<th>Mã học viên</th>
+					<th>Họ</th>
+					<th>Tên</th>
+					<th>Ngày sinh</th>
+					<th>Địa chỉ</th>
+					<th>Email</th>
+					<th>Số điện thoại</th>
+					<th>Lớp tham gia</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody id="studentsTableBody">
+				@foreach (var student in Model)
+				{
+					<tr>
+						<td>@student.MaHocVien</td>
+						<td>@student.Ho</td>
+						<td>@student.Ten</td>
+						<td>@student.NgaySinh.ToString("dd/MM/yyyy")</td>
+						<td>@student.DiaChi</td>
+						<td>@student.Email</td>
+						<td>@student.SoDienThoai</td>
+						<td>
+							<button class="btn btn-outline-primary btn-sm btn-view-students"
+									data-id="@student.MaHocVien"
+									data-bs-toggle="modal"
+									data-bs-target="#popupLopHoc">
+								Xem
+							</button>
+						</td>
+						<td>
+							<button class="btn btn-outline-secondary btn-sm btn-edit"
+									data-id="@student.MaHocVien"
+									data-bs-toggle="modal"
+									data-bs-target="#popupSuaHocVien"
+									onclick="initUpdateStudentFields(@student.MaHocVien)">
+								Sửa
+							</button>
+						</td>
+						<td>
+							<button class="btn btn-outline-danger btn-sm btn-delete"
+									data-id="@student.MaHocVien"
+									data-bs-toggle="modal"
+									data-bs-target="#popupXoaHocVien"
+									onclick="initDeleteStudentField(@student.MaHocVien)">
+								Xoá
+							</button>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+@await Html.PartialAsync("/Views/Component/CreateStudentModal.cshtml", new uef_diem_danh.DTOs.StudentCreateRequest())
+
+@await Html.PartialAsync("/Views/Component/UpdateStudentModal.cshtml", new uef_diem_danh.DTOs.StudentUpdateRequest())
+
+@await Html.PartialAsync("/Views/Component/DeleteStudentModal.cshtml", new uef_diem_danh.DTOs.StudentDeleteRequest())
+
+
+
+<script src="~/js/Student.js"></script>

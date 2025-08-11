@@ -13,6 +13,8 @@ namespace uef_diem_danh.Models
 
         public int TietHoc { get; set; }
 
+        public bool TrangThai { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // relationships
