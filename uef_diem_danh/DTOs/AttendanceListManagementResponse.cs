@@ -4,6 +4,8 @@
     {
         public int Id { get; set; }
 
+        public int Stt { get; set; }
+
         public string StudyClassName { get; set; }
 
         public int ClassSessionNumber { get; set; }

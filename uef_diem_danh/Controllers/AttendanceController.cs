@@ -20,7 +20,7 @@ namespace uef_diem_danh.Controllers
         public async Task<IActionResult> GetListManagementPage()
         {
 
-            List<AttendanceListManagementResponse> attendances = await context.BuoiHocs
+            List<AttendanceListManagementResponse> studySesstions = await context.BuoiHocs
                 .Where(bh => bh.TrangThai == false)
                 .Select(bh => new AttendanceListManagementResponse
                 {
@@ -30,7 +30,17 @@ namespace uef_diem_danh.Controllers
                 })
                 .ToListAsync();
 
-            return View("~/Views/Attendances/ListView.cshtml", attendances);
+            studySesstions = studySesstions.Select((item, index) => new AttendanceListManagementResponse
+                {
+                    Id = item.Id,
+                    Stt = index + 1,
+                    StudyClassName = item.StudyClassName,
+                    ClassSessionNumber = item.ClassSessionNumber
+                })
+                .OrderBy(ss => ss.Stt)
+                .ToList();
+
+            return View("~/Views/Attendances/ListView.cshtml", studySesstions);
         }
 
     }
