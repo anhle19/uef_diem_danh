@@ -53,9 +53,7 @@ namespace uef_diem_danh.Controllers
                     Id = tg.HocVien.MaHocVien,
                     LastName = tg.HocVien.Ho,
                     FirstName = tg.HocVien.Ten,
-                    Email = tg.HocVien.Email,
                     PhoneNumber = tg.HocVien.SoDienThoai,
-                    BarCode = tg.HocVien.MaBarCode,
                     Address = tg.HocVien.DiaChi,
                     DateOfBirth = tg.HocVien.NgaySinh,
                 })
