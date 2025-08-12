@@ -9,14 +9,30 @@
 
 <div>
     <div class="d-flex justify-content-between align-items-start mb-3">
-        <div>
+        <div style="width: 20rem">
             <h2 class="mb-1">Quản lý điểm danh</h2>
             <div class="d-flex search-row">
-                <input id="kw" class="form-control form-control-sm" placeholder="Tìm môn học hoặc buổi học..." />
-                <button class="btn-next-secondary btn-sm" id="btnSearch">Tìm</button>
+                <form id="searchAttendanceForm"
+                      style="width: 100%"
+                      onsubmit="return preventSearchAttendancesSubmit()">
+
+                    <input id="attendanceSearchInput"
+                           class="form-control form-control-sm" 
+                           name="attendanceSearchInput"
+                           placeholder="Tìm môn học hoặc buổi học..."
+                           style="width: 70%; display: inline" />
+                    <button type="button"
+                            class="btn-next-secondary btn-sm"
+                            id="btnSearch"
+                            onclick="searchAttendances()">
+                        Tìm
+                    </button>
+                </form>
+@*                 <input id="kw" class="form-control form-control-sm" placeholder="Tìm môn học hoặc buổi học..." />
+                <button class="btn-next-secondary btn-sm" id="btnSearch">Tìm</button> *@
             </div>
         </div>
-        <div class="d-flex align-items-center gap-2">
+        @* <div class="d-flex align-items-center gap-2">
             <div class="form-text">Sắp xếp:</div>
             <select id="sortBy" class="form-select form-select-sm" style="width:auto">
                 <option value="subject_asc">Môn học (A→Z)</option>
@@ -24,11 +40,11 @@
                 <option value="session_asc">Buổi học (lâu nhất)</option>
                 <option value="session_desc">Buổi học (mới nhất)</option>
             </select>
-        </div>
+        </div> *@
     </div>
 
     <div class="table-wrapper">
-        <table class="fl-table">
+        <table id="attendanceManagementTable" class="fl-table">
             <thead>
                 <tr>
                     <th>STT</th>
@@ -37,7 +53,30 @@
                     <th>Kết quả điểm danh</th>
                 </tr>
             </thead>
-            <tbody id="sessionsTbody"></tbody>
+            <tbody id="sessionsTbody">
+				@foreach (var studySesstion in Model)
+				{
+                    <input type="hidden" name="studySessionId" id="studySessionId_@studySesstion.Id" value="@studySesstion.Id" />
+
+					<tr>
+						<td>
+ 							@studySesstion.Stt
+						</td>
+						<td>@studySesstion.StudyClassName</td>
+						<td>Buổi @studySesstion.ClassSessionNumber</td>
+						<td>
+							<a class="btn btn-outline-primary btn-sm btn-view-students"
+							   href="quan-ly-danh-sach-lop-hoc/@studySesstion.Id/quan-ly-danh-sach-hoc-vien">
+								Xem
+							</a>
+						</td>
+					</tr>
+				}
+            </tbody>
         </table>
     </div>
 </div>
+
+
+
+<script src="~/js/Attendance.js"></script>
