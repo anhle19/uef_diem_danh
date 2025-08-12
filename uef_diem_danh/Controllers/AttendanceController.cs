@@ -57,15 +57,17 @@ namespace uef_diem_danh.Controllers
                     ClassSessionNumber = bh.TietHoc,
                     TotalStudents = bh.LopHoc.ThamGias.Count(),
                     TotalStudentsPresent = bh.DiemDanhs.Count(sbh => sbh.TrangThai == true),
-                    StudentAttendanceResults = bh.DiemDanhs.Select(dd => new StudentAttendanceResult
+                    StudentAttendanceResults = bh.DiemDanhs.Select((dd) => new StudentAttendanceResult
                     {
                         StudentFirstName = dd.HocVien.Ten,
                         StudentLastName = dd.HocVien.Ho,
                         AttendanceDateTime = dd.ThoiGianDiemDanh
                     })
+                    .OrderBy(dd => dd.StudentFirstName)
                     .ToList()
                 })
                 .FirstOrDefaultAsync();
+
 
             return View("~/Views/Attendances/ResultView.cshtml", attendanceResult);
         }

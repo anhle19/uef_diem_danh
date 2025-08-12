@@ -37,8 +37,8 @@
         </div>
 
         <div class="stats">
-            <div>Tổng số: <strong id="tongSo">0</strong></div>
-            <div>Hiện diện: <strong id="hienDien">0</strong></div>
+            <div>Tổng số: <strong id="tongSo">@attendanceResult.TotalStudents</strong></div>
+            <div>Hiện diện: <strong id="hienDien">@attendanceResult.TotalStudentsPresent</strong></div>
         </div>
 
         <div class="table-responsive">
@@ -50,7 +50,22 @@
                         <th style="width:220px">Thời gian</th>
                     </tr>
                 </thead>
-                <tbody id="resultBody"></tbody>
+                <tbody id="studentAttendanceResultBody">
+                    @{
+                        int stt = 1;
+                    }
+                    @foreach (var student in attendanceResult.StudentAttendanceResults)
+                    {
+                        <tr>
+                            <td>@stt</td>
+                            <td>@student.StudentLastName @student.StudentFirstName</td>
+                            <td>@student.AttendanceDateTime.ToString("dd/MM/yyyy HH:mm")</td>
+                            @{
+                                stt++;
+                            }
+                        </tr>
+                    }
+                </tbody>
             </table>
         </div>
     </div>
