@@ -66,6 +66,11 @@ namespace uef_diem_danh.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromForm] StudentCreateRequest request)
         {
+            if(context.HocViens.Any(hv => hv.SoDienThoai == request.SoDienThoai))
+            {
+                TempData["StudentErrorMessage"] = "Số điện thoại đã tồn tại trong hệ thống!";
+                return Redirect("hoc-vien/danh-sach");
+            }
 
             try
             {
