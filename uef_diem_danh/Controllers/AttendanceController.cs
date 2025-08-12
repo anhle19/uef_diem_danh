@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using uef_diem_danh.Database;
 using uef_diem_danh.DTOs;
+using uef_diem_danh.Models;
 
 namespace uef_diem_danh.Controllers
 {
@@ -51,7 +52,20 @@ namespace uef_diem_danh.Controllers
         public async Task<IActionResult> GetAttendanceCheckingPage()
         {
 
-            return View("~/Views/Attendances/CheckingView.cshtml");
+            // Get top 5 latest stundet attendances
+            List<AttendanceLatestCheckingResponse> latestAttendances = await context.DiemDanhs
+                .Where(dd => dd.TrangThai == true)
+                .Select((dd, index) => new AttendanceLatestCheckingResponse
+                {
+                    Stt = index + 1,
+                    StudyClassName = dd.BuoiHoc.LopHoc.TenLopHoc,
+                    AttendanceDateTime = dd.ThoiGianDiemDanh
+                })
+                .OrderByDescending(dd => dd.AttendanceDateTime)
+                .Take(5)
+                .ToListAsync();
+
+            return View("~/Views/Attendances/CheckingView.cshtml", latestAttendances);
         }
 
         [Route("ket-qua-diem-danh")]
@@ -182,6 +196,55 @@ namespace uef_diem_danh.Controllers
                 }
             }
 
+        }
+
+
+
+        [Route("api/diem-danh-hoc-vien")]
+        [HttpPost]
+        public async Task<IActionResult> CheckAttendance([FromBody] AttendanceCheckingRequest request)
+        {
+
+            DiemDanh newAttendance = new DiemDanh();
+
+            // Get student by barcode
+            HocVien student = await context.HocViens
+                .Where(hv => hv.MaBarCode == request.StudentBarCode)
+                .FirstOrDefaultAsync();
+
+            // Check if student attendance already exists
+            var isAttendanceExisted = context.DiemDanhs
+                .Any(dd => dd.MaHocVien == student.MaHocVien && dd.MaBuoiHoc == request.ClassSessionId);
+
+            if (isAttendanceExisted)
+            {
+                return BadRequest("Học viên đã điểm danh trong buổi học này.");
+            }
+            else
+            {
+                // Create new attendance record
+                newAttendance = new DiemDanh
+                {
+                    MaHocVien = student.MaHocVien,
+                    MaBuoiHoc = request.ClassSessionId,
+                    ThoiGianDiemDanh = DateTime.Now,
+                    TrangThai = true
+                };
+
+                context.DiemDanhs.Add(newAttendance);
+                await context.SaveChangesAsync();
+            }
+
+            AttendanceCheckingResponse attendanceCheckingResponse = new AttendanceCheckingResponse
+            {
+                StudyClassName = request.StudyClassName,
+                StudentFirstName = student.Ten,
+                StudentLastName = student.Ho,
+                StudentPhoneNumber = student.SoDienThoai,
+                AttendanceDateTime = newAttendance.ThoiGianDiemDanh
+            };
+
+            return Ok(attendanceCheckingResponse);
         }
 
 
