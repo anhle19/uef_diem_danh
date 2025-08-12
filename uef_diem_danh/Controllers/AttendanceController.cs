@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using uef_diem_danh.Database;
 using uef_diem_danh.DTOs;
@@ -53,7 +54,9 @@ namespace uef_diem_danh.Controllers
                 .Where(bh => bh.MaLopHoc == studyClassId && bh.MaBuoiHoc == classSessionId)
                 .Select(bh => new AttendanceResultResponse
                 {
+                    StudyClassId = bh.LopHoc.MaLopHoc,
                     StudyClassName = bh.LopHoc.TenLopHoc,
+                    ClassSessionId = bh.MaBuoiHoc,
                     ClassSessionNumber = bh.TietHoc,
                     TotalStudents = bh.LopHoc.ThamGias.Count(),
                     TotalStudentsPresent = bh.DiemDanhs.Count(sbh => sbh.TrangThai == true),
@@ -71,6 +74,110 @@ namespace uef_diem_danh.Controllers
 
             return View("~/Views/Attendances/ResultView.cshtml", attendanceResult);
         }
+
+
+
+        [Route("xuat-ket-qua-diem-danh-excel")]
+        [HttpGet]
+        public async Task<IActionResult> ExportResultToExcel([FromQuery] int studyClassId, [FromQuery] int classSessionId)
+        {
+
+            // Get data
+            AttendanceResultResponse attendanceResult = await context.BuoiHocs
+                .Where(bh => bh.MaLopHoc == studyClassId && bh.MaBuoiHoc == classSessionId)
+                .Select(bh => new AttendanceResultResponse
+                {
+                    StudyClassId = bh.LopHoc.MaLopHoc,
+                    StudyClassName = bh.LopHoc.TenLopHoc,
+                    ClassSessionId = bh.MaBuoiHoc,
+                    ClassSessionNumber = bh.TietHoc,
+                    TotalStudents = bh.LopHoc.ThamGias.Count(),
+                    TotalStudentsPresent = bh.DiemDanhs.Count(sbh => sbh.TrangThai == true),
+                    StudentAttendanceResults = bh.DiemDanhs.Select((dd) => new StudentAttendanceResult
+                    {
+                        StudentFirstName = dd.HocVien.Ten,
+                        StudentLastName = dd.HocVien.Ho,
+                        AttendanceDateTime = dd.ThoiGianDiemDanh
+                    })
+                    .OrderBy(dd => dd.StudentFirstName)
+                    .ToList()
+                })
+                .FirstOrDefaultAsync();
+
+
+            // Make copy from Attendance Result sample.xlsx
+            string sampleFilePath = Path.Combine(Directory.GetCurrentDirectory(), "ExportExcels", "Attendance Result sample.xlsx");
+
+            string processingFileName = $"Attendance Result {attendanceResult.StudyClassName} - {attendanceResult.ClassSessionNumber}.xlsx";
+
+            using (var templateStream = new MemoryStream(System.IO.File.ReadAllBytes(sampleFilePath)))
+
+            // Process excel file
+            using (var workbook = new XLWorkbook(templateStream))
+            {
+                const int STT_COLUMN = 1;
+                const int FULL_NAME_COLUMN = 2;
+                const int ATTENDANCE_DAY_TIME_COLUMN = 3;
+
+                int startStudentRow = 6;
+                int endStudentRow = startStudentRow + attendanceResult.TotalStudents;
+                int startStudentCol = 1;
+                int endStudentCol = 3;
+
+                // Get first worksheet
+                var worksheet = workbook.Worksheet(1);
+
+                // Set data
+                worksheet.Cell("A2").Value = $"Buổi: {attendanceResult.ClassSessionNumber}";
+                worksheet.Cell("A3").Value = $"Môn: {attendanceResult.StudyClassName}";
+                worksheet.Cell("D2").Value = $"Tổng số: {attendanceResult.TotalStudents}";
+                worksheet.Cell("D3").Value = $"Hiển diện: {attendanceResult.TotalStudentsPresent}";
+
+                int currentStudentIndex = 0;
+                for (int row = startStudentRow; row < endStudentRow; row++)
+                {
+                    StudentAttendanceResult student = attendanceResult.StudentAttendanceResults[currentStudentIndex];
+                    for (int col = startStudentCol; col <= endStudentCol; col++)
+                    {
+                        // Set font name, size, and background color
+                        worksheet.Cell(row, col).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        worksheet.Cell(row, col).Style.Font.FontName = "Arial";
+                        worksheet.Cell(row, col).Style.Font.FontSize = 13;
+                        worksheet.Cell(row, col).Style.Fill.BackgroundColor = XLColor.FromHtml("#DDEBF7");
+
+                        if (col == STT_COLUMN)
+                        {
+                            worksheet.Cell(row, col).Value = currentStudentIndex + 1;
+                        }
+                        if (col == FULL_NAME_COLUMN)
+                        {
+                            worksheet.Cell(row, col).Value = $"{student.StudentLastName} {student.StudentFirstName}";
+                        }
+                        if (col == ATTENDANCE_DAY_TIME_COLUMN)
+                        {
+                            worksheet.Cell(row, col).Value = student.AttendanceDateTime.ToString("dd/MM/yyyy HH:mm");
+                        }
+
+                    }
+
+                    currentStudentIndex++;
+                }
+
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+
+                    return File(
+                        stream.ToArray(),
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        processingFileName
+                    );
+                }
+            }
+
+        }
+
 
     }
 }
