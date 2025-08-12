@@ -60,7 +60,6 @@
 					<th>Tên</th>
 					<th>Ngày sinh</th>
 					<th>Địa chỉ</th>
-					<th>Email</th>
 					<th>Số điện thoại</th>
 					<th>Lớp tham gia</th>
 					<th></th>
@@ -68,15 +67,18 @@
 				</tr>
 			</thead>
 			<tbody id="studentsTableBody">
+				@{int count = 1;}
 				@foreach (var student in Model)
 				{
 					<tr>
-						<td>@student.MaHocVien</td>
+						<td>@count</td>
+						@{
+							count++;
+						}
 						<td>@student.Ho</td>
 						<td>@student.Ten</td>
 						<td>@student.NgaySinh.ToString("dd/MM/yyyy")</td>
 						<td>@student.DiaChi</td>
-						<td>@student.Email</td>
 						<td>@student.SoDienThoai</td>
 						<td>
 							<button class="btn btn-outline-primary btn-sm btn-view-students"

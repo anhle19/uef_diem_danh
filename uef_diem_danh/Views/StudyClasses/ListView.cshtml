@@ -71,10 +71,16 @@
 				</tr>
 			</thead>
 			<tbody id="classesTableBody">
+				@{
+					int count = 1;
+				}
 				@foreach (var studyClass in Model)
 				{
 					<tr>
-						<td>@studyClass.Id</td>
+						<td>@count</td>
+						@{
+							count++;
+						}
                         <td>@studyClass.StudyClassName</td>
 						<td>@studyClass.StartDate.ToString("dd/MM/yyyy")</td>
 						<td>@studyClass.EndDate.ToString("dd/MM/yyyy")</td>

@@ -113,6 +113,7 @@ namespace uef_diem_danh.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete([FromForm] ClassDeleteRequest request)
         {
+            Console.WriteLine("Xoa buoi hoc: " + request.MaBuoiHoc);
             try
             {
                 BuoiHoc _class = await _context.BuoiHocs

@@ -140,8 +140,8 @@ function updateStudent() {
 
 
 // ================== DELETE CLASS ==================
-async function initDeleteClasstField(id) {
+async function initDeleteClassField(id) {
     const studyClassIdInput = document.getElementById("xoaMaBuoiHoc");
-
+    console.log(id);
     studyClassIdInput.value = id;
 }

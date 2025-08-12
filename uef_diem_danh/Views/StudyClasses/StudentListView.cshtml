@@ -76,10 +76,17 @@
 				</tr>
 			</thead>
 			<tbody id="classesTableBody">
+				@{
+					int count = 1;
+				}
+
 				@foreach (var student in Model)
 				{
 					<tr>
-						<td>@student.Id</td>
+						<td>@count</td>
+						@{
+							count++;
+						}
 						<td>@student.LastName @student.FirstName</td>
 						<td>@student.Email</td>
 						<td>@student.PhoneNumber</td>
