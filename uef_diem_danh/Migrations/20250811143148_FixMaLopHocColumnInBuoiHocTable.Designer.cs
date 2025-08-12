@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using uef_diem_danh.Database;
 
@@ -11,9 +12,11 @@ using uef_diem_danh.Database;
 namespace uef_diem_danh.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250811143148_FixMaLopHocColumnInBuoiHocTable")]
+    partial class FixMaLopHocColumnInBuoiHocTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -193,6 +196,12 @@ namespace uef_diem_danh.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaDiemDanh"));
 
+                    b.Property<int>("BuoiHocMaBuoiHoc")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HocVienMaHocVien")
+                        .HasColumnType("int");
+
                     b.Property<int>("MaBuoiHoc")
                         .HasColumnType("int");
 
@@ -207,9 +216,9 @@ namespace uef_diem_danh.Migrations
 
                     b.HasKey("MaDiemDanh");
 
-                    b.HasIndex("MaBuoiHoc");
+                    b.HasIndex("BuoiHocMaBuoiHoc");
 
-                    b.HasIndex("MaHocVien");
+                    b.HasIndex("HocVienMaHocVien");
 
                     b.ToTable("DiemDanh");
                 });
@@ -440,13 +449,13 @@ namespace uef_diem_danh.Migrations
                 {
                     b.HasOne("uef_diem_danh.Models.BuoiHoc", "BuoiHoc")
                         .WithMany("DiemDanhs")
-                        .HasForeignKey("MaBuoiHoc")
+                        .HasForeignKey("BuoiHocMaBuoiHoc")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("uef_diem_danh.Models.HocVien", "HocVien")
                         .WithMany("DiemDanhs")
-                        .HasForeignKey("MaHocVien")
+                        .HasForeignKey("HocVienMaHocVien")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -1,0 +1,92 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "~/Views/Layout/Main.cshtml";
+    ViewData["Title"] = "Quản lý điểm danh";
+}
+@model List<uef_diem_danh.DTOs.AttendanceListManagementResponse>
+
+<div>
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <div style="width: 20rem">
+            <h2 class="mb-1">Quản lý điểm danh</h2>
+            <div class="d-flex search-row">
+                <form id="searchAttendanceForm"
+                      style="width: 100%"
+                      onsubmit="return preventSearchAttendancesSubmit()">
+
+                    <input id="attendanceSearchInput"
+                           class="form-control form-control-sm" 
+                           name="attendanceSearchInput"
+                           placeholder="Tìm môn học hoặc buổi học..."
+                           style="width: 70%; display: inline" />
+                    <button type="button"
+                            class="btn-next-secondary btn-sm"
+                            id="btnSearch"
+                            onclick="searchAttendances()">
+                        Tìm
+                    </button>
+                </form>
+@*                 <input id="kw" class="form-control form-control-sm" placeholder="Tìm môn học hoặc buổi học..." />
+                <button class="btn-next-secondary btn-sm" id="btnSearch">Tìm</button> *@
+            </div>
+        </div>
+        @* <div class="d-flex align-items-center gap-2">
+            <div class="form-text">Sắp xếp:</div>
+            <select id="sortBy" class="form-select form-select-sm" style="width:auto">
+                <option value="subject_asc">Môn học (A→Z)</option>
+                <option value="subject_desc">Môn học (Z→A)</option>
+                <option value="session_asc">Buổi học (lâu nhất)</option>
+                <option value="session_desc">Buổi học (mới nhất)</option>
+            </select>
+        </div> *@
+    </div>
+
+    <div class="table-wrapper">
+        <table id="attendanceManagementTable" class="fl-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Môn học</th>
+                    <th>Buổi học</th>
+                    <th>Kết quả điểm danh</th>
+                </tr>
+            </thead>
+            <tbody id="sessionsTbody">
+				@foreach (var studySesstion in Model)
+				{
+                    <input 
+                        type="hidden" 
+                        name="studyClassId_@studySesstion.StudyClassId" 
+                        id="studySessionId_@studySesstion.StudyClassId" 
+                        value="@studySesstion.StudyClassId" />
+                    <input 
+                        type="hidden"
+                        name="classSessionId_@studySesstion.ClassSessionId"
+                        id="studySessionId_@studySesstion.ClassSessionId" 
+                        value="@studySesstion.ClassSessionId" />
+
+					<tr>
+						<td>
+ 							@studySesstion.Stt
+						</td>
+						<td>@studySesstion.StudyClassName</td>
+						<td>Buổi @studySesstion.ClassSessionNumber</td>
+						<td>
+							<a class="btn btn-outline-primary btn-sm btn-view-students"
+                               href="/ket-qua-diem-danh?studyClassId=@studySesstion.StudyClassId&classSessionId=@studySesstion.ClassSessionId"
+                                target="_blank">
+								Xem
+							</a>
+						</td>
+					</tr>
+				}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+<script src="~/js/Attendance.js"></script>

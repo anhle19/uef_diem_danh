@@ -1,0 +1,80 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model uef_diem_danh.DTOs.AttendanceResultResponse
+@{
+    uef_diem_danh.DTOs.AttendanceResultResponse attendanceResult = Model;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kết quả điểm danh</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.19.3/dist/xlsx.full.min.js"></script>
+    <style>
+        .page-wrap{max-width: 960px; margin: 24px auto;}
+        .title{font-size: 1.5rem; font-weight: 600}
+        .sub{color:#6b7280}
+        .stats{margin: 16px 0}
+        .table thead th{background:#2b4b73; color:#fff}
+        .btn-export{background:#50a556; color:white}
+    </style>
+</head>
+<body>
+    <div class="page-wrap">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+                <div class="title" id="sessionTitle">Kết quả điểm danh: Buổi @attendanceResult.ClassSessionNumber</div>
+                <div class="sub" id="subjectLine">Môn: @attendanceResult.StudyClassName</div>
+            </div>
+            <a 
+                class="btn btn-export" 
+                id="btnExport" 
+                href="/xuat-ket-qua-diem-danh-excel?studyClassId=@attendanceResult.StudyClassId&classSessionId=@attendanceResult.ClassSessionId"
+                >
+                    Xuất file Excel
+                </a>
+        </div>
+
+        <div class="stats">
+            <div>Tổng số: <strong id="tongSo">@attendanceResult.TotalStudents</strong></div>
+            <div>Hiện diện: <strong id="hienDien">@attendanceResult.TotalStudentsPresent</strong></div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped" id="resultTable">
+                <thead>
+                    <tr>
+                        <th style="width:80px">STT</th>
+                        <th>Tên</th>
+                        <th style="width:220px">Thời gian</th>
+                    </tr>
+                </thead>
+                <tbody id="studentAttendanceResultBody">
+                    @{
+                        int stt = 1;
+                    }
+                    @foreach (var student in attendanceResult.StudentAttendanceResults)
+                    {
+                        <tr>
+                            <td>@stt</td>
+                            <td>@student.StudentLastName @student.StudentFirstName</td>
+                            <td>@student.AttendanceDateTime.ToString("dd/MM/yyyy HH:mm")</td>
+                            @{
+                                stt++;
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>
