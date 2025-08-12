@@ -47,6 +47,13 @@ namespace uef_diem_danh.Controllers
         }
 
 
+        [Route("diem-danh-hoc-vien")]
+        public async Task<IActionResult> GetAttendanceCheckingPage()
+        {
+
+            return View("~/Views/Attendances/CheckingView.cshtml");
+        }
+
         [Route("ket-qua-diem-danh")]
         public async Task<IActionResult> GetAttendanceResult([FromQuery] int studyClassId, [FromQuery] int classSessionId)
         {
@@ -74,7 +81,6 @@ namespace uef_diem_danh.Controllers
 
             return View("~/Views/Attendances/ResultView.cshtml", attendanceResult);
         }
-
 
 
         [Route("xuat-ket-qua-diem-danh-excel")]
