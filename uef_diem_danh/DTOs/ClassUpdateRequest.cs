@@ -8,8 +8,5 @@
 
         public int TietHoc { get; set; }
 
-        public bool TrangThai { get; set; }
-
-        public int MaLopHoc { get; set; }
     }
 }

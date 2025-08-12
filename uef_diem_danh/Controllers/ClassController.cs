@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using uef_diem_danh.Database;
@@ -41,6 +42,8 @@ namespace uef_diem_danh.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDetailForUpdate(int class_id)
         {
+            Console.WriteLine("MaLop:" + class_id);
+
             return Ok(await _context.BuoiHocs.FindAsync(class_id));
         }
 
@@ -49,7 +52,6 @@ namespace uef_diem_danh.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromForm] ClassCreateRequest request)
         {
-            Console.WriteLine("MaLop:" + request.MaLopHoc);
             try
             {
 
@@ -66,7 +68,7 @@ namespace uef_diem_danh.Controllers
                 await _context.SaveChangesAsync();
 
                 TempData["ClassSuccessMessage"] = "Thêm buổi học thành công!";
-                return Redirect("buoi-hoc");
+                return Redirect("lop-hoc/" + request.MaLopHoc + "/buoi-hoc");
             }
             catch (Exception ex)
             {
@@ -90,8 +92,6 @@ namespace uef_diem_danh.Controllers
 
                 _class.NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture);
                 _class.TietHoc = request.TietHoc;
-                _class.TrangThai = request.TrangThai;
-                _class.MaLopHoc = request.MaLopHoc;
 
                 await _context.SaveChangesAsync();
 
@@ -108,7 +108,7 @@ namespace uef_diem_danh.Controllers
         }
 
 
-        [Route("xoa-hoc-vien")]
+        [Route("xoa-buoi-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete([FromForm] ClassDeleteRequest request)
@@ -122,13 +122,13 @@ namespace uef_diem_danh.Controllers
                 await _context.SaveChangesAsync();
 
                 TempData["ClassSuccessMessage"] = "Xóa buổi học thành công!";
-                return Redirect("hoc-vien/danh-sach");
+                return Redirect("lop-hoc/" + request.MaBuoiHoc + "/buoi-hoc");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi xóa buổi học: " + ex.Message;
-                return Redirect("buoi-hoc");
+                return Redirect("lop-hoc/" + request.MaBuoiHoc + "/buoi-hoc");
             }
         }
     }

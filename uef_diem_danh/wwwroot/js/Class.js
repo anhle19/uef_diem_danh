@@ -76,32 +76,29 @@ function addClass(id) {
     createStudentForm.requestSubmit();
 };
 
+async function initAddClassFields(id) {
+    // Call API to get study class detail
+        const classIdInput = document.getElementById("themMaLopHoc");
+        console.log(id);
+        classIdInput.value = id;
+}
 
 // ================== EDIT CLASS ==================
-async function initUpdateStudentFields(id) {
+async function initUpdateClassFields(id) {
     // Call API to get study class detail
     try {
-        const studentIdInput = document.getElementById("suaMaHocVien");
-        const studentLastNameInput = document.getElementById("suaHo");
-        const studentFirstNameInput = document.getElementById("suaTen");
-        const studentDobInput = document.getElementById("suaNgaySinh");
-        const studentAddressInput = document.getElementById("suaDiaChi");
-        const studentEmailInput = document.getElementById("suaEmail");
-        const studentPhoneNumberInput = document.getElementById("suaSoDienThoai");
+        const studentIdInput = document.getElementById("suaMaBuoiHoc");
+        const studentLastNameInput = document.getElementById("suaNgayHoc");
+        const studentFirstNameInput = document.getElementById("suaTietHoc");
 
 
-        const response = await axios.get(`https://localhost:7045/api/lay-chi-tiet-hoc-vien/${id}`)
+        const response = await axios.get(`https://localhost:7045/api/lay-chi-tiet-buoi-hoc/${id}`)
         const fetchedStudent = response.data;
 
-        console.log(fetchedStudent);
-        studentIdInput.value = fetchedStudent.maHocVien;
-        studentLastNameInput.value = fetchedStudent.ho;
-        studentFirstNameInput.value = fetchedStudent.ten;
-        studentDobInput.value = fetchedStudent.ngaySinh;
-        studentAddressInput.value = fetchedStudent.diaChi;
-        studentEmailInput.value = fetchedStudent.email;
-        studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
-
+        console.log(fetchedStudent.maBuoiHoc);
+        studentIdInput.value = fetchedStudent.maBuoiHoc;
+        studentLastNameInput.value = fetchedStudent.ngayHoc;
+        studentFirstNameInput.value = fetchedStudent.tietHoc;
 
         console.log(response)
     } catch (ex) {
@@ -143,8 +140,8 @@ function updateStudent() {
 
 
 // ================== DELETE CLASS ==================
-async function initDeleteStudentField(id) {
-    const studyClassIdInput = document.getElementById("xoaMaHocVien");
+async function initDeleteClasstField(id) {
+    const studyClassIdInput = document.getElementById("xoaMaBuoiHoc");
 
     studyClassIdInput.value = id;
 }
