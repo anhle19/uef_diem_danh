@@ -33,7 +33,13 @@
                 <div class="title" id="sessionTitle">Kết quả điểm danh: Buổi @attendanceResult.ClassSessionNumber</div>
                 <div class="sub" id="subjectLine">Môn: @attendanceResult.StudyClassName</div>
             </div>
-            <button class="btn btn-export" id="btnExport">Xuất file Excel</button>
+            <a 
+                class="btn btn-export" 
+                id="btnExport" 
+                href="/xuat-ket-qua-diem-danh-excel?studyClassId=@attendanceResult.StudyClassId&classSessionId=@attendanceResult.ClassSessionId"
+                >
+                    Xuất file Excel
+                </a>
         </div>
 
         <div class="stats">
