@@ -2,8 +2,10 @@
 {
     public class AttendanceResultResponse
     {
+        public int StudyClassId { get; set; }
         public string StudyClassName { get; set; }
 
+        public int ClassSessionId { get; set; }
         public int ClassSessionNumber { get; set; }
 
         public int TotalStudents { get; set; }
