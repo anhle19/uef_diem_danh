@@ -1,0 +1,170 @@
+﻿@model uef_diem_danh.DTOs.ClassGetRequest
+
+@{
+	Layout = "~/Views/Layout/Main.cshtml";
+	ViewData["Title"] = "Quản lý buổi học";
+}
+
+<div>
+	@if (TempData["ClassSuccessMessage"] != null)
+	{
+		<div class="bg-success p-2 text-white">
+			@TempData["ClassSuccessMessage"]
+		</div>
+	}
+	@if (TempData["ClassErrorMessage"] != null)
+	{
+		<div class="bg-danger">
+			@TempData["ClassErrorMessage"]
+		</div>
+	}
+	<div class="d-flex justify-content-between align-items-start mb-3">
+		<div style="width: 30rem">
+			<h2 class="table-title">Quản lý buổi học</h2>
+			<h4 class="table-title">Lớp: @Model.TenLop.ToString()</h4>
+			@* <div class="d-flex search-row">
+				<form id="searchOrderClassForm"
+					  style="width: 100%"
+					  onsubmit="return preventSearchClassSubmit()">
+
+					<input id="classSearchInput"
+						   class="form-control form-control-sm"
+						   name="ClassName"
+						   placeholder="Tìm theo tên ..."
+						   style="width: 70%; display: inline" /> 
+					<button type="button"
+							class="btn-next-secondary btn-sm"
+							id="btnSearch"
+							onclick="searchClass()">
+						Tìm
+					</button>
+				</form>
+			</div>*@
+		</div>
+		<div>
+			<button type="button"
+					class="btn-next-secondary btn -sm btn-add"
+					data-bs-toggle="modal"
+					data-bs-target="#popupThemBuoiHoc"
+					data-id="@Model.MaLopHoc">
+				Thêm Buổi Học
+			</button>
+		</div>
+	</div>
+
+	<div class="table-wrapper">
+		<div id="searchResultLabel" style="display: none">Kết quả tìm kiếm: </div>
+		<table id="classTable" class="fl-table">
+			<thead>
+				<tr>
+					<th>Mã buổi học</th>
+					<th>Ngày học</th>
+					<th>Tiết học</th>
+					<th>Trạng thái</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody id="classsTableBody">
+				@foreach (var _class in Model.BuoiHocs)
+				{
+					<tr>
+						<td>@_class.MaBuoiHoc</td>
+						<td>@_class.NgayHoc.ToString("dd/MM/yyyy")</td>
+						<td>@_class.TietHoc</td>
+						<td>
+							<label class="switch">
+								<input type="checkbox">
+								<span class="slider"></span>
+							</label>
+						</td>
+						<td>
+							<button class="btn btn-outline-secondary btn-sm btn-edit"
+									data-id="@_class.MaBuoiHoc"
+									data-bs-toggle="modal"
+									data-bs-target="#popupSuaBuoiHoc"
+									onclick="initUpdateClassFields(@_class.MaBuoiHoc)">
+								Sửa
+							</button>
+						</td>
+						<td>
+							<button class="btn btn-outline-danger btn-sm btn-delete"
+									data-id="@_class.MaBuoiHoc"
+									data-bs-toggle="modal"
+									data-bs-target="#popupXoaBuoiHoc"
+									onclick="initDeleteClassField(@_class.MaBuoiHoc)">
+								Xoá
+							</button>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+@await Html.PartialAsync("/Views/Component/CreateClassModal.cshtml", new uef_diem_danh.DTOs.ClassCreateRequest())
+
+@await Html.PartialAsync("/Views/Component/UpdateClassModal.cshtml", new uef_diem_danh.DTOs.ClassUpdateRequest())
+
+@await Html.PartialAsync("/Views/Component/DeleteClassModal.cshtml", new uef_diem_danh.DTOs.ClassDeleteRequest())
+
+
+
+<script src="~/js/Class.js"></script>
+
+<style>
+	/* From Uiverse.io by gharsh11032000 */
+	/* The switch - the box around the slider */
+	.switch {
+		font-size: 17px;
+		position: relative;
+		display: inline-block;
+		width: 3.5em;
+		height: 2em;
+	}
+
+		/* Hide default HTML checkbox */
+		.switch input {
+			opacity: 0;
+			width: 0;
+			height: 0;
+		}
+
+	/* The slider */
+	.slider {
+		position: absolute;
+		cursor: pointer;
+		inset: 0;
+		background: #9fccfa;
+		border-radius: 50px;
+		transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+	}
+
+		.slider:before {
+			position: absolute;
+			content: "";
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 2em;
+			width: 2em;
+			inset: 0;
+			background-color: white;
+			border-radius: 50px;
+			box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+			transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+		}
+
+	.switch input:checked + .slider {
+		background: #0974f1;
+	}
+
+	.switch input:focus + .slider {
+		box-shadow: 0 0 1px #0974f1;
+	}
+
+	.switch input:checked + .slider:before {
+		transform: translateX(1.6em);
+	}
+</style>

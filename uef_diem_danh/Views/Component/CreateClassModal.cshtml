@@ -1,0 +1,61 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model uef_diem_danh.DTOs.ClassCreateRequest
+@{
+}
+<div class="modal fade"
+	 id="popupThemBuoiHoc"
+	 tabindex="-1"
+	 aria-labelledby="popupThemBuoiHocLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="popupThemBuoiHocLabel">Thêm Buổi Học</h5>
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Đóng"></button>
+			</div>
+			<div class="modal-body">
+				<form method="POST" action="/tao-buoi-hoc" id="createClassForm">
+					@Html.AntiForgeryToken()
+					<input type="hidden" id="themMaLop" name="MaLopHoc" class="form-control" />
+
+					<div class="mb-2">
+						<label class="form-label">Ngày học <span class="text-danger">*</span></label>
+						<input type="date"
+							   id="themNgayHoc"
+							   name="NgayHoc"
+							   class="form-control" />
+					</div>
+					<div class="mb-2">
+						<label class="form-label">Tiết Học <span class="text-danger">*</span></label>
+						<input type="number"
+							   id="themTietHoc"
+							   name="TietHoc"
+							   class="form-control"
+							   min=1 />
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button"
+						class="btn-next-secondary"
+						data-bs-dismiss="modal">
+					Đóng
+				</button>
+				<button type="button"
+						class="btn-next-primary"
+						id="btnLuuBuoiHocMoi"
+						onclick="addClass()"
+						form="createClassForm">
+					Lưu
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
