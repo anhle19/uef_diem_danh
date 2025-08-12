@@ -56,7 +56,16 @@
             <tbody id="sessionsTbody">
 				@foreach (var studySesstion in Model)
 				{
-                    <input type="hidden" name="studySessionId" id="studySessionId_@studySesstion.Id" value="@studySesstion.Id" />
+                    <input 
+                        type="hidden" 
+                        name="studyClassId_@studySesstion.StudyClassId" 
+                        id="studySessionId_@studySesstion.StudyClassId" 
+                        value="@studySesstion.StudyClassId" />
+                    <input 
+                        type="hidden"
+                        name="classSessionId_@studySesstion.ClassSessionId"
+                        id="studySessionId_@studySesstion.ClassSessionId" 
+                        value="@studySesstion.ClassSessionId" />
 
 					<tr>
 						<td>
@@ -66,7 +75,7 @@
 						<td>Buổi @studySesstion.ClassSessionNumber</td>
 						<td>
 							<a class="btn btn-outline-primary btn-sm btn-view-students"
-							   href="quan-ly-danh-sach-lop-hoc/@studySesstion.Id/quan-ly-danh-sach-hoc-vien">
+                               href="/ket-qua-diem-danh?studyClassId=@studySesstion.StudyClassId&classSessionId=@studySesstion.ClassSessionId">
 								Xem
 							</a>
 						</td>
