@@ -86,6 +86,8 @@ function addStudent() {
 
 
 // ================== EDIT CLASS ==================
+
+
 async function initUpdateStudentFields(id) {
     // Call API to get study class detail
     try {
