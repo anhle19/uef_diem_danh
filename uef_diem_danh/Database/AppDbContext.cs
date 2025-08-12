@@ -42,6 +42,17 @@ namespace uef_diem_danh.Database
                 .WithMany(lh => lh.ThamGias)
                 .HasForeignKey(tg => tg.MaLopHoc);
 
+
+            modelBuilder.Entity<DiemDanh>()
+                .HasOne<HocVien>(dd => dd.HocVien)
+                .WithMany(hv => hv.DiemDanhs)
+                .HasForeignKey(dd => dd.MaHocVien);
+
+            modelBuilder.Entity<DiemDanh>()
+                .HasOne<BuoiHoc>(dd => dd.BuoiHoc)
+                .WithMany(bh => bh.DiemDanhs)
+                .HasForeignKey(dd => dd.MaBuoiHoc);
+
             base.OnModelCreating(modelBuilder);
         }
     }
