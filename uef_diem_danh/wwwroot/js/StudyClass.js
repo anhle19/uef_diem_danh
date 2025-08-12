@@ -295,16 +295,3 @@ async function searchStudyClass() {
 //        }
 //    });
 //})();
-
-    popup.addEventListener("click", (e) => {
-        const btn = e.target.closest(".btn-remove-student");
-        if (!btn) return;
-        const stId = Number(btn.getAttribute("data-id"));
-        const arr = studentsByClass[currentClassId] || [];
-        const idx = arr.findIndex((x) => x.id === stId);
-        if (idx > -1) {
-            arr.splice(idx, 1);
-            renderStudents();
-        }
-    });
-})();
