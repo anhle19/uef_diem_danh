@@ -2,7 +2,9 @@
 {
     public class AttendanceListManagementResponse
     {
-        public int Id { get; set; }
+        public int StudyClassId { get; set; }
+
+        public int ClassSessionId { get; set; }
 
         public int Stt { get; set; }
 
