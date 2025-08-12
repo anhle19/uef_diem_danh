@@ -46,6 +46,12 @@
 					class="btn-next-secondary btn -sm btn-add"
 					data-bs-toggle="modal"
 					data-bs-target="#popupThemHocVienCuaLopHocTuFileExcel">
+				Xuất tất cả thẻ sinh viên
+			</button>
+			<button type="button"
+					class="btn-next-secondary btn -sm btn-add"
+					data-bs-toggle="modal"
+					data-bs-target="#popupThemHocVienCuaLopHocTuFileExcel">
 				Thêm học viên từ file Excel
 			</button>
 			<button type="button"
@@ -65,29 +71,33 @@
 		<table id="studyClassTable" class="fl-table">
 			<thead>
 				<tr>
-					<th>Mã học viên</th>
+					<th>STT</th>
 					<th>Họ và tên</th>
-					<th>Email</th>
 					<th>Số điện thoại</th>
-					<th>Mã Bar Code</th>
 					<th>Địa chỉ</th>
 					<th>Ngày sinh</th>
 					<th></th>
 				</tr>
 			</thead>
 			<tbody id="classesTableBody">
+				@{
+					int stt = 1;
+				}
 				@foreach (var student in Model)
 				{
 					<tr>
-						<td>@student.Id</td>
+						<td>@stt</td>
 						<td>@student.LastName @student.FirstName</td>
-						<td>@student.Email</td>
 						<td>@student.PhoneNumber</td>
-						<td>@student.BarCode</td>
 						<td>@student.Address</td>
 						<td>@student.DateOfBirth.ToString("dd/MM/yyyy")</td>
 						<td>
-							<button class="btn btn-outline-danger btn-sm btn-delete"
+							<button class="btn btn-outline-primary btn-sm btn-delete"
+									data-id="@student.Id">
+								Xuất thẻ
+							</button>
+
+							<button class="btn btn-outline-danger btn-sm btn-delete ms-2"
 									data-id="@student.Id"
 									data-bs-toggle="modal"
 									data-bs-target="#popupXoaHocVienCuaLopHoc"
@@ -96,6 +106,8 @@
 							</button>
 						</td>
 					</tr>
+
+					stt++;
 				}
 			</tbody>
 		</table>
