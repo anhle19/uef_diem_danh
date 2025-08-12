@@ -235,6 +235,55 @@ namespace uef_diem_danh.Controllers
                             // Extract data
                             if (currentRow >= 4)
                             {
+
+                                string lastName = excelReader.GetValue(LAST_NAME_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty;
+                                string firstName = excelReader.GetValue(FIRST_NAME_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty;
+                                string email = excelReader.GetValue(EMAIL_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty;
+                                string phoneNumber = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty;
+                                string address = excelReader.GetValue(ADDRESS_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty;
+                                string dateOfBirth = excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? string.Empty;
+
+                                // Validate if row is empty
+                                if (string.IsNullOrEmpty(lastName))
+                                {
+                                    TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Họ học viên ở dòng: {currentRow}";
+                                    return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                                }
+                                if (string.IsNullOrEmpty(firstName))
+                                {
+                                    TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Tên học viên ở dòng: {currentRow}";
+                                    return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                                }
+                                if (string.IsNullOrEmpty(phoneNumber))
+                                {
+                                    TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Số điện thoại học viên ở dòng: {currentRow}";
+                                    return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                                }
+                                if (string.IsNullOrEmpty(address))
+                                {
+                                    TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Địa chỉ học viên ở dòng: {currentRow}";
+                                    return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                                }
+                                if (string.IsNullOrEmpty(dateOfBirth))
+                                {
+                                    TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Ngày sinh học viên ở dòng: {currentRow}";
+                                    return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                                }
+
+                                try
+                                {
+                                    DateOnly
+                                        .ParseExact(
+                                            excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? "01/01/1900",
+                                            "dd/MM/yyyy",
+                                            CultureInfo.InvariantCulture);
+                                } 
+                                catch (FormatException)
+                                {
+                                    TempData["StudentInStudyClassErrorMessage"] = $"Ngày sinh học viên không hợp lệ ở dòng: {currentRow}. Vui lòng nhập đúng định dạng dd/MM/yyyy";
+                                    return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                                }
+
                                 HocVien student = new HocVien
                                 {
                                     Ho = excelReader.GetValue(LAST_NAME_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
