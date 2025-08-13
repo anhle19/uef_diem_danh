@@ -5,8 +5,11 @@ $(document).ready(function () {
 
 
 let attendanceManagementTable = new DataTable('#attendanceManagementTable', {
-    dom: 'rtp'    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
+    dom: 'rt',    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
     // Notice no "f" here, which is the default filter/search box
+    columnDefs: [
+        { orderable: false, targets: [3] } // Disable button column
+    ]
 });
 
 
@@ -36,3 +39,50 @@ async function searchAttendances() {
     }
 
 }
+
+
+// ================== TABLE PAGINATION ==================
+function initTablePagination() {
+    const paginationContainer = document.getElementById("paginationContainer");
+
+    const tablePageInfo = attendanceManagementTable.page.info()
+    const currentPage = attendanceManagementTable.page();
+
+
+    // Init pagination items
+    for (let i = 0; i < tablePageInfo.pages; i++) {
+        paginationContainer.innerHTML +=
+            `
+            <ol class="paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
+        `;
+    }
+
+    // Set current active page
+    const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
+    currentPaginationItem.classList.add("paginationActive");
+
+
+    console.log(currentPage);
+}
+
+function goToPage(targetPage) {
+    // Go to target page
+    attendanceManagementTable.page(targetPage).draw(false);
+
+    // Clear previous pagination item active style
+    const previousActivetePaginationItem = document.getElementsByClassName("paginationActive")[0];
+    previousActivetePaginationItem.classList.remove("paginationActive")
+
+    // Set current active page
+    const currentPage = attendanceManagementTable.page();
+    const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
+    currentPaginationItem.classList.add("paginationActive");
+
+}
+
+
+
+// ================== CALL FUNCTIONS ==================
+
+initTablePagination();
+
