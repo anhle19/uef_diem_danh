@@ -47,16 +47,16 @@
         <table id="attendanceManagementTable" class="fl-table">
             <thead>
                 <tr>
-                    <th>STT</th>
-                    <th>Môn học</th>
-                    <th>Buổi học</th>
-                    <th>Kết quả điểm danh</th>
+                    <th class="text-center">STT</th>
+                    <th class="text-center">Môn học</th>
+                    <th class="text-center">Buổi học</th>
+                    <th class="text-center">Kết quả điểm danh</th>
                 </tr>
             </thead>
             <tbody id="sessionsTbody">
 				@foreach (var studySesstion in Model)
 				{
-                    <input 
+                    <input
                         type="hidden" 
                         name="studyClassId_@studySesstion.StudyClassId" 
                         id="studySessionId_@studySesstion.StudyClassId" 
@@ -68,12 +68,12 @@
                         value="@studySesstion.ClassSessionId" />
 
 					<tr>
-						<td>
+						<td class="text-center">
  							@studySesstion.Stt
 						</td>
-						<td>@studySesstion.StudyClassName</td>
-						<td>Buổi @studySesstion.ClassSessionNumber</td>
-						<td>
+						<td class="text-center">@studySesstion.StudyClassName</td>
+						<td class="text-center">Buổi @studySesstion.ClassSessionNumber</td>
+						<td class="text-center">
 							<a class="btn btn-outline-primary btn-sm btn-view-students"
                                href="/ket-qua-diem-danh?studyClassId=@studySesstion.StudyClassId&classSessionId=@studySesstion.ClassSessionId"
                                 target="_blank">

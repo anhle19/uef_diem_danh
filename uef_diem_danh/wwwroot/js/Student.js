@@ -1,12 +1,13 @@
 ﻿$(document).ready(function () {
     //// ================== INIT ==================
     $.fn.dataTable.moment('DD/MM/YYYY');
-
-
+   
 })
+
 let studentTable = new DataTable('#studentTable', {
-    dom: 'lrtp'    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
-    // Notice no "f" here, which is the default filter/search box
+    'pageLength': 25,
+    'pagingType': 'full',
+    'dom': 'lrtp'    // "l" = length, "r" = processing, "t" = table, "p" = pagination
 });
 // ================== SEARCH ==================
 
