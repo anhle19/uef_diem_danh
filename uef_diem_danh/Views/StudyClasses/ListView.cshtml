@@ -121,138 +121,23 @@
 				}
 			</tbody>
 		</table>
+
+		<!-- Pagination -->
+		<div style="padding-top: 20px; padding-bottom: 5px">
+			<ul id="paginationContainer" class="d-flex justify-content-lg-center">
+			</ul>
+		</div>
 	</div>
 </div>
 
 <!-- Modal: Thêm lớp -->
-@* <div class="modal fade"
-	 id="popupThemLop"
-	 tabindex="-1"
-	 aria-labelledby="popupThemLopLabel"
-	 aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="popupThemLopLabel">Thêm lớp học</h5>
-				<button type="button"
-						class="btn-close"
-						data-bs-dismiss="modal"
-						aria-label="Đóng"></button>
-			</div>
-			<div class="modal-body">
-				<form method="POST" action="">
-					<div class="mb-2">
-						<label class="form-label">Tên lớp <span class="text-danger">*</span></label>
-						<input type="text"
-							   id="themTenLop"
-							   class="form-control"
-							   placeholder="VD: Lịch sử Đảng" />
-					</div>
-					<div class="row g-2">
-						<div class="col-6">
-							<label class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
-							<input type="date" id="themNgayBD" class="form-control" />
-						</div>
-						<div class="col-6">
-							<label class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
-							<input type="date" id="themNgayKT" class="form-control" />
-						</div>
-					</div>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button"
-						class="btn-next-secondary"
-						data-bs-dismiss="modal">
-					Đóng
-				</button>
-				<button type="button" class="btn-next-primary" id="btnLuuLopMoi">
-					Lưu
-				</button>
-			</div>
-		</div>
-	</div>
-</div> *@
 @await Html.PartialAsync("/Views/Component/CreateStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassCreateRequest())
 
 <!-- Modal: Sửa lớp -->
-@* <div class="modal fade"
-	 id="popupSuaLop"
-	 tabindex="-1"
-	 aria-labelledby="popupSuaLopLabel"
-	 aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="popupSuaLopLabel">Sửa lớp học</h5>
-				<button type="button"
-						class="btn-close"
-						data-bs-dismiss="modal"
-						aria-label="Đóng"></button>
-			</div>
-			<div class="modal-body">
-				<div class="mb-2">
-					<label class="form-label">Tên lớp <span class="text-danger">*</span></label>
-					<input type="text" id="suaTenLop" class="form-control" />
-				</div>
-				<div class="row g-2">
-					<div class="col-6">
-						<label class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
-						<input type="date" id="suaNgayBD" class="form-control" />
-					</div>
-					<div class="col-6">
-						<label class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
-						<input type="date" id="suaNgayKT" class="form-control" />
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button"
-						class="btn-next-secondary"
-						data-bs-dismiss="modal">
-					Đóng
-				</button>
-				<button type="button" class="btn-next-primary" id="btnLuuSuaLop">
-					Lưu thay đổi
-				</button>
-			</div>
-		</div>
-	</div>
-</div> *@
 @await Html.PartialAsync("/Views/Component/UpdateStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassUpdateRequest())
 
 
 <!-- Modal: Xoá lớp -->
-@* <div class="modal fade"
-	 id="popupXoaLop"
-	 tabindex="-1"
-	 aria-labelledby="popupXoaLopLabel"
-	 aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="popupXoaLopLabel">Xác nhận xoá</h5>
-				<button type="button"
-						class="btn-close"
-						data-bs-dismiss="modal"
-						aria-label="Đóng"></button>
-			</div>
-			<div class="modal-body">Bạn có chắc chắn muốn xoá lớp này không?</div>
-			<div class="modal-footer">
-				<button type="button"
-						class="btn-next-secondary"
-						data-bs-dismiss="modal">
-					Huỷ
-				</button>
-				<button type="button"
-						class="btn-next-primary"
-						id="btnXacNhanXoaLop">
-					Xoá
-				</button>
-			</div>
-		</div>
-	</div>
-</div> *@
 @await Html.PartialAsync("/Views/Component/DeleteStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassDeleteRequest())
 
 

@@ -32,15 +32,6 @@
                 <button class="btn-next-secondary btn-sm" id="btnSearch">Tìm</button> *@
             </div>
         </div>
-        @* <div class="d-flex align-items-center gap-2">
-            <div class="form-text">Sắp xếp:</div>
-            <select id="sortBy" class="form-select form-select-sm" style="width:auto">
-                <option value="subject_asc">Môn học (A→Z)</option>
-                <option value="subject_desc">Môn học (Z→A)</option>
-                <option value="session_asc">Buổi học (lâu nhất)</option>
-                <option value="session_desc">Buổi học (mới nhất)</option>
-            </select>
-        </div> *@
     </div>
 
     <div class="table-wrapper">
@@ -84,6 +75,12 @@
 				}
             </tbody>
         </table>
+
+        <!-- Pagination -->
+        <div style="padding-top: 20px; padding-bottom: 5px">
+            <ul id="paginationContainer" class="d-flex justify-content-lg-center">
+            </ul>
+        </div>
     </div>
 </div>
 
