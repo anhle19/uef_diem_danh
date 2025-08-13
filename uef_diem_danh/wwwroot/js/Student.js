@@ -5,8 +5,6 @@
 })
 
 let studentTable = new DataTable('#studentTable', {
-    'pageLength': 25,
-    'pagingType': 'full',
     'dom': 'lrtp'    // "l" = length, "r" = processing, "t" = table, "p" = pagination
 });
 // ================== SEARCH ==================
