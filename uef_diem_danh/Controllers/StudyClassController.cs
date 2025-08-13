@@ -1,6 +1,10 @@
-﻿using ExcelDataReader;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using ExcelDataReader;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.Text;
 using uef_diem_danh.Database;
@@ -349,6 +353,24 @@ namespace uef_diem_danh.Controllers
                     }
                 }
 
+                // Extract image 
+                var workbook = new XLWorkbook(filePath);
+                var worksheet = workbook.Worksheet(1); // Assuming the first worksheet contains the data
+
+                foreach (var picture in worksheet.Pictures)
+                {
+                    var imageBytes = picture.ImageStream.ToArray();
+
+                    var fileName = $"{picture.Name}.png";
+
+                    Console.WriteLine($"Picture Name: {picture.Name}");
+
+                    var imageFilePath = Path.Combine(Directory.GetCurrentDirectory(), "UploadAvatars", fileName);
+
+                    await System.IO.File.WriteAllBytesAsync(imageFilePath, imageBytes);
+
+                }
+
                 // Delete excel file after processing
                 System.IO.File.Delete(filePath);
 
@@ -369,6 +391,7 @@ namespace uef_diem_danh.Controllers
 
         }
 
+        
 
         [Route("cap-nhat-lop-hoc")]
         [HttpPost]
