@@ -1,9 +1,10 @@
 ﻿@model IEnumerable<uef_diem_danh.Models.HocVien>
 
 @{
-    Layout = "~/Views/Layout/Main.cshtml";
-    ViewData["Title"] = "Quản lý học viên";
+	Layout = "~/Views/Layout/Main.cshtml";
+	ViewData["Title"] = "Quản lý học viên";
 }
+
 
 <div>
 	@if (TempData["StudentSuccessMessage"] != null)
@@ -22,29 +23,19 @@
 		<div style="width: 20rem">
 			<h2 class="table-title">Quản lý học viên</h2>
 			<div class="d-flex search-row">
-				<form id="searchOrderStudentForm"
-					  style="width: 100%"
-					  onsubmit="return preventSearchStudentSubmit()">
+				<form id="searchOrderStudentForm" style="width: 100%" onsubmit="return preventSearchStudentSubmit()">
 
-					<input id="studentSearchInput"
-						   class="form-control form-control-sm"
-						   name="StudentName"
-						   placeholder="Tìm theo tên học viên..."
-						   style="width: 70%; display: inline" />
-					<button type="button"
-							class="btn-next-secondary btn-sm"
-							id="btnSearch"
-							onclick="searchStudent()">
+					<input id="studentSearchInput" class="form-control form-control-sm" name="StudentName"
+						placeholder="Tìm theo tên học viên..." style="width: 70%; display: inline" />
+					<button type="button" class="btn-next-secondary btn-sm" id="btnSearch" onclick="searchStudent()">
 						Tìm
 					</button>
 				</form>
 			</div>
 		</div>
 		<div>
-			<button type="button"
-					class="btn-next-secondary btn -sm btn-add"
-					data-bs-toggle="modal"
-					data-bs-target="#popupThemHocVien">
+			<button type="button" class="btn-next-secondary btn -sm btn-add" data-bs-toggle="modal"
+				data-bs-target="#popupThemHocVien">
 				Thêm Học Viên
 			</button>
 		</div>
@@ -55,54 +46,51 @@
 		<table id="studentTable" class="fl-table">
 			<thead>
 				<tr>
-					<th>Mã học viên</th>
-					<th>Họ</th>
-					<th>Tên</th>
-					<th>Ngày sinh</th>
-					<th>Địa chỉ</th>
-					<th>Số điện thoại</th>
-					<th>Lớp tham gia</th>
+					<th class="text-center">Mã học viên</th>
+					<th class="text-center">Họ</th>
+					<th class="text-center">Tên</th>
+					<th class="text-center">Ngày sinh</th>
+					<th class="text-center">Địa chỉ</th>
+					<th class="text-center">Số điện thoại</th>
 					<th></th>
 					<th></th>
 				</tr>
 			</thead>
 			<tbody id="studentsTableBody">
-				@{int count = 1;}
+				@{
+					int count = 1;
+				}
 				@foreach (var student in Model)
 				{
 					<tr>
-						<td>@count</td>
+						<td class="text-center">@count</td>
 						@{
 							count++;
 						}
-						<td>@student.Ho</td>
-						<td>@student.Ten</td>
-						<td>@student.NgaySinh.ToString("dd/MM/yyyy")</td>
-						<td>@student.DiaChi</td>
-						<td>@student.SoDienThoai</td>
-						<td>
+						<td class="text-center">@student.Ho</td>
+						<td class="text-center">@student.Ten</td>
+						<td class="text-center">@student.NgaySinh.ToString("dd/MM/yyyy")</td>
+						<td class="text-center">@student.DiaChi</td>
+						<td class="text-center">@student.SoDienThoai</td>
+						@* <td class="text-center">
 							<button class="btn btn-outline-primary btn-sm btn-view-students"
 									data-id="@student.MaHocVien"
 									data-bs-toggle="modal"
 									data-bs-target="#popupLopHoc">
 								Xem
 							</button>
-						</td>
-						<td>
-							<button class="btn btn-outline-secondary btn-sm btn-edit"
-									data-id="@student.MaHocVien"
-									data-bs-toggle="modal"
-									data-bs-target="#popupSuaHocVien"
-									onclick="initUpdateStudentFields(@student.MaHocVien)">
+						</td> *@
+						<td class="text-center">
+							<button class="btn btn-outline-secondary btn-sm btn-edit" data-id="@student.MaHocVien"
+								data-bs-toggle="modal" data-bs-target="#popupSuaHocVien"
+								onclick="initUpdateStudentFields(@student.MaHocVien)">
 								Sửa
 							</button>
 						</td>
-						<td>
-							<button class="btn btn-outline-danger btn-sm btn-delete"
-									data-id="@student.MaHocVien"
-									data-bs-toggle="modal"
-									data-bs-target="#popupXoaHocVien"
-									onclick="initDeleteStudentField(@student.MaHocVien)">
+						<td class="text-center">
+							<button class="btn btn-outline-danger btn-sm btn-delete" data-id="@student.MaHocVien"
+								data-bs-toggle="modal" data-bs-target="#popupXoaHocVien"
+								onclick="initDeleteStudentField(@student.MaHocVien)">
 								Xoá
 							</button>
 						</td>
@@ -110,6 +98,12 @@
 				}
 			</tbody>
 		</table>
+
+		<!-- Pagination -->
+		<div style="padding-top: 20px; padding-bottom: 5px">
+			<ul id="paginationContainer" class="d-flex justify-content-lg-center">
+			</ul>
+		</div>
 	</div>
 </div>
 
@@ -118,7 +112,5 @@
 @await Html.PartialAsync("/Views/Component/UpdateStudentModal.cshtml", new uef_diem_danh.DTOs.StudentUpdateRequest())
 
 @await Html.PartialAsync("/Views/Component/DeleteStudentModal.cshtml", new uef_diem_danh.DTOs.StudentDeleteRequest())
-
-
 
 <script src="~/js/Student.js"></script>

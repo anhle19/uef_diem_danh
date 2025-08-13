@@ -32,31 +32,22 @@
                 <button class="btn-next-secondary btn-sm" id="btnSearch">Tìm</button> *@
             </div>
         </div>
-        @* <div class="d-flex align-items-center gap-2">
-            <div class="form-text">Sắp xếp:</div>
-            <select id="sortBy" class="form-select form-select-sm" style="width:auto">
-                <option value="subject_asc">Môn học (A→Z)</option>
-                <option value="subject_desc">Môn học (Z→A)</option>
-                <option value="session_asc">Buổi học (lâu nhất)</option>
-                <option value="session_desc">Buổi học (mới nhất)</option>
-            </select>
-        </div> *@
     </div>
 
     <div class="table-wrapper">
         <table id="attendanceManagementTable" class="fl-table">
             <thead>
                 <tr>
-                    <th>STT</th>
-                    <th>Môn học</th>
-                    <th>Buổi học</th>
-                    <th>Kết quả điểm danh</th>
+                    <th class="text-center">STT</th>
+                    <th class="text-center">Môn học</th>
+                    <th class="text-center">Buổi học</th>
+                    <th class="text-center">Kết quả điểm danh</th>
                 </tr>
             </thead>
             <tbody id="sessionsTbody">
 				@foreach (var studySesstion in Model)
 				{
-                    <input 
+                    <input
                         type="hidden" 
                         name="studyClassId_@studySesstion.StudyClassId" 
                         id="studySessionId_@studySesstion.StudyClassId" 
@@ -68,12 +59,12 @@
                         value="@studySesstion.ClassSessionId" />
 
 					<tr>
-						<td>
+						<td class="text-center">
  							@studySesstion.Stt
 						</td>
-						<td>@studySesstion.StudyClassName</td>
-						<td>Buổi @studySesstion.ClassSessionNumber</td>
-						<td>
+						<td class="text-center">@studySesstion.StudyClassName</td>
+						<td class="text-center">Buổi @studySesstion.ClassSessionNumber</td>
+						<td class="text-center">
 							<a class="btn btn-outline-primary btn-sm btn-view-students"
                                href="/ket-qua-diem-danh?studyClassId=@studySesstion.StudyClassId&classSessionId=@studySesstion.ClassSessionId"
                                 target="_blank">
@@ -84,6 +75,12 @@
 				}
             </tbody>
         </table>
+
+        <!-- Pagination -->
+        <div style="padding-top: 20px; padding-bottom: 5px">
+            <ul id="paginationContainer" class="d-flex justify-content-lg-center">
+            </ul>
+        </div>
     </div>
 </div>
 
