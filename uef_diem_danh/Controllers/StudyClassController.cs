@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using ExcelDataReader;
@@ -68,6 +69,29 @@ namespace uef_diem_danh.Controllers
             ViewBag.StudyClassId = study_class_id;
 
             return View("~/Views/StudyClasses/StudentListView.cshtml", students);
+        }
+
+        [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-buoi-hoc")]
+        [HttpGet]
+        public async Task<IActionResult> GetListOfClassSessionManagementPage(int study_class_id)
+        {
+
+            StudyClassClassSessionListManagementResponse classSessions = await context.LopHocs
+                .Where(lh => lh.MaLopHoc == study_class_id)
+                .Select(lh => new StudyClassClassSessionListManagementResponse
+                {
+                    StudyClassName = lh.TenLopHoc,
+                    ClassSessions = lh.BuoiHocs.Select(bh => new StudyClassClassSessionList
+                    {
+                        ClassSessionId = bh.MaBuoiHoc,
+                        ClassSessionNumber = bh.TietHoc
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
+
+            ViewBag.StudyClassId = study_class_id;
+
+            return View("~/Views/StudyClasses/AttendanceListView.cshtml", classSessions);
         }
 
         [Route("api/quan-ly-danh-sach-lop-hoc/danh-sach-hoc-vien-con-trong")]
