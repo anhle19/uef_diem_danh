@@ -8,8 +8,11 @@ $(document).ready(function () {
 
 
 let studyClassTable = new DataTable('#studyClassTable', {
-    dom: 'lrtp'    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
+    dom: 'lrt',    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
     // Notice no "f" here, which is the default filter/search box
+    columnDefs: [
+        { orderable: false, targets: [4, 5, 6, 7] } // Disable button column
+    ]
 });
 
 // ================== ADD STUDY CLASS ==================
@@ -247,51 +250,52 @@ async function searchStudyClass() {
         console.error(ex);
     }
 
-    //    searchOrderStudyClassForm.requestSubmit();
 }
 
-// ================== VIEW/REMOVE STUDENTS ==================
-//(function setupViewStudents() {
-//    const popup = document.getElementById("popupHocVien");
-//    const tbody = popup.querySelector(".studentsTableBody");
-//    let currentClassId = null;
 
-//    function renderStudents() {
-//        const list = studentsByClass[currentClassId] || [];
-//        tbody.innerHTML = "";
-//        list.forEach((st, idx) => {
-//            const tr = document.createElement("tr");
-//            tr.innerHTML = `
-//    <td>${idx + 1}</td>
-//    <td>${st.lastName}</td>
-//    <td>${st.firstName}</td>
-//    <td>${st.email}</td>
-//    <td><button class="btn btn-outline-danger btn-sm btn-remove-student" data-id="${st.id
-//                }">Xoá</button></td>
-//`;
-//            tbody.appendChild(tr);
-//        });
-//        if (list.length === 0) {
-//            const tr = document.createElement("tr");
-//            tr.innerHTML = `<td colspan="5">Chưa có học viên</td>`;
-//            tbody.appendChild(tr);
-//        }
-//    }
+// ================== TABLE PAGINATION ==================
+function initTablePagination() {
+    const paginationContainer = document.getElementById("paginationContainer");
 
-//    popup.addEventListener("show.bs.modal", (ev) => {
-//        currentClassId = Number(ev.relatedTarget.getAttribute("data-id"));
-//        renderStudents();
-//    });
+    const tablePageInfo = studyClassTable.page.info()
+    const currentPage = studyClassTable.page();
 
-//    popup.addEventListener("click", (e) => {
-//        const btn = e.target.closest(".btn-remove-student");
-//        if (!btn) return;
-//        const stId = Number(btn.getAttribute("data-id"));
-//        const arr = studentsByClass[currentClassId] || [];
-//        const idx = arr.findIndex((x) => x.id === stId);
-//        if (idx > -1) {
-//            arr.splice(idx, 1);
-//            renderStudents();
-//        }
-//    });
-//})();
+
+    // Init pagination items
+    for (let i = 0; i < tablePageInfo.pages; i++) {
+        paginationContainer.innerHTML +=
+        `
+            <ol class="paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
+        `;
+    }
+
+    // Set current active page
+    const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
+    currentPaginationItem.classList.add("paginationActive");
+
+
+    console.log(currentPage);
+}
+
+function goToPage(targetPage) {
+    // Go to target page
+    studyClassTable.page(targetPage).draw(false);
+
+    // Clear previous pagination item active style
+    const previousActivetePaginationItem = document.getElementsByClassName("paginationActive")[0];
+    previousActivetePaginationItem.classList.remove("paginationActive")
+
+    // Set current active page
+    const currentPage = studyClassTable.page();
+    const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
+    currentPaginationItem.classList.add("paginationActive");
+
+
+}
+
+
+
+// ================== CALL FUNCTIONS ==================
+
+initTablePagination();
+

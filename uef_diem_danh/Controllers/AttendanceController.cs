@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using uef_diem_danh.Database;
 using uef_diem_danh.DTOs;
+using uef_diem_danh.Models;
 
 namespace uef_diem_danh.Controllers
 {
@@ -48,10 +49,38 @@ namespace uef_diem_danh.Controllers
 
 
         [Route("diem-danh-hoc-vien")]
-        public async Task<IActionResult> GetAttendanceCheckingPage()
+        public async Task<IActionResult> GetAttendanceCheckingPage([FromQuery] int studyClassId, [FromQuery] int classSessionId)
         {
 
-            return View("~/Views/Attendances/CheckingView.cshtml");
+            // Get top 5 latest stundet attendances
+            AttendanceCheckingViewResponse attendanceCheckingResponse = await context.BuoiHocs
+                .Where(bh => bh.MaBuoiHoc == classSessionId)
+                .Select(bh => new AttendanceCheckingViewResponse
+                {
+                    StudyClassName = bh.LopHoc.TenLopHoc,
+                    ClassSessionId = bh.MaBuoiHoc,
+                    ClassSessionNumber = bh.TietHoc
+                })
+                .FirstOrDefaultAsync();
+
+
+            return View("~/Views/Attendances/CheckingView.cshtml", attendanceCheckingResponse);
+        }
+
+        [Route("api/lay-nam-buoi-diem-danh-moi-nhat")]
+        public async Task<IActionResult> GetFiveLatestAttendances()
+        {
+            List<AttendanceFiveLatestListResponse> latestAttendances = await context.DiemDanhs
+                .Select(dd => new AttendanceFiveLatestListResponse
+                {
+                    StudyClassName = dd.BuoiHoc.LopHoc.TenLopHoc,
+                    AttendanceDateTime = dd.ThoiGianDiemDanh
+                })
+                .OrderByDescending(dd => dd.AttendanceDateTime)
+                .Take(5)
+                .ToListAsync();
+
+            return Ok(latestAttendances);
         }
 
         [Route("ket-qua-diem-danh")]
@@ -182,6 +211,81 @@ namespace uef_diem_danh.Controllers
                 }
             }
 
+        }
+
+
+
+        [Route("api/diem-danh-hoc-vien")]
+        [HttpPost]
+        public async Task<IActionResult> CheckAttendance([FromBody] AttendanceCheckingRequest request)
+        {
+
+            try
+            {
+                DiemDanh newAttendance = new DiemDanh();
+
+                // Get student by barcode
+                HocVien? student = await context.HocViens
+                    .Where(hv => hv.MaBarCode == request.StudentBarCode)
+                    .FirstOrDefaultAsync();
+
+                if (student == null)
+                {
+                    return BadRequest("Học viên không tồn tại.");
+                }
+
+                // Check if student participated in study class
+                var isParticipatedInStudyClass = context.ThamGias
+                    .Any(tg => tg.MaHocVien == student.MaHocVien && tg.LopHoc.TenLopHoc == request.StudyClassName);
+
+                // Check if student attendance already present
+                var isAttendanceExisted = context.DiemDanhs
+                    .Any(dd => dd.MaHocVien == student.MaHocVien && dd.MaBuoiHoc == request.ClassSessionId);
+
+                if (!isParticipatedInStudyClass)
+                {
+                    return BadRequest("Học viên không có trong lớp học này.");
+                }
+                if (isAttendanceExisted)
+                {
+                    return BadRequest("Học viên đã điểm danh trong buổi học này.");
+                }
+                else
+                {
+                    // Create new attendance record
+                    newAttendance = new DiemDanh
+                    {
+                        MaHocVien = student.MaHocVien,
+                        MaBuoiHoc = request.ClassSessionId,
+                        ThoiGianDiemDanh = DateTime.Now,
+                        TrangThai = true
+                    };
+
+                    context.DiemDanhs.Add(newAttendance);
+                    await context.SaveChangesAsync();
+                }
+
+                AttendanceCheckingResponse attendanceCheckingResponse = new AttendanceCheckingResponse
+                {
+                    Message = "Điểm danh học viên thành công!",
+                    StudyClassName = request.StudyClassName,
+                    StudentFirstName = student.Ten,
+                    StudentLastName = student.Ho,
+                    StudentPhoneNumber = student.SoDienThoai,
+                    AttendanceDateTime = newAttendance.ThoiGianDiemDanh
+                };
+
+                return Ok(attendanceCheckingResponse);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine(ex.InnerException.Message);
+                }
+
+                return BadRequest();
+            }
         }
 
 

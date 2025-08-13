@@ -1,12 +1,14 @@
 ﻿$(document).ready(function () {
     //// ================== INIT ==================
     $.fn.dataTable.moment('DD/MM/YYYY');
-
-
+   
 })
+
 let studentTable = new DataTable('#studentTable', {
-    dom: 'lrtp'    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
-    // Notice no "f" here, which is the default filter/search box
+    'dom': 'rt',    // "l" = length, "r" = processing, "t" = table, "p" = pagination
+    columnDefs: [
+        { orderable: false, targets: [6, 7] } // Disable button column
+    ]
 });
 // ================== SEARCH ==================
 
@@ -159,140 +161,51 @@ async function initDeleteStudentField(id) {
     studyClassIdInput.value = id;
 }
 
-//(function setupDelete() {
-//    const popup = document.getElementById("popupXoaLop");
-//    const btn = document.getElementById("btnXacNhanXoaLop");
-//    let currentId = null;
-//    popup.addEventListener("show.bs.modal", (ev) => {
-//        currentId = Number(ev.relatedTarget.getAttribute("data-id"));
-//        const item = classesData.find((x) => x.id === currentId);
-//        popup.querySelector(
-//            ".modal-body"
-//        ).textContent = `Bạn có chắc chắn muốn xoá "${item?.tenLop}" không?`;
-//    });
-//    btn.addEventListener("click", () => {
-//        const idx = classesData.findIndex((x) => x.id === currentId);
-//        if (idx > -1) {
-//            classesData.splice(idx, 1);
-//        }
-//        renderTable(classesData);
-//        bootstrap.Modal.getInstance(popup)?.hide();
-//    });
-//})();
 
-// ================== IMPORT STUDENTS ==================
-//(function setupImport() {
-//    const popup = document.getElementById("popupImport");
-//    const btnDownload = document.getElementById("btnDownloadTemplate");
-//    const fileInput = document.getElementById("fileImport");
-//    const btnImport = document.getElementById("btnThucHienImport");
-//    let currentClassId = null;
 
-//    popup.addEventListener("show.bs.modal", (ev) => {
-//        currentClassId = Number(ev.relatedTarget.getAttribute("data-id"));
-//        fileInput.value = "";
-//    });
+// ================== TABLE PAGINATION ==================
+function initTablePagination() {
+    const paginationContainer = document.getElementById("paginationContainer");
 
-//    // Tải file mẫu
-//    btnDownload.addEventListener("click", () => {
-//        const csvHeader = "lastName,firstName,email\n";
-//        const csvSample =
-//            csvHeader + "Nguyen,An,an@example.com\nTran,Binh,binh@example.com\n";
-//        const blob = new Blob([csvSample], { type: "text/csv;charset=utf-8;" });
-//        const url = URL.createObjectURL(blob);
-//        const a = document.createElement("a");
-//        a.href = url;
-//        a.download = "mau_import_hoc_vien.csv";
-//        document.body.appendChild(a);
-//        a.click();
-//        a.remove();
-//        URL.revokeObjectURL(url);
-//    });
+    const tablePageInfo = studentTable.page.info()
+    const currentPage = studentTable.page();
 
-//    btnImport.addEventListener("click", () => {
-//        const file = fileInput.files?.[0];
-//        if (!file) {
-//            Swal.fire("Thông báo", "Vui lòng chọn file trước khi import", "info");
-//            return;
-//        }
-//        if (!file.name.endsWith(".csv")) {
-//            Swal.fire("Thông báo", "Demo này chỉ đọc nhanh", "info");
-//            return;
-//        }
-//        const reader = new FileReader();
-//        reader.onload = function (e) {
-//            const text = e.target.result;
-//            const lines = String(text).split(/\r?\n/).filter(Boolean);
-//            if (lines.length <= 1) {
-//                Swal.fire("Lỗi", "File trống hoặc sai định dạng", "error");
-//                return;
-//            }
-//            const rows = lines.slice(1).map((l) => l.split(","));
-//            const toAdd = rows.map((r, i) => ({
-//                id: Date.now() + i,
-//                lastName: r[0]?.trim() || "",
-//                firstName: r[1]?.trim() || "",
-//                email: r[2]?.trim() || "",
-//            }));
-//            if (!studentsByClass[currentClassId])
-//                studentsByClass[currentClassId] = [];
-//            studentsByClass[currentClassId].push(...toAdd);
-//            Swal.fire(
-//                "Thành công",
-//                `Đã import ${toAdd.length} học viên vào lớp`,
-//                "success"
-//            );
-//            bootstrap.Modal.getInstance(popup)?.hide();
-//        };
-//        reader.readAsText(file, "utf-8");
-//    });
-//})();
 
-// ================== VIEW/REMOVE STUDENTS ==================
-//(function setupViewStudents() {
-//    const popup = document.getElementById("popupHocVien");
-//    const tbody = popup.querySelector(".studentsTableBody");
-//    let currentClassId = null;
+    // Init pagination items
+    for (let i = 0; i < tablePageInfo.pages; i++) {
+        paginationContainer.innerHTML +=
+        `
+            <ol class="paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
+        `;
+    }
 
-//    function renderStudents() {
-//        const list = studentsByClass[currentClassId] || [];
-//        tbody.innerHTML = "";
-//        list.forEach((st, idx) => {
-//            const tr = document.createElement("tr");
-//            tr.innerHTML = `
-//        <td>${idx + 1}</td>
-//        <td>${st.ho}</td>
-//        <td>${st.ten}</td>
-//        <td>${st.ngaySinh}</td>
-//        <td>${st.diaChi}</td>
-//        <td>${st.email}</td>
-//        <td>${st.soDienThoai}</td>
-//        <td><button class="btn btn-outline-danger btn-sm btn-remove-student" data-id="${st.MaHocVien
-//                }">Xoá</button></td>
-//    `;
-//            tbody.appendChild(tr);
-//        });
-//        if (list.length === 0) {
-//            const tr = document.createElement("tr");
-//            tr.innerHTML = `<td colspan="5">Chưa có học viên</td>`;
-//            tbody.appendChild(tr);
-//        }
-//    }
+    // Set current active page
+    const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
+    currentPaginationItem.classList.add("paginationActive");
 
-//    popup.addEventListener("show.bs.modal", (ev) => {
-//        currentClassId = Number(ev.relatedTarget.getAttribute("data-id"));
-//        renderStudents();
-//    });
 
-//    popup.addEventListener("click", (e) => {
-//        const btn = e.target.closest(".btn-remove-student");
-//        if (!btn) return;
-//        const stId = Number(btn.getAttribute("data-id"));
-//        const arr = studentsByClass[currentClassId] || [];
-//        const idx = arr.findIndex((x) => x.id === stId);
-//        if (idx > -1) {
-//            arr.splice(idx, 1);
-//            renderStudents();
-//        }
-//    });
-//})();
+    console.log(currentPage);
+}
+
+function goToPage(targetPage) {
+    // Go to target page
+    studentTable.page(targetPage).draw(false);
+
+    // Clear previous pagination item active style
+    const previousActivetePaginationItem = document.getElementsByClassName("paginationActive")[0];
+    previousActivetePaginationItem.classList.remove("paginationActive")
+
+    // Set current active page
+    const currentPage = studentTable.page();
+    const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
+    currentPaginationItem.classList.add("paginationActive");
+
+
+}
+
+
+
+// ================== CALL FUNCTIONS ==================
+
+initTablePagination();
+
