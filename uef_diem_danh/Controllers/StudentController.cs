@@ -19,7 +19,7 @@ namespace uef_diem_danh.Controllers
             this.context = context;
         }
 
-        [HttpGet("hoc-vien/danh-sach")]
+        [HttpGet("hoc-vien")]
         public IActionResult StudentList()
         {
             var students = context.HocViens.ToList();
@@ -69,7 +69,7 @@ namespace uef_diem_danh.Controllers
             if(context.HocViens.Any(hv => hv.SoDienThoai == request.SoDienThoai))
             {
                 TempData["StudentErrorMessage"] = "Số điện thoại đã tồn tại trong hệ thống!";
-                return Redirect("hoc-vien/danh-sach");
+                return Redirect("hoc-vien");
             }
 
             try
@@ -90,13 +90,13 @@ namespace uef_diem_danh.Controllers
                 await context.SaveChangesAsync();
 
                 TempData["StudentSuccessMessage"] = "Thêm học viên thành công!";
-                return Redirect("hoc-vien/danh-sach");
+                return Redirect("hoc-vien");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 TempData["StudentErrorMessage"] = "Có lỗi xảy ra khi thêm học viên: " + ex.Message;
-                return Redirect("hoc-vien/danh-sach");
+                return Redirect("hoc-vien");
             }
 
         }
@@ -122,13 +122,13 @@ namespace uef_diem_danh.Controllers
                 await context.SaveChangesAsync();
 
                 TempData["StudentSuccessMessage"] = "Cập nhật học viên thành công!";
-                return Redirect("hoc-vien/danh-sach");
+                return Redirect("hoc-vien");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 TempData["StudentSuccessMessage"] = "Có lỗi xảy ra khi cập nhật học viên: " + ex.Message;
-                return Redirect("hoc-vien/danh-sach");
+                return Redirect("hoc-vien");
             }
 
         }
@@ -149,13 +149,13 @@ namespace uef_diem_danh.Controllers
                 await context.SaveChangesAsync();
 
                 TempData["StudentSuccessMessage"] = "Xóa học viên thành công!";
-                return Redirect("hoc-vien/danh-sach");
+                return Redirect("hoc-vien");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 TempData["StudentSuccessMessage"] = "Có lỗi xảy ra khi xóa học viên: " + ex.Message;
-                return Redirect("hoc-vien/danh-sach");
+                return Redirect("hoc-vien");
             }
         }
 

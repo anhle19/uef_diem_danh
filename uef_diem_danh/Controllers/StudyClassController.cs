@@ -74,29 +74,7 @@ namespace uef_diem_danh.Controllers
             return View("~/Views/StudyClasses/StudentListView.cshtml", students);
         }
 
-        [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-buoi-hoc")]
-        [HttpGet]
-        public async Task<IActionResult> GetListOfClassSessionManagementPage(int study_class_id)
-        {
-
-            StudyClassClassSessionListManagementResponse classSessions = await context.LopHocs
-                .Where(lh => lh.MaLopHoc == study_class_id)
-                .Select(lh => new StudyClassClassSessionListManagementResponse
-                {
-                    StudyClassName = lh.TenLopHoc,
-                    ClassSessions = lh.BuoiHocs.Select(bh => new StudyClassClassSessionList
-                    {
-                        ClassSessionId = bh.MaBuoiHoc,
-                        ClassSessionNumber = bh.TietHoc
-                    }).ToList()
-                })
-                .FirstOrDefaultAsync();
-
-            ViewBag.StudyClassId = study_class_id;
-
-            return View("~/Views/StudyClasses/AttendanceListView.cshtml", classSessions);
-        }
-
+        
         [Route("api/quan-ly-danh-sach-lop-hoc/danh-sach-hoc-vien-con-trong")]
         [HttpGet]
         public async Task<IActionResult> GetListOfAvailableStudents()
@@ -500,5 +478,132 @@ namespace uef_diem_danh.Controllers
             }
         }
 
+
+
+
+
+
+        // Quản lí buổi học của lớp học
+        [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-buoi-hoc")]
+        [HttpGet]
+        public async Task<IActionResult> GetListOfClassSessionManagementPage(int study_class_id)
+        {
+
+            StudyClassClassSessionListManagementResponse? classSessions = await context.LopHocs
+                .Where(lh => lh.MaLopHoc == study_class_id)
+                .Select(lh => new StudyClassClassSessionListManagementResponse
+                {
+                    StudyClassId = lh.MaLopHoc,
+                    StudyClassName = lh.TenLopHoc,
+                    ClassSessions = lh.BuoiHocs.Select(bh => new StudyClassClassSessionList
+                    {
+                        ClassSessionId = bh.MaBuoiHoc,
+                        ClassSessionNumber = bh.TietHoc,
+                        ClassSessionTime = bh.NgayHoc,
+                        ClassTotalStudent = lh.ThamGias.Count(),
+                        ClassSessionAttendanceCount = bh.DiemDanhs.Count(dd => dd.TrangThai == true)
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
+
+            ViewBag.StudyClassId = study_class_id;
+
+            return View("~/Views/StudyClasses/AttendanceListView.cshtml", classSessions);
+        }
+
+        [Route("api/lay-chi-tiet-buoi-hoc/{class_id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetClassDetailForUpdate(int class_id)
+        {
+            Console.WriteLine("MaLop:" + class_id);
+
+            return Ok(await context.BuoiHocs.FindAsync(class_id));
+        }
+
+        [Route("tao-buoi-hoc")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([FromForm] ClassCreateRequest request)
+        {
+            try
+            {
+
+                BuoiHoc _class = new BuoiHoc
+                {
+                    NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture),
+                    TietHoc = request.TietHoc,
+                    TrangThai = true,
+                    MaLopHoc = request.MaLopHoc
+                };
+
+                context.BuoiHocs.Add(_class);
+
+                await context.SaveChangesAsync();
+
+                TempData["ClassSuccessMessage"] = "Thêm buổi học thành công!";
+                return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-buoi-hoc");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi thêm buổi học: " + ex.Message;
+                return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-buoi-hoc");
+            }
+
+        }
+
+        [Route("cap-nhat-buoi-hoc")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(int class_id, [FromForm] ClassUpdateRequest request)
+        {
+
+            try
+            {
+                BuoiHoc _class = await context.BuoiHocs
+                    .FirstOrDefaultAsync(lh => lh.MaBuoiHoc == request.MaBuoiHoc);
+
+                _class.NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture);
+                _class.TietHoc = request.TietHoc;
+
+                await context.SaveChangesAsync();
+
+                TempData["ClassSuccessMessage"] = "Cập nhật buổi học thành công!";
+                return Redirect("buoi-hoc");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi cập nhật buổi học: " + ex.Message;
+                return Redirect("buoi-hoc");
+            }
+
+        }
+
+
+        [Route("xoa-buoi-hoc")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete([FromForm] ClassDeleteRequest request)
+        {
+            Console.WriteLine("Xoa buoi hoc: " + request.MaBuoiHoc);
+            try
+            {
+                BuoiHoc _class = await context.BuoiHocs
+                    .FirstOrDefaultAsync(lh => lh.MaBuoiHoc == request.MaBuoiHoc);
+
+                context.BuoiHocs.Remove(_class);
+                await context.SaveChangesAsync();
+
+                TempData["ClassSuccessMessage"] = "Xóa buổi học thành công!";
+                return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-buoi-hoc");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi xóa buổi học: " + ex.Message;
+                return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-buoi-hoc");
+            }
+        }
     }
 }
