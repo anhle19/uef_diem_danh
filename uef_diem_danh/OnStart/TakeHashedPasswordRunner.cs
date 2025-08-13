@@ -11,7 +11,7 @@ namespace uef_diem_danh.OnStart
 
             var hasher = new PasswordHasher<NguoiDungUngDung>();
             var user = new NguoiDungUngDung();
-            var passwordHash = hasher.HashPassword(user, "123456");
+            var passwordHash = hasher.HashPassword(user, "123");
             Console.WriteLine("HASHED PASSWORD 1: " + passwordHash);
 
         }
