@@ -9,24 +9,36 @@ var builder = WebApplication.CreateBuilder(args);
 // Add Db Context
 builder.Services.AddDbContext<AppDbContext>();
 
-//builder.Services.AddScoped<TakeHashedPasswordRunner>();
-//builder.Services.AddHostedService<TakeHashedPasswordService>();
+
 
 // Add Identity
 builder.Services.AddIdentity<NguoiDungUngDung, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.ExpireTimeSpan = TimeSpan.FromDays(14);
+    options.SlidingExpiration = true;
+    options.LoginPath = "/login"; 
+    options.LogoutPath = "/logout";
+    //options.AccessDeniedPath = "/Auth/AccessDenied"; 
+});
+
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
-    options.Password.RequiredLength = 4; 
+    options.Password.RequiredLength = 3; 
     options.Password.RequiredUniqueChars = 0;
 
     options.User.RequireUniqueEmail = true;
 });
+
+//builder.Services.AddScoped<TakeHashedPasswordRunner>();
+//builder.Services.AddHostedService<TakeHashedPasswordService>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -51,5 +63,36 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+//    db.Database.ExecuteSqlRaw(@"
+//        INSERT INTO AspNetUsers (
+//            Id, UserName, NormalizedUserName, Email, NormalizedEmail,
+//            EmailConfirmed, PasswordHash, SecurityStamp, ConcurrencyStamp,
+//            PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnabled, AccessFailedCount
+//        )
+//        VALUES (
+//            '1a2b3c4d-5e6f-7g8h-9i10-jklmnopqrst',
+//            'admin',
+//            'ADMIN',
+//            'admin123@example.com',
+//            'ADMIN@EXAMPLE.COM',
+//            1,
+//            'AQAAAAIAAYagAAAAEKYwINzjoiKUhpJH3zwc5EjfOkMrLxnORIS+wDj64CI3RQsyIX5rEh1VMNJZ/1aCgQ==',
+//            NEWID(),
+//            NEWID(),
+//            0,
+//            0,
+//            1,
+//            0
+//        )
+//    ");
+
+//    Console.WriteLine("ADMIN ACCOUNT CREATED !!!");
+//}
+
 
 app.Run();

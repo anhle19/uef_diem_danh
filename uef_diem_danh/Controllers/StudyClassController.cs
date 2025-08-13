@@ -1,4 +1,5 @@
 ﻿using ExcelDataReader;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -20,6 +21,7 @@ namespace uef_diem_danh.Controllers
             this.context = context;
         }
 
+        [Authorize]
         [Route("")]
         [HttpGet]
         public async Task<IActionResult> GetListManagementPage()
