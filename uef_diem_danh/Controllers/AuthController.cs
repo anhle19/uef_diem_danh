@@ -7,85 +7,106 @@ namespace uef_diem_danh.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly UserManager<NguoiDungUngDung> userManager;
-        private readonly SignInManager<NguoiDungUngDung> signInManager;
+        private readonly SignInManager<NguoiDungUngDung> _signInManager;
+        private readonly UserManager<NguoiDungUngDung> _userManager;
 
-
-        public AuthController(
-            UserManager<NguoiDungUngDung> userManager, 
-            SignInManager<NguoiDungUngDung> signInManager
-        )
+        public AuthController(SignInManager<NguoiDungUngDung> signInManager,
+                                  UserManager<NguoiDungUngDung> userManager)
         {
-            this.userManager = userManager;
-            this.signInManager = signInManager;
+            _signInManager = signInManager;
+            _userManager = userManager;
         }
 
-        public IActionResult GetLoginPage()
+       
+        [HttpGet("login")]
+        public IActionResult Login(string returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
+            Console.WriteLine("ĐĂNG NHẬP 1");
             return View();
         }
 
-        public IActionResult GetRegisterPage()
-        {
-            return View();
-        }
 
-        [HttpGet]
-        public IActionResult Login()
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginRequest model, string returnUrl = null)
         {
-            return View();
-        }
+            ViewData["ReturnUrl"] = returnUrl;
 
-        [Route("login")]
-        [HttpPost]
-        public async Task<IActionResult> Login( LoginRequest model)
-        {
-            if (!ModelState.IsValid) return View(model);
-            Console.WriteLine("Login for user: " + model.Username);
-
-            var result = await this.signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
-            if (result.Succeeded)
+            if (ModelState.IsValid)
             {
-                Console.WriteLine("Login successful for user: " + model.Username);
-                return Redirect("/");
+                // Tìm user theo username   
+                var user = await _userManager.FindByNameAsync(model.Username);
+                if (user != null)
+                {
+                    var result = await _signInManager.PasswordSignInAsync(
+                        model.Username,
+                        model.Password,
+                        true,
+                        lockoutOnFailure: false);
+
+                    if (result.Succeeded)
+                    {
+                        return Redirect("/");
+                    }
+                }
+
+                ModelState.AddModelError(string.Empty, "Sai tên đăng nhập hoặc mật khẩu.");
             }
 
-            ModelState.AddModelError("", "Invalid login attempt");
+            TempData["LoginErrorMessage"] = "Tên đăng nhập hoặc mật khẩu không đúng";
             return View(model);
         }
 
-
-        //[Route("register")]
-        //[HttpPost]
-        //public async Task<IActionResult> Register(RegisterRequest model)
-        //{
-        //    if (!ModelState.IsValid) return View(model);
-
-        //    var user = new IdentityUser { UserName = model.Email, Email = model.Email };
-        //    var result = await this.userManager.CreateAsync(user, model.Password);
-
-        //    if (result.Succeeded)
-        //    {
-        //        await this.signInManager.SignInAsync(user, isPersistent: false);
-        //        return RedirectToAction("Index", "Home");
-        //    }
-
-        //    foreach (var error in result.Errors)
-        //    {
-        //        ModelState.AddModelError("", error.Description);
-        //    }
-
-        //    return View(model);
-        //}
-
-        // POST: /Account/Logout
-        [Route("logout")]
-        [HttpPost]
+        [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            await this.signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            await _signInManager.SignOutAsync();
+            return Redirect("/");
         }
 
+        [HttpPost("/doi-mat-khau")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
+        {
+            Console.WriteLine("Mật khẩu cũ: " + request.OldPassword);
+            Console.WriteLine("Mật khẩu mới: " + request.NewPassword);
+            Console.WriteLine("Mật khẩu xác nhận: " + request.ConfirmPassword);
+
+            if (request.NewPassword != request.ConfirmPassword)
+            {
+                ModelState.AddModelError(string.Empty, "Mật khẩu mới và xác nhận mật khẩu mới không khớp");
+                TempData["StudyClassErrorMessage"] = "Mật khẩu mới và xác nhận mật khẩu mới không khớp";
+                return Redirect("/");
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            Console.WriteLine("User: " + User.Identity?.Name);
+
+            if (user == null)
+            {
+                return Redirect("/");
+            } 
+
+            var res = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
+
+            if (res.Succeeded)
+            {
+                await _signInManager.RefreshSignInAsync(user);
+                await _signInManager.SignOutAsync();
+                Console.WriteLine("Đổi mật khẩu thành công!");
+                return Redirect("/");
+            }
+            else
+            {
+                TempData["StudyClassErrorMessage"] = "Mật khẩu hiện tại không đúng!";
+            }
+
+            foreach (var error in res.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+            
+            return Redirect("/");
+        }
     }
 }
