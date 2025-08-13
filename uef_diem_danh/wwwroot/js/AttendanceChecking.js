@@ -1,34 +1,20 @@
 ﻿
+// ============== DOM varialbles ============== 
 let loadingRow = document.getElementById("loadingRow");
 
+// ============== Data varialbles ============== 
 let fiveLatestAttendances = [];
 let studentBarcode = "";
 
 
+// ============== Helper functions ==============
 function isNumberOnly(barcode) {
     return !isNaN(barcode) && Number.isInteger(Number(barcode));
 }
 
-document.getElementById("studentBarcodeInput").addEventListener("paste", async (e) => {
-    const updateStudentBarcodeInput = document.getElementById("studentBarcodeInput");
 
-    e.preventDefault();
 
-    updateStudentBarcodeInput.value = (e.clipboardData || window.clipboardData).getData("text");
-
-    studentBarcode = updateStudentBarcodeInput.value;
-
-    if (studentBarcode.trim().length > 0) {
-        JsBarcode("#studentBarcode", studentBarcode, {
-            width: 2,
-            height: 30,
-        });
-        console.log("asdasdasdasd")
-        await fakeBarcodeScannedEvent();
-    } else {
-        document.getElementById("studentBarcode").innerHTML = "";
-    }
-})
+// ============== Async functions ============== 
 
 async function updateStudentBarcode() {
 
@@ -191,5 +177,29 @@ async function fakeBarcodeScannedEvent() {
 }
 
 
-// Call function
+// ============== Attach Event listeners ==============
+document.getElementById("studentBarcodeInput").addEventListener("paste", async (e) => {
+    const updateStudentBarcodeInput = document.getElementById("studentBarcodeInput");
+
+    e.preventDefault();
+
+    updateStudentBarcodeInput.value = (e.clipboardData || window.clipboardData).getData("text");
+
+    studentBarcode = updateStudentBarcodeInput.value;
+
+    if (studentBarcode.trim().length > 0) {
+        JsBarcode("#studentBarcode", studentBarcode, {
+            width: 2,
+            height: 30,
+        });
+        console.log("asdasdasdasd")
+        await fakeBarcodeScannedEvent();
+    } else {
+        document.getElementById("studentBarcode").innerHTML = "";
+    }
+})
+
+
+
+// =============== Call function ==============
 fetchFiveLatestAttendances()
