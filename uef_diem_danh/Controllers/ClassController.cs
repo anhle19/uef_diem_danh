@@ -23,20 +23,20 @@ namespace uef_diem_danh.Controllers
             return View(_context.BuoiHocs.ToList());
         }
 
-        [HttpGet("lop-hoc/{study_class_id}/buoi-hoc")]
-        public IActionResult ClassesOfStudyClass(int study_class_id)
-        {
-            Console.WriteLine("MA LOP: " + study_class_id);
+        //[HttpGet("lop-hoc/{study_class_id}/buoi-hoc")]
+        //public IActionResult ClassesOfStudyClass(int study_class_id)
+        //{
+        //    Console.WriteLine("MA LOP: " + study_class_id);
 
-            ClassGetRequest classes = new ClassGetRequest();
-            classes.BuoiHocs = _context.BuoiHocs.Where(b => b.MaLopHoc == study_class_id).ToList();
+        //    ClassGetRequest classes = new ClassGetRequest();
+        //    classes.BuoiHocs = _context.BuoiHocs.Where(b => b.MaLopHoc == study_class_id).ToList();
 
-            LopHoc lopHoc = _context.LopHocs.FirstOrDefault(l => l.MaLopHoc == study_class_id);
-            classes.TenLop = lopHoc.TenLopHoc;
-            classes.MaLopHoc = lopHoc.MaLopHoc;
+        //    LopHoc lopHoc = _context.LopHocs.FirstOrDefault(l => l.MaLopHoc == study_class_id);
+        //    classes.TenLop = lopHoc.TenLopHoc;
+        //    classes.MaLopHoc = lopHoc.MaLopHoc;
 
-            return View(classes);
-        }
+        //    return View(classes);
+        //}
 
         [Route("api/lay-chi-tiet-buoi-hoc/{class_id}")]
         [HttpGet]

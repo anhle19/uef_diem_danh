@@ -2,6 +2,7 @@
 {
     public class AttendanceCheckingResponse
     {
+        public string Message { get; set; }
         public string StudyClassName { get; set; }
 
         public string StudentFirstName { get; set; }
