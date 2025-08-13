@@ -1,0 +1,162 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model uef_diem_danh.DTOs.StudyClassClassSessionListManagementResponse
+@{
+    Layout = "~/Views/Layout/Main.cshtml";
+    ViewData["Title"] = "Quản lý buổi học của lớp họx";
+}
+
+<div>
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+            <h2 class="table-title">Quản lý buổi học</h2>
+            <h3>Môn: <strong>@Model.StudyClassName</strong></h3>
+        </div>
+        <div>
+            <button type="button"
+                    class="btn-next-secondary btn-sm btn-add"
+                    data-bs-toggle="modal"
+                    data-bs-target="#popupThem">
+                Thêm buổi học
+            </button>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <table class="fl-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Buổi học</th>
+                    <th>Kết quả điểm danh</th>
+                    <th>Màn hình điểm danh</th>
+                    <th>Khóa điểm danh</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody class="classSessionTableBody">
+                @{
+                    int stt = 1;
+                }
+                @foreach (var classSession in Model.ClassSessions)
+                {
+                    <tr>
+                        <td>@stt</td>
+                        <td>Buổi @classSession.ClassSessionNumber</td>
+                        <td>
+                            <a class="btn btn-outline-primary btn-sm"
+                               href="#">
+                                Xem
+                            </a>
+                        </td>
+                        <td>
+                            <a 
+                                class="btn btn-outline-primary btn-sm" 
+                                target="_blank"
+                                href="/diem-danh-hoc-vien?studyClassId=@ViewBag.StudyClassId&classSessionId=@classSession.ClassSessionId">
+                                Điểm danh
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-outline-primary btn-sm"
+                               href="#">
+                                Khóa
+                            </a>
+                        </td>
+                    </tr>
+
+                    stt++;
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal: Thêm buổi học -->
+<div class="modal fade"
+     id="popupThem"
+     tabindex="-1"
+     aria-labelledby="popupThemLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="popupThemLabel">Thêm buổi học</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text"
+                       id="themTenBuoiHoc"
+                       class="form-control mb-2"
+                       placeholder="Tên buổi học..." />
+
+                <input type="date" id="themNgayHoc" class="form-control" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-next-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn-next-primary">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Sửa buổi học -->
+<div class="modal fade"
+     id="popupSua"
+     tabindex="-1"
+     aria-labelledby="popupSuaLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="popupSuaLabel">Sửa buổi học</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text"
+                       id="suaTenBuoiHoc"
+                       class="form-control mb-2"
+                       placeholder="Tên buổi học..." />
+                <input type="date" id="suaNgayHoc" class="form-control" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-next-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn-next-primary" id="btnLuuSua">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Xác nhận xoá -->
+<div class="modal fade"
+     id="popupXoa"
+     tabindex="-1"
+     aria-labelledby="popupXoaLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="popupXoaLabel">Xác nhận xoá</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">Bạn có chắc chắn muốn xoá buổi học này không?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn-next-secondary" data-bs-dismiss="modal">Huỷ</button>
+                <button type="button" class="btn-next-primary" id="btnXacNhanXoa">Xoá</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* <script src="/js/class-session.js"></script>
+ *@

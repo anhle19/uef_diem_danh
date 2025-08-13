@@ -1,7 +1,7 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@model List<uef_diem_danh.DTOs.AttendanceLatestCheckingResponse>
+@model uef_diem_danh.DTOs.AttendanceCheckingViewResponse
 @{
 }
 
@@ -17,18 +17,41 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             defer></script>
+
+     <!-- Moment JS -->
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>
+
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- Barcode Generator JS -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.12.1/dist/barcodes/JsBarcode.code128.min.js"></script>
+
     <link rel="stylesheet" href="../../css/style.css" />
 </head>
 <body>
 
     <div class="container-fluid px-lg-5 py-lg-5">
+
+        <input type="text" class="form-control" id="studentBarcodeInput" name="studentBarcodeInput" oninput="updateStudentBarcode()" placeholder="Mã barcode của học viên...." />
+
+        <div class="px-3 py-2">
+            <div class="bg-success p-2 text-white" id="checkingAttendanceSuccessfulMessage" style="display: none">
+            </div>
+            <div class="bg-danger p-2 text-white" id="checkingAttendanceFailedMessage" style="display: none">
+            </div>
+        </div>
+
         <div class="row top-row">
             <div class="box barcode-box">
-                <div class="barcode">Barcode sau khi scan</div>
+                <div class="barcode">
+                    <svg id="studentBarcode"></svg>
+                </div>
             </div>
             <div class="box info-box">
-                <p><strong>Lớp:</strong> Tư tưởng Hồ Chí Minh khóa 20</p>
-                <p><strong>Buổi:</strong> 1</p>
+                <p><strong>Lớp:</strong> <span id="studyClassNameInfo">@Model.StudyClassName</span></p>
+                <p><strong>Buổi:</strong> <span id="classSessionNumberInfo">@Model.ClassSessionNumber</span></p>
+                <input type="hidden" name="classSessionIdInput" id="classSessionIdInput" value="@Model.ClassSessionId" />
             </div>
         </div>
 
@@ -44,15 +67,12 @@
                                 <th>Thời gian</th>
                             </tr>
                         </thead>
-                        <tbody class="latestAttendenceTableBody">
-                            @foreach (var latestAttendance in Model)
-                            {
-                                <tr>
-                                    <td>@latestAttendance.Stt</td>
-                                    <td>@latestAttendance.StudyClassName</td>
-                                    <td>@latestAttendance.AttendanceDateTime.ToString("dd/MM/yyyy HH:mm")</td>
-                                </tr>
-                            }
+                        <tbody id="latestAttendenceTableBody"> 
+                            <tr id="loadingRow" style="display: none">
+                                <td colspan="3">
+                                    <span class="loader"></span>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -60,9 +80,13 @@
 
             <div class="box user-box">
                 <img src="https://placehold.net/avatar.svg" alt="Ảnh học viên" class="avatar" />
-                <p class="username">Đỗ Nam Trung</p>
-                <p class="phone">SDT: ......</p>
-                <p class="success-msg">Điểm danh thành công!<br />10/8/2025 09:30:00</p>
+                <p id="fullNameInfo" class="username"></p>
+                <p id="phoneNumberInfo" class="phone"></p>
+                <p class="success-msg" id="attendanceCheckingSuccessInfo">
+@*                     <span>Điểm danh thành công!</span>
+                    <br />
+                    <span>10/8/2025 09:30:00</span> *@
+                </p>
             </div>
         </div>
     </div>
