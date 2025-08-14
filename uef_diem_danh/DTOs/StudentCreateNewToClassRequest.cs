@@ -1,7 +1,9 @@
 ﻿namespace uef_diem_danh.DTOs
 {
-    public class StudentCreateRequest
+    public class StudentCreateNewToClassRequest
     {
+        public int MaLopHoc { get; set; }
+
         public string Ho { get; set; }
 
         public string Ten { get; set; }
