@@ -1,4 +1,6 @@
-﻿using ClosedXML.Excel;
+using ExcelDataReader;
+using Microsoft.AspNetCore.Authorization;
+using ClosedXML.Excel;
 using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
@@ -25,6 +27,7 @@ namespace uef_diem_danh.Controllers
             this.context = context;
         }
 
+        [Authorize]
         [Route("")]
         [HttpGet]
         public async Task<IActionResult> GetListManagementPage()

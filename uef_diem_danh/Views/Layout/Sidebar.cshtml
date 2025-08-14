@@ -40,9 +40,11 @@
                 </div>
             </li>
             <li>
-                <a class="dropdown-item text-danger" href="/html/page/login.html">
-                    <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
-                </a>
+                <form id="logoutForm" action="logout" method="post">
+                    <button type="submit" class="dropdown-item text-danger">
+                        <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                    </button>
+                </form>
             </li>
         </ul>
     </div>
@@ -68,24 +70,33 @@
 
             <!-- Body -->
             <div class="modal-body">
-                <input type="password"
-                       id="matKhauCu"
-                       class="form-control mb-3"
-                       placeholder="Mật khẩu hiện tại" />
-                <input type="password"
-                       id="matKhauMoi"
-                       class="form-control mb-3"
-                       placeholder="Mật khẩu mới" />
-                <input type="password"
-                       id="xacNhanMatKhauMoi"
-                       class="form-control"
-                       placeholder="Xác nhận mật khẩu mới" />
+                <form method="POST" action="/doi-mat-khau" id="changePasswordForm">
+                    <input type="password"
+                           id="matKhauCu"
+                           name="OldPassword"
+                           class="form-control mb-3"
+                           placeholder="Mật khẩu hiện tại" />
+
+                    <input type="password"
+                           id="matKhauMoi"
+                           name="NewPassword"
+                           class="form-control mb-3"
+                           placeholder="Mật khẩu mới" />
+
+                    <input type="password"
+                           id="xacNhanMatKhauMoi"
+                           name="ConfirmPassword"
+                           class="form-control"
+                           placeholder="Xác nhận mật khẩu mới" />
+
+                </form>
+
             </div>
 
             <!-- Footer -->
             <div class="modal-footer">
                 <button type="button" class="btn-next-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button type="button" class="btn-next-primary" id="btnLuuMatKhau">Lưu thay đổi</button>
+                <button type="submit" class="btn-next-primary" id="btnLuuMatKhau" form="changePasswordForm">Lưu thay đổi</button>
             </div>
         </div>
     </div>
