@@ -66,7 +66,7 @@ async function fetchFiveLatestAttendances() {
 
             fiveLatestAttendances.push({
                 stt: index + 1,
-                study_class_name: d.studyClassName,
+                student_full_name: `${d.studentLastName} ${d.studentFirstName}`,
                 attendance_date_time: moment(d.attendanceDateTime).format("DD/MM/YYYY HH:mm")
             })
         })
@@ -77,7 +77,7 @@ async function fetchFiveLatestAttendances() {
                 `
                 <tr>
                     <td>${la.stt}</td>
-                    <td>${la.study_class_name}</td>
+                    <td>${la.student_full_name}</td>
                     <td>${la.attendance_date_time}</td>
                 </tr>
             `;
@@ -150,7 +150,7 @@ async function fakeBarcodeScannedEvent() {
         // Add new latest attendance
         fiveLatestAttendances.unshift({
             stt: 1,
-            study_class_name: response.data.studyClassName,
+            student_full_name: `${response.data.studentLastName} ${response.data.studentFirstName}`,
             attendance_date_time: moment(response.data.attendanceDateTime).format("DD/MM/YYYY HH:mm")
         })
 
@@ -160,7 +160,7 @@ async function fakeBarcodeScannedEvent() {
                 `
                 <tr>
                     <td>${la.stt}</td>
-                    <td>${la.study_class_name}</td>
+                    <td>${la.student_full_name}</td>
                     <td>${la.attendance_date_time}</td>
                 </tr>
             `;
