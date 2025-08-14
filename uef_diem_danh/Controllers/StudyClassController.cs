@@ -607,8 +607,6 @@ namespace uef_diem_danh.Controllers
         }
 
 
-        // Quản lý học viên của lớp
-
 
     }
 }

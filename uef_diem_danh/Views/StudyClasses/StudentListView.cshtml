@@ -7,6 +7,53 @@
 	ViewData["Title"] = "Quản lý học viên của lớp học";
 }
 
+
+<!-- PRINT STUDENT CARD STYLE -->
+<style>
+	.student-card {
+		width: 204px; /* Chiều rộng cố định */
+		height: 321px; /* Chiều cao cố định */
+		border-radius: 15px; /* Bo tròn góc */
+		box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Tạo bóng đổ */
+		overflow: hidden; /* Ẩn các phần nội dung tràn ra ngoài */
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+	.card-img-top {
+		width: 120px; /* Kích thước ảnh */
+		height: 120px;
+		object-fit: cover; /* Đảm bảo ảnh không bị méo */
+		border-radius: 10px; /* Bo tròn góc ảnh để có hình vuông bo góc */
+		border: 4px solid #ffffff; /* Viền trắng cho ảnh */
+		margin-top: 14px;
+	}
+
+	.card-body h5 {
+		font-size: 1.3rem; /* Tăng kích thước font tên */
+		font-weight: 700;
+	}
+
+	.card-body p {
+		font-size: 0.9rem; /* Giảm kích thước font các thông tin khác */
+		margin-bottom: 5px;
+	}
+
+	.card-footer {
+		background-color: #0d6efd; /* Màu nền cho footer */
+		color: #ffffff; /* Màu chữ trắng */
+		font-size: 0.8rem;
+		text-align: center;
+	}
+
+	.barcode-section {
+		padding: 5px 0;
+		background-color: #ffffff;
+		border-top: 1px solid #e9ecef;
+	}
+</style>
+
 <div>
 	@if (TempData["StudentInStudyClassSuccessMessage"] != null)
 	{
@@ -93,7 +140,14 @@
 						<td>@student.DateOfBirth.ToString("dd/MM/yyyy")</td>
 						<td>
 							<button class="btn btn-outline-primary btn-sm btn-delete"
-									data-id="@student.Id">
+									data-id="@student.Id"
+									onclick="printStudentCard(
+										`@student.Id`,
+										'@student.LastName @student.FirstName', 
+										'@student.PhoneNumber', 
+										'@student.DateOfBirth.ToString("dd/MM/yyyy")'
+									)"
+							>
 								Xuất thẻ
 							</button>
 
@@ -123,6 +177,9 @@
 
 <!-- Modal: Xóa học viên khỏi lớp học -->
 @await Html.PartialAsync("/Views/Component/DeleteStudentFromStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassRemoveStudentRequest())
+
+
+<div id="hiddenStudentCardPrintContainer"></div>
 
 
 <script src="~/js/StudentInStudyClass.js"></script>
