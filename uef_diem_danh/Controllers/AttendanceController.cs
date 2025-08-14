@@ -73,7 +73,8 @@ namespace uef_diem_danh.Controllers
             List<AttendanceFiveLatestListResponse> latestAttendances = await context.DiemDanhs
                 .Select(dd => new AttendanceFiveLatestListResponse
                 {
-                    StudyClassName = dd.BuoiHoc.LopHoc.TenLopHoc,
+                    StudentFirstName = dd.HocVien.Ten,
+                    StudentLastName = dd.HocVien.Ho,
                     AttendanceDateTime = dd.ThoiGianDiemDanh
                 })
                 .OrderByDescending(dd => dd.AttendanceDateTime)

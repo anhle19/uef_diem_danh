@@ -2,7 +2,10 @@
 {
     public class AttendanceFiveLatestListResponse
     {
-        public string StudyClassName { get; set; }
+        public string StudentFirstName { get; set; }
+
+        public string StudentLastName { get; set; }
+
 
         public DateTime AttendanceDateTime { get; set; }
     }
