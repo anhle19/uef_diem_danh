@@ -23,19 +23,15 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- Barcode Generator JS -->
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.12.1/dist/barcodes/JsBarcode.code128.min.js"></script>
+    <!-- JsBarcode -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 
     <!-- html2canvasd -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- js Pdf -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
 
-    <!-- Moment JS -->
-@*     <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>
- *@
-@*     <script src="https://code.jquery.com/jquery-3.7.1.slim.js" integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=" crossorigin="anonymous"></script>
- *@    
+
     <!-- Datatable CSS -->
     <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/moment-2.29.4/dt-2.3.2/datatables.min.css" rel="stylesheet" integrity="sha384-2hrw5+Yld28NbBC4XPaMK/4iSsjof1GRBn0E14p0qRDpIp6rJgJZ52uN9vwPvwC6" crossorigin="anonymous">
 
@@ -61,5 +57,12 @@
                 @await Html.PartialAsync("/Views/Layout/Footer.cshtml")
             </div>
         </div>
+
+
+        <!-- PRINT STUDENT CARD AREA -->
+        <div id="hiddenStudentCardPrintContainer"></div>
+
+        <div id="hiddenStudentCardsPrintContainer"></div>
+
     </body>
 </html>
