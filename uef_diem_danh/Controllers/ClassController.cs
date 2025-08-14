@@ -38,99 +38,99 @@ namespace uef_diem_danh.Controllers
         //    return View(classes);
         //}
 
-        [Route("api/lay-chi-tiet-buoi-hoc/{class_id}")]
-        [HttpGet]
-        public async Task<IActionResult> GetDetailForUpdate(int class_id)
-        {
-            Console.WriteLine("MaLop:" + class_id);
+        //[Route("api/lay-chi-tiet-buoi-hoc/{class_id}")]
+        //[HttpGet]
+        //public async Task<IActionResult> GetDetailForUpdate(int class_id)
+        //{
+        //    Console.WriteLine("MaLop:" + class_id);
 
-            return Ok(await _context.BuoiHocs.FindAsync(class_id));
-        }
+        //    return Ok(await _context.BuoiHocs.FindAsync(class_id));
+        //}
 
-        [Route("tao-buoi-hoc")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([FromForm] ClassCreateRequest request)
-        {
-            try
-            {
+        //[Route("tao-buoi-hoc")]
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create([FromForm] ClassCreateRequest request)
+        //{
+        //    try
+        //    {
 
-                BuoiHoc _class = new BuoiHoc
-                {
-                    NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture),
-                    TietHoc = request.TietHoc,
-                    TrangThai = true,
-                    MaLopHoc = request.MaLopHoc
-                };
+        //        BuoiHoc _class = new BuoiHoc
+        //        {
+        //            NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture),
+        //            TietHoc = request.TietHoc,
+        //            TrangThai = true,
+        //            MaLopHoc = request.MaLopHoc
+        //        };
 
-                _context.BuoiHocs.Add(_class);
+        //        _context.BuoiHocs.Add(_class);
 
-                await _context.SaveChangesAsync();
+        //        await _context.SaveChangesAsync();
 
-                TempData["ClassSuccessMessage"] = "Thêm buổi học thành công!";
-                return Redirect("lop-hoc/" + request.MaLopHoc + "/buoi-hoc");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi thêm buổi học: " + ex.Message;
-                return Redirect("lop-hoc/" + request.MaLopHoc + "/buoi-hoc");
-            }
+        //        TempData["ClassSuccessMessage"] = "Thêm buổi học thành công!";
+        //        return Redirect("lop-hoc/" + request.MaLopHoc + "/buoi-hoc");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //        TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi thêm buổi học: " + ex.Message;
+        //        return Redirect("lop-hoc/" + request.MaLopHoc + "/buoi-hoc");
+        //    }
 
-        }
+        //}
 
-        [Route("cap-nhat-buoi-hoc")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int class_id, [FromForm] ClassUpdateRequest request)
-        {
+        //[Route("cap-nhat-buoi-hoc")]
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Update(int class_id, [FromForm] ClassUpdateRequest request)
+        //{
 
-            try
-            {
-                BuoiHoc _class = await _context.BuoiHocs
-                    .FirstOrDefaultAsync(lh => lh.MaBuoiHoc == request.MaBuoiHoc);
+        //    try
+        //    {
+        //        BuoiHoc _class = await _context.BuoiHocs
+        //            .FirstOrDefaultAsync(lh => lh.MaBuoiHoc == request.MaBuoiHoc);
 
-                _class.NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture);
-                _class.TietHoc = request.TietHoc;
+        //        _class.NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture);
+        //        _class.TietHoc = request.TietHoc;
 
-                await _context.SaveChangesAsync();
+        //        await _context.SaveChangesAsync();
 
-                TempData["ClassSuccessMessage"] = "Cập nhật buổi học thành công!";
-                return Redirect("buoi-hoc");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi cập nhật buổi học: " + ex.Message;
-                return Redirect("buoi-hoc");
-            }
+        //        TempData["ClassSuccessMessage"] = "Cập nhật buổi học thành công!";
+        //        return Redirect("buoi-hoc");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //        TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi cập nhật buổi học: " + ex.Message;
+        //        return Redirect("buoi-hoc");
+        //    }
 
-        }
+        //}
 
 
-        [Route("xoa-buoi-hoc")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete([FromForm] ClassDeleteRequest request)
-        {
-            Console.WriteLine("Xoa buoi hoc: " + request.MaBuoiHoc);
-            try
-            {
-                BuoiHoc _class = await _context.BuoiHocs
-                    .FirstOrDefaultAsync(lh => lh.MaBuoiHoc == request.MaBuoiHoc);
+        //[Route("xoa-buoi-hoc")]
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Delete([FromForm] ClassDeleteRequest request)
+        //{
+        //    Console.WriteLine("Xoa buoi hoc: " + request.MaBuoiHoc);
+        //    try
+        //    {
+        //        BuoiHoc _class = await _context.BuoiHocs
+        //            .FirstOrDefaultAsync(lh => lh.MaBuoiHoc == request.MaBuoiHoc);
 
-                _context.BuoiHocs.Remove(_class);
-                await _context.SaveChangesAsync();
+        //        _context.BuoiHocs.Remove(_class);
+        //        await _context.SaveChangesAsync();
 
-                TempData["ClassSuccessMessage"] = "Xóa buổi học thành công!";
-                return Redirect("lop-hoc/" + request.MaBuoiHoc + "/buoi-hoc");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi xóa buổi học: " + ex.Message;
-                return Redirect("lop-hoc/" + request.MaBuoiHoc + "/buoi-hoc");
-            }
-        }
+        //        TempData["ClassSuccessMessage"] = "Xóa buổi học thành công!";
+        //        return Redirect("lop-hoc/" + request.MaBuoiHoc + "/buoi-hoc");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //        TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi xóa buổi học: " + ex.Message;
+        //        return Redirect("lop-hoc/" + request.MaBuoiHoc + "/buoi-hoc");
+        //    }
+        //}
     }
 }

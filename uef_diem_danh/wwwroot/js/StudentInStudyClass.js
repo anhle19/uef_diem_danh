@@ -108,3 +108,84 @@ function initDeleteStudentInStudyClassField(studentId) {
 
     removeStudentIdInput.value = studentId;
 }
+
+
+
+// ================== STUDENT CARD PDF PRINT ==================
+
+async function printStudentCard(id, fullName, phoneNumber, dob) {
+
+    console.log(id)
+
+
+    let studentCardHtmlContent =
+    `
+    <div id="sheet" class="d-flex justify-content-center align-items-center vh-100">
+        <div class="card student-card text-center">
+            <div>
+                <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top mx-auto d-block" alt="Ảnh đại diện">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">${fullName}</h5>
+                        <p class="card-text text-muted"><strong>Ngày sinh:</strong> ${dob}</p>
+                        <p class="card-text text-muted"><strong>SĐT:</strong> ${phoneNumber}</p>
+                    </div>
+            </div>
+            <div class="barcode-section">
+                <svg id="studentBarcode-${id}"></svg>
+            </div>
+        </div>
+    </div>
+    `;
+
+
+    const hiddenStudentCardPrintContainer = document.getElementById('hiddenStudentCardPrintContainer');
+
+    // Overflow y hidden
+    document.body.style.overflowY = 'hidden';
+
+    // Init PDF
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+
+
+    // Parse into DOM nodes
+    const template = document.createElement('template');
+    template.innerHTML = studentCardHtmlContent.trim();
+    const studentCardElement = template.content.firstChild;
+
+    // Append to the DOM (hidden)
+    hiddenStudentCardPrintContainer.appendChild(studentCardElement);
+
+    // Generate barcode
+    const studentPhoneNumber = phoneNumber; // Lấy số điện thoại từ thẻ
+    JsBarcode(`#studentBarcode-${id}`, studentPhoneNumber, {
+        format: "CODE128",
+        displayValue: false, // Không hiển thị số điện thoại bên dưới barcode
+        width: 1.5,
+        height: 50,
+        margin: 5
+    });
+
+
+    // Create image from card element
+    const canvas = await html2canvas(studentCardElement, { scale: 1.1, useCORS: true });
+    const imgData = canvas.toDataURL("image/png");
+
+    const imgWidth = pageWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+
+    // Save PDF
+    pdf.save(`the_hoc_vien_${phoneNumber}.pdf`);
+
+    alert("In thẻ học viên thành công");
+
+    // Reset body overflow
+    document.body.style.overflowY = 'auto';
+
+    // Clear hidden container childs
+    hiddenStudentCardPrintContainer.innerHTML = '';
+
+}

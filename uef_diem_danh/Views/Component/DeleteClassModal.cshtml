@@ -14,6 +14,7 @@
 		<form class="modal-content" method="POST" action="/xoa-buoi-Hoc" id="deleteClassForm">
 			@Html.AntiForgeryToken()
 			<input type="hidden" id="xoaMaBuoiHoc" name="MaBuoiHoc" class="form-control" />
+			<input type="hidden" id="xoaMaLopHoc" name="MaLopHoc" class="form-control" />
 
 			<div class="modal-header">
 				<h5 class="modal-title" id="popupBuoiHocLabel">Xác nhận xoá</h5>
