@@ -12,7 +12,7 @@
         </a>
     </li>
     <li>
-        <a href="/hoc-vien/danh-sach" class="nav-link-custom">
+        <a href="/hoc-vien" class="nav-link-custom">
             <i class="bi bi-person-fill me-2"></i> Học viên
         </a>
     </li>
@@ -40,7 +40,7 @@
                 </div>
             </li>
             <li>
-                <form id="logoutForm" action="logout" method="post">
+                <form id="logoutForm" action="@Url.Action("Logout", "Auth")" method="post">
                     <button type="submit" class="dropdown-item text-danger">
                         <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
                     </button>
@@ -70,7 +70,7 @@
 
             <!-- Body -->
             <div class="modal-body">
-                <form method="POST" action="/doi-mat-khau" id="changePasswordForm">
+                <form method="POST" action=@Url.Action("ChangePassword", "Auth") id="changePasswordForm">
                     <input type="password"
                            id="matKhauCu"
                            name="OldPassword"

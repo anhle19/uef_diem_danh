@@ -46,7 +46,7 @@ namespace uef_diem_danh.Controllers
 
                     if (result.Succeeded)
                     {
-                        return Redirect("/");
+                        return RedirectToAction("GetListManagementPage", "StudyClass");
                     }
                 }
 
@@ -61,7 +61,7 @@ namespace uef_diem_danh.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return Redirect("/");
+            return RedirectToAction("GetListManagementPage", "StudyClass");
         }
 
         [HttpPost("/doi-mat-khau")]
@@ -75,7 +75,7 @@ namespace uef_diem_danh.Controllers
             {
                 ModelState.AddModelError(string.Empty, "Mật khẩu mới và xác nhận mật khẩu mới không khớp");
                 TempData["StudyClassErrorMessage"] = "Mật khẩu mới và xác nhận mật khẩu mới không khớp";
-                return Redirect("/");
+                return RedirectToAction("GetListManagementPage", "StudyClass");
             }
 
             var user = await _userManager.GetUserAsync(User);
@@ -83,7 +83,8 @@ namespace uef_diem_danh.Controllers
 
             if (user == null)
             {
-                return Redirect("/");
+                TempData["StudyClassErrorMessage"] = "Đã hết phiên đăng nhập !";
+                return RedirectToAction("GetListManagementPage", "StudyClass");
             } 
 
             var res = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
@@ -93,7 +94,7 @@ namespace uef_diem_danh.Controllers
                 await _signInManager.RefreshSignInAsync(user);
                 await _signInManager.SignOutAsync();
                 Console.WriteLine("Đổi mật khẩu thành công!");
-                return Redirect("/");
+                return RedirectToAction("GetListManagementPage", "StudyClass");
             }
             else
             {
@@ -101,12 +102,12 @@ namespace uef_diem_danh.Controllers
             }
 
             foreach (var error in res.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
 
             
-            return Redirect("/");
+            return RedirectToAction("GetListManagementPage", "StudyClass");
         }
     }
 }

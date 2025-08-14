@@ -1,13 +1,13 @@
-﻿$(document).ready(function () {
-    //// ================== INIT ==================
-    $.fn.dataTable.moment('DD/MM/YYYY');
+﻿//$(document).ready(function () {
+//    //// ================== INIT ==================
+//    $.fn.dataTable.moment('DD/MM/YYYY');
 
 
-})
-let studentTable = new DataTable('#classTable', {
-    dom: 'lrtp'    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
-    // Notice no "f" here, which is the default filter/search box
-});
+//})
+//let studentTable = new DataTable('#classTable', {
+//    dom: 'lrtp'    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
+//    // Notice no "f" here, which is the default filter/search box
+//});
 // ================== SEARCH ==================
 
 //function preventSearchClassSubmit() {
@@ -50,7 +50,7 @@ let studentTable = new DataTable('#classTable', {
 
 // ================== ADD STUDY CLASS ==================
 function addClass(id) {
-    const createStudentForm = document.getElementById("createClassForm");
+    const createClassForm = document.getElementById("createClassForm");
     const popup = document.getElementById("popupThemBuoiHoc");
 
     const classDayInput = popup.querySelector("#themNgayHoc");
@@ -73,7 +73,7 @@ function addClass(id) {
 
 
     // Submit form
-    createStudentForm.requestSubmit();
+    createClassForm.requestSubmit();
 };
 
 async function initAddClassFields(id) {
@@ -140,8 +140,11 @@ function updateStudent() {
 
 
 // ================== DELETE CLASS ==================
-async function initDeleteClassField(id) {
-    const studyClassIdInput = document.getElementById("xoaMaBuoiHoc");
-    console.log(id);
-    studyClassIdInput.value = id;
+async function initDeleteClassField(studyClassId, classId) {
+    const studyClassIdInput = document.getElementById("xoaMaLopHoc");
+    const classIdInput = document.getElementById("xoaMaBuoiHoc");
+    //console.log("Mã lớp" + studyClassId);
+    //console.log("Mã buổi" + classId);
+    studyClassIdInput.value = studyClassId;
+    classIdInput.value = classId;
 }
