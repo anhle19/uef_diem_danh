@@ -105,7 +105,15 @@
 					class="btn-next-secondary btn -sm btn-add"
 					data-bs-toggle="modal"
 					data-bs-target="#popupHocVienCuaLopHoc">
-				Thêm học viên
+				Thêm học viên có sẵn
+			</button>
+			<button type="button"
+					class="btn-next-secondary btn -sm btn-add"
+					data-bs-toggle="modal"
+					data-bs-target="#popupThemHocVien"
+					data-id="@ViewBag.StudyClassId"
+					onclick="initAddStudentFields(@ViewBag.StudyClassId)">
+				Thêm học viên mới
 			</button>
 		</div>
 	</div>
@@ -177,6 +185,9 @@
 
 <!-- Modal: Xóa học viên khỏi lớp học -->
 @await Html.PartialAsync("/Views/Component/DeleteStudentFromStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassRemoveStudentRequest())
+
+<!-- Modal: Thêm mới học viên -->
+@await Html.PartialAsync("/Views/Component/CreateNewStudentToClass.cshtml", new uef_diem_danh.DTOs.StudentCreateNewToClassRequest())
 
 
 <div id="hiddenStudentCardPrintContainer"></div>

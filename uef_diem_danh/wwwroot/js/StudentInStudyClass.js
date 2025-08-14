@@ -101,6 +101,49 @@ function enableSubmitButton() {
     submitImportingStudentBtn.style.display = "block"
 }
 
+ //================== ADD NEW STUDENT TO STUDY CLASS ==================
+async function initAddStudentFields(id) {
+    // Call API to get study class detail
+    const classIdInput = document.getElementById("themMaLopHoc");
+    console.log(id);
+    classIdInput.value = id;
+}
+
+function addStudent() {
+    const createStudentForm = document.getElementById("createStudentForm");
+    const popup = document.getElementById("popupThemHocVien");
+
+    const studentLastNameInput = popup.querySelector("#themHo");
+    const studentFirstNameInput = popup.querySelector("#themTen");
+    const studentDobInput = popup.querySelector("#themNgaySinh");
+    const studentAddressInput = popup.querySelector("#themDiaChi");
+    const studentEmailInput = popup.querySelector("#themEmail");
+    const studentPhoneNumberInput = popup.querySelector("#themSoDienThoai");
+
+
+    const studentLastName = studentLastNameInput.value.trim();
+    const studentFirstName = studentFirstNameInput.value.trim();
+    const studentDob = studentDobInput.value;
+    const studentAddress = studentAddressInput.value.trim();
+    const studentEmail = studentEmailInput.value.trim();
+    const studentPhoneNumber = studentPhoneNumberInput.value.trim();
+
+
+    // Validate inputs
+    if (!studentLastName || !studentFirstName || !studentDob || !studentAddress || !studentEmail || !studentPhoneNumber) {
+        Swal.fire(
+            "Lỗi",
+            "Vui lòng nhập đầy đủ dữ liệu",
+            "warning"
+        );
+        return;
+    }
+
+
+    // Submit form
+    createStudentForm.requestSubmit();
+};
+
 
 // ================== DELETE ==================
 function initDeleteStudentInStudyClassField(studentId) {
