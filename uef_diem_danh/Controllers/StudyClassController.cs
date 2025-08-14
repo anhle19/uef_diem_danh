@@ -605,5 +605,8 @@ namespace uef_diem_danh.Controllers
                 return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-buoi-hoc");
             }
         }
+
+
+
     }
 }
