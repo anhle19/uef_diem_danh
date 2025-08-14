@@ -108,7 +108,11 @@ async function fakeBarcodeScannedEvent() {
         const classSessionId = document.getElementById("classSessionIdInput").value;
         const studentBarcodeValue = studentBarcode
 
-        console.log(studentBarcodeValue)
+
+        // Clear Student Attendance Info
+        fullNameInfo.innerText = ``;
+        phoneNumberInfo.innerText = ``;
+        attendanceCheckingSuccessInfo.innerHTML = ``;
 
         const checkingAttendanceRequest = {
             StudentBarCode: studentBarcodeValue,
@@ -181,7 +185,19 @@ async function fakeBarcodeScannedEvent() {
 document.getElementById("studentBarcodeInput").addEventListener("paste", async (e) => {
     const updateStudentBarcodeInput = document.getElementById("studentBarcodeInput");
 
+    const checkingAttendanceSuccessfulMessage = document.getElementById("checkingAttendanceSuccessfulMessage");
+    const checkingAttendanceFailedMessage = document.getElementById("checkingAttendanceFailedMessage");
+
+
     e.preventDefault();
+
+    // Clear style
+    checkingAttendanceSuccessfulMessage.style.display = "none";
+    checkingAttendanceFailedMessage.style.display = "none";
+
+    // Clear success and fail message
+    checkingAttendanceSuccessfulMessage.innerText = "";
+    checkingAttendanceFailedMessage.innerText = "";
 
     updateStudentBarcodeInput.value = (e.clipboardData || window.clipboardData).getData("text");
 

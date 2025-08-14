@@ -282,16 +282,6 @@ body {
     align-items: center;
 }
 
-.barcode {
-    width: 80%;
-    height: 80px;
-    border: 1px dashed #888;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-style: italic;
-    color: #555;
-}
 
 .info-box p {
     margin-bottom: 8px;
