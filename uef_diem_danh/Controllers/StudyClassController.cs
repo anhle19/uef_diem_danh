@@ -396,7 +396,76 @@ namespace uef_diem_danh.Controllers
 
         }
 
-        
+        [Route("tao-hoc-vien-moi-vao-lop")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([FromForm] StudentCreateNewToClassRequest request)
+        {
+            var hocVien = await context.HocViens
+                                .FirstOrDefaultAsync(hv => hv.SoDienThoai == request.SoDienThoai);
+           
+            if (hocVien != null)
+            {
+                bool daCoTrongLop = await context.ThamGias
+                        .AnyAsync(t => t.MaHocVien == hocVien.MaHocVien && t.MaLopHoc == request.MaLopHoc);
+
+                if (!daCoTrongLop)
+                {
+                    ThamGia thamGia = new ThamGia
+                    {
+                        MaHocVien = hocVien.MaHocVien,
+                        MaLopHoc = request.MaLopHoc
+                    };
+
+                    context.ThamGias.Add(thamGia);
+                    await context.SaveChangesAsync();
+                    TempData["StudentInStudyClassSuccessMessage"] = "Đã có học viên dùng SĐT này, học viên đó đã được thêm vào lớp!";
+                    return Redirect("quan-ly-danh-sach-lop-hoc/"+ request.MaLopHoc +"/quan-ly-danh-sach-hoc-vien");
+                }
+                else
+                {
+                    TempData["StudentInStudyClassErrorMessage"] = "Đã có học viên trong lớp dùng SĐT này!";
+                    return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-hoc-vien");
+                }
+            }
+
+            try
+            {
+
+                HocVien student = new HocVien
+                {
+                    Ho = request.Ho,
+                    Ten = request.Ten,
+                    NgaySinh = DateOnly.Parse(request.NgaySinh, CultureInfo.InvariantCulture),
+                    DiaChi = request.DiaChi,
+                    MaBarCode = request.SoDienThoai,
+                    Email = request.Email,
+                    SoDienThoai = request.SoDienThoai,
+                };
+
+                context.HocViens.Add(student);
+                await context.SaveChangesAsync();
+
+                ThamGia thamGia = new ThamGia
+                {
+                    MaHocVien = student.MaHocVien,
+                    MaLopHoc = request.MaLopHoc
+                };
+
+                context.ThamGias.Add(thamGia);
+                await context.SaveChangesAsync();
+
+                TempData["StudentInStudyClassSuccessMessage"] = "Thêm học viên thành công!";
+                return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-hoc-vien");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["StudentInStudyClassErrorMessage"] = "Có lỗi xảy ra khi thêm học viên: " + ex.Message;
+                return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-hoc-vien");
+            }
+
+        }
 
         [Route("cap-nhat-lop-hoc")]
         [HttpPost]
