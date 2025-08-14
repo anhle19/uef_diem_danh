@@ -158,9 +158,6 @@ function initDeleteStudentInStudyClassField(studentId) {
 
 async function printStudentCard(id, fullName, phoneNumber, dob) {
 
-    console.log(id)
-
-
     let studentCardHtmlContent =
     `
     <div class="sheet d-flex justify-content-center align-items-center">
@@ -253,6 +250,8 @@ async function printStudentCards(students) {
 
     const totalPages = Math.ceil(students.length / 10);
 
+    // Overflow y hidden
+    document.body.style.overflowY = 'hidden';
 
     // Generate Student Card HTML
     for (let i = 0; i < totalPages; i++) {
@@ -298,7 +297,6 @@ async function printStudentCards(students) {
 
         })
 
-        console.log(hiddenStudentCardsPrintContainer)
     }
 
 
@@ -327,6 +325,12 @@ async function printStudentCards(students) {
     }
 
     pdf.save("Danh_sach_hoc_vien.pdf");
+
+    // Reset body overflow
+    document.body.style.overflowY = 'auto';
+
+    // Clear hidden container childs
+    hiddenStudentCardsPrintContainer.innerHTML = '';
 
     alert("In thẻ học viên thành công");
 }
