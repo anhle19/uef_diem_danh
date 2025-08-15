@@ -28,10 +28,68 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.12.1/dist/barcodes/JsBarcode.code128.min.js"></script>
 
     <link rel="stylesheet" href="../../css/style.css" />
+
+    <style>
+        /* Tùy chỉnh kích thước thẻ để giống thẻ học viên */
+        .student-card {
+            width: 204px; /* Chiều rộng cố định */
+            height: 321px; /* Chiều cao cố định */
+            border-radius: 15px; /* Bo tròn góc */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Tạo bóng đổ */
+            overflow: hidden; /* Ẩn các phần nội dung tràn ra ngoài */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-img-top {
+            width: 120px; /* Kích thước ảnh */
+            height: 120px;
+            object-fit: cover; /* Đảm bảo ảnh không bị méo */
+            border-radius: 10px; /* Bo tròn góc ảnh để có hình vuông bo góc */
+            border: 4px solid #ffffff; /* Viền trắng cho ảnh */
+            margin-top: 14px;
+        }
+
+        .card-body h5 {
+            font-size: 1.3rem; /* Tăng kích thước font tên */
+            font-weight: 700;
+        }
+
+        .card-body p {
+            font-size: 0.9rem; /* Giảm kích thước font các thông tin khác */
+            margin-bottom: 5px;
+        }
+
+        .card-footer {
+            background-color: #0d6efd; /* Màu nền cho footer */
+            color: #ffffff; /* Màu chữ trắng */
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .barcode-section {
+            padding: 5px 0;
+            background-color: #ffffff;
+            border-top: 1px solid #e9ecef;
+        }
+
+    </style>
 </head>
 <body>
 
     <div class="container-fluid px-lg-5 py-lg-5">
+
+        <div id="attendance-checking-screen-info" class="text-center">
+            <p class="fs-4">
+                <strong>Lớp:</strong> 
+                <span id="studyClassNameInfo">@Model.StudyClassName</span> 
+                <span id="classSessionNumberInfo">@Model.ClassSessionNumber</span>
+            </p>
+            <p class="fs-5">
+                Điểm danh học viên
+            </p>
+        </div>
 
         <input type="text" class="form-control" id="studentBarcodeInput" name="studentBarcodeInput" oninput="updateStudentBarcode()" placeholder="Mã barcode của học viên...." />
 
@@ -41,7 +99,7 @@
             <div class="bg-danger p-2 text-white" id="checkingAttendanceFailedMessage" style="display: none">
             </div>
         </div>
-
+@* 
         <div class="row top-row">
             <div class="box barcode-box">
                 <div class="barcode">
@@ -53,7 +111,7 @@
                 <p><strong>Buổi:</strong> <span id="classSessionNumberInfo">@Model.ClassSessionNumber</span></p>
                 <input type="hidden" name="classSessionIdInput" id="classSessionIdInput" value="@Model.ClassSessionId" />
             </div>
-        </div>
+        </div> *@
 
         <div class="row bottom-row">
             <div class="box history-box">
@@ -79,14 +137,21 @@
             </div>
 
             <div class="box user-box">
-                <img src="https://placehold.net/avatar.svg" alt="Ảnh học viên" class="avatar" />
-                <p id="fullNameInfo" class="username"></p>
-                <p id="phoneNumberInfo" class="phone"></p>
-                <p class="success-msg" id="attendanceCheckingSuccessInfo">
-@*                     <span>Điểm danh thành công!</span>
-                    <br />
-                    <span>10/8/2025 09:30:00</span> *@
-                </p>
+                <div id="sheet" class="d-flex justify-content-center align-items-center">
+                    <div class="card student-card text-center">
+                        <div>
+                            <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top mx-auto d-block" alt="Ảnh đại diện">
+                            <div class="card-body">
+                                <h5 id="fullNameInfo" class="card-title text-primary">Nguyễn Văn A</h5>
+                                <p id="dobInfo" class="card-text text-muted"><strong>Ngày sinh:</strong> 01/01/2000</p>
+                                <p id="phoneNumberInfo" class="card-text text-muted"><strong>SĐT:</strong> 0912345678</p>
+                            </div>
+                        </div>
+                        <div class="barcode-section">
+                            <svg id="studentBarcode"></svg>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
