@@ -16,19 +16,24 @@
     <!-- Bootstrap Icon -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- Moment JS -->
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>
+
     <!-- html2canvasd -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- js Pdf -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
-
     <style>
         body {
             background-color: #f8f9fa;
         }
         /* Tùy chỉnh kích thước thẻ để giống thẻ học viên */
         .student-card {
-            width: 204px; /* Chiều rộng cố định */
-            height: 321px; /* Chiều cao cố định */
+            width: 367px; /* Chiều rộng cố định */
+            height: 525px; /* Chiều cao cố định */
             border-radius: 15px; /* Bo tròn góc */
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Tạo bóng đổ */
             overflow: hidden; /* Ẩn các phần nội dung tràn ra ngoài */
@@ -36,28 +41,33 @@
             flex-direction: column;
             justify-content: space-between;
         }
+
         .card-img-top {
-            width: 120px; /* Kích thước ảnh */
-            height: 120px;
+            width: 180px; /* Kích thước ảnh */
+            height: 180px;
             object-fit: cover; /* Đảm bảo ảnh không bị méo */
             border-radius: 10px; /* Bo tròn góc ảnh để có hình vuông bo góc */
             border: 4px solid #ffffff; /* Viền trắng cho ảnh */
-            margin-top: 14px;
+            margin-top: 25px;
         }
+
         .card-body h5 {
-            font-size: 1.3rem; /* Tăng kích thước font tên */
+            font-size: 2.3rem; /* Tăng kích thước font tên */
             font-weight: 700;
         }
+
         .card-body p {
-            font-size: 0.9rem; /* Giảm kích thước font các thông tin khác */
+            font-size: 1.3rem; /* Giảm kích thước font các thông tin khác */
             margin-bottom: 5px;
         }
+
         .card-footer {
             background-color: #0d6efd; /* Màu nền cho footer */
             color: #ffffff; /* Màu chữ trắng */
             font-size: 0.8rem;
             text-align: center;
         }
+
         .barcode-section {
             padding: 5px 0;
             background-color: #ffffff;
@@ -69,28 +79,32 @@
             bottom: 10px;
             right: 10px;
         }
+
         .print-btn {
             background-color: #0d6efd;
             border: 0;
             border-radius: 50%;
-
             transition: background-color 0.15s ease;
         }
-        .print-btn:hover {
-            background-color: #0b55d4;
-        }
+
+            .print-btn:hover {
+                background-color: #0b55d4;
+            }
     </style>
 </head>
 <body>
+
+    <!-- STUDENT ID HIDDEN INPUT -->
+    <input type="hidden" name="studentIdInput" id="studentIdInput" value="@ViewBag.StudentId" />
 
     <div id="sheet" class="d-flex justify-content-center align-items-center vh-100">
         <div class="card student-card text-center">
             <div>
                 <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top mx-auto d-block" alt="Ảnh đại diện">
                 <div class="card-body">
-                    <h5 class="card-title text-primary">Nguyễn Văn A</h5>
-                    <p class="card-text text-muted"><strong>Ngày sinh:</strong> 01/01/2000</p>
-                    <p class="card-text text-muted"><strong>SĐT:</strong> 0912345678</p>
+                    <h5 id="studentFullNameInfo" class="card-title text-primary"></h5>
+                    <p id="studentDobInfo" class="card-text text-muted"><strong>Ngày sinh:</strong> </p>
+                    <p id="studentPhoneNumberInfo" class="card-text text-muted"><strong>SĐT:</strong> </p>
                 </div>
             </div>
             <div class="barcode-section">
@@ -99,10 +113,12 @@
         </div>
     </div>
 
-    <div class="print-btn-container">
+
+
+    <div id="print-btn-container" class="print-btn-container">
         <button class="print-btn px-3 py-2"
                 type="button"
-                onclick="printStudentCard()">
+                onclick="printStudentCard('@ViewBag.StudentId')">
             <i class="bi bi-printer-fill" style="color: white; font-size: x-large;"></i>
         </button>
     </div>
@@ -111,37 +127,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <!-- Thư viện JsBarcode -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const studentPhoneNumber = '0912345678'; // Lấy số điện thoại từ thẻ
-            JsBarcode("#studentBarcode", studentPhoneNumber, {
-                format: "CODE128",
-                displayValue: false, // Không hiển thị số điện thoại bên dưới barcode
-                width: 1.5,
-                height: 50,
-                margin: 5
-            });
-        });
 
-
-        async function printStudentCard() {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const pageWidth = pdf.internal.pageSize.getWidth();
-
-            const sheet = document.getElementById(`sheet`);
-
-            const canvas = await html2canvas(sheet, { scale: 1.1, useCORS: true });
-            const imgData = canvas.toDataURL("image/png");
-
-            const imgWidth = pageWidth;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-
-            pdf.save("document.pdf");
-            alert("In thẻ học viên thành công");
-        }
-    </script>
+    <script src="~/js/StudentCardSinglePrint.js"></script>
 </body>
 </html>
