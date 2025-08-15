@@ -240,17 +240,12 @@
 						<td>@student.Address</td>
 						<td>@student.DateOfBirth.ToString("dd/MM/yyyy")</td>
 						<td>
-							<button class="btn btn-outline-primary btn-sm btn-delete"
-									data-id="@student.Id"
-									onclick="printStudentCard(
-										`@student.Id`,
-										'@student.LastName @student.FirstName', 
-										'@student.PhoneNumber', 
-										'@student.DateOfBirth.ToString("dd/MM/yyyy")'
-									)"
-							>
+							<a 
+								class="btn btn-outline-primary btn-sm btn-delete"
+								data-id="@student.Id"
+								href="/in-mot-the-hoc-vien/@student.Id">
 								Xuất thẻ
-							</button>
+							</a>
 
 							<button class="btn btn-outline-danger btn-sm btn-delete ms-2"
 									data-id="@student.Id"
