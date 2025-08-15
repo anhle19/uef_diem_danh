@@ -1,6 +1,11 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using System.Drawing.Printing;
+using System.Security.Policy;
 using uef_diem_danh.Database;
 using uef_diem_danh.DTOs;
 using uef_diem_danh.Models;
@@ -290,6 +295,48 @@ namespace uef_diem_danh.Controllers
             }
         }
 
+        [Route("api/xuat-mot-the-hoc-vien")]
+        [HttpPost]
+        public async Task<IActionResult> GenerateSingleStudentCard()
+        {
+
+            try
+            {
+
+                var options = new ChromeOptions();
+                options.AddArgument("--headless=new"); // Chrome headless mode
+                options.AddArgument("--disable-gpu");
+                options.AddArgument("--no-sandbox");
+
+                using var driver = new ChromeDriver(options);
+                driver.Navigate().GoToUrl("http://127.0.0.1:5500/html/page/barcode-card-single.html");
+
+                var printOptions = new PrintOptions
+                {
+                    Orientation = PrintOrientation.Portrait,
+                    ScaleFactor = 1.5,
+                    PageMargins = new PrintOptions.Margins { Bottom = 0, Top = 0, Left = 0, Right = 0},
+                    PageDimensions = new PrintOptions.PageSize { WidthInInches = 5.83, HeightInInches = 8.27 }
+                };
+
+                // Convert to PDF
+                var pdf = driver.Print(printOptions);
+
+
+                string pdfPath = Path.Combine(Directory.GetCurrentDirectory(), "GeneratedPdf", "localhost_report.pdf");
+
+                // Save PDF to disk
+                pdf.SaveAsFile(pdfPath);
+
+                return Ok();
+            } 
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+            
+
+        }
 
     }
 }
