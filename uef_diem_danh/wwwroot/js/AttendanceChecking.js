@@ -35,10 +35,10 @@ async function updateStudentBarcode() {
 
     if (studentBarcode.trim().length == 10) {
         if (isNumberOnly(studentBarcode)) {
-            JsBarcode("#studentBarcode", studentBarcode, {
-                width: 2,
-                height: 30,
-            });
+            //JsBarcode("#studentBarcode", studentBarcode, {
+            //    width: 2,
+            //    height: 30,
+            //});
 
             await fakeBarcodeScannedEvent();
         } else {
@@ -100,20 +100,18 @@ async function fakeBarcodeScannedEvent() {
 
         let latestAttendanceTableRows = "";
         const latestAttendenceTableBody = document.getElementById("latestAttendenceTableBody");
+        const studentCard = document.getElementById("student-card");
         const fullNameInfo = document.getElementById("fullNameInfo");
         const dayOfBirthInfo = document.getElementById("dobInfo");
         const phoneNumberInfo = document.getElementById("phoneNumberInfo");
-        const attendanceCheckingSuccessInfo = document.getElementById("attendanceCheckingSuccessInfo");
 
         const studyClassName = document.getElementById("studyClassNameInfo").innerText;
         const classSessionId = document.getElementById("classSessionIdInput").value;
-        const studentBarcodeValue = studentBarcode
+        const studentBarcodeValue = studentBarcode;
 
+        // Hide student card
+        studentCard.style.display = "none";
 
-        // Clear Student Attendance Info
-        fullNameInfo.innerText = ``;
-        phoneNumberInfo.innerText = ``;
-        attendanceCheckingSuccessInfo.innerHTML = ``;
 
         const checkingAttendanceRequest = {
             StudentBarCode: studentBarcodeValue,
@@ -131,14 +129,17 @@ async function fakeBarcodeScannedEvent() {
 
         // Set student info
         fullNameInfo.innerText = `${response.data.studentLastName} ${response.data.studentFirstName}`;
-        dayOfBirthInfo.innerHTML = `<strong>Ngày sinh:</strong>: ${moment(response.data.studentDayOfBirth)}`
+        dayOfBirthInfo.innerHTML = `<strong>Ngày sinh:</strong>: ${moment(response.data.studentDayOfBirth).format("DD/MM/YYYY")}`
         phoneNumberInfo.innerHTML = `<strong>SĐT:</strong>: ${response.data.studentPhoneNumber}`;
-        attendanceCheckingSuccessInfo.innerHTML =
-            `
-                <span>Điểm danh thành công!</span>
-                    <br />
-                <span>${moment(response.data.attendanceDateTime).format("DD/MM/YYYY HH:mm") }</span>
-            `;
+
+        // Generate barcode by phone number
+        JsBarcode("#studentBarcode", response.data.studentPhoneNumber, {
+            format: "CODE128",
+            displayValue: false, // Không hiển thị số điện thoại bên dưới barcode
+            width: 1.5,
+            height: 50,
+            margin: 5
+        });
 
 
         // Remove last latest attendance
@@ -168,6 +169,7 @@ async function fakeBarcodeScannedEvent() {
             `;
         })
 
+        studentCard.style.display = "flex";
         checkingAttendanceSuccessfulMessage.style.display = "block";
         latestAttendenceTableBody.innerHTML = latestAttendanceTableRows;
 
@@ -206,10 +208,10 @@ document.getElementById("studentBarcodeInput").addEventListener("paste", async (
     studentBarcode = updateStudentBarcodeInput.value;
 
     if (studentBarcode.trim().length > 0) {
-        JsBarcode("#studentBarcode", studentBarcode, {
-            width: 2,
-            height: 30,
-        });
+        //JsBarcode("#studentBarcode", studentBarcode, {
+        //    width: 2,
+        //    height: 30,
+        //});
 
         await fakeBarcodeScannedEvent();
     } else {
