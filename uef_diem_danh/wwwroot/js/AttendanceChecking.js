@@ -101,6 +101,7 @@ async function fakeBarcodeScannedEvent() {
         let latestAttendanceTableRows = "";
         const latestAttendenceTableBody = document.getElementById("latestAttendenceTableBody");
         const fullNameInfo = document.getElementById("fullNameInfo");
+        const dayOfBirthInfo = document.getElementById("dobInfo");
         const phoneNumberInfo = document.getElementById("phoneNumberInfo");
         const attendanceCheckingSuccessInfo = document.getElementById("attendanceCheckingSuccessInfo");
 
@@ -130,7 +131,8 @@ async function fakeBarcodeScannedEvent() {
 
         // Set student info
         fullNameInfo.innerText = `${response.data.studentLastName} ${response.data.studentFirstName}`;
-        phoneNumberInfo.innerText = `SĐT: ${response.data.studentPhoneNumber}`;
+        dayOfBirthInfo.innerHTML = `<strong>Ngày sinh:</strong>: ${moment(response.data.studentDayOfBirth)}`
+        phoneNumberInfo.innerHTML = `<strong>SĐT:</strong>: ${response.data.studentPhoneNumber}`;
         attendanceCheckingSuccessInfo.innerHTML =
             `
                 <span>Điểm danh thành công!</span>
@@ -208,7 +210,7 @@ document.getElementById("studentBarcodeInput").addEventListener("paste", async (
             width: 2,
             height: 30,
         });
-        console.log("asdasdasdasd")
+
         await fakeBarcodeScannedEvent();
     } else {
         document.getElementById("studentBarcode").innerHTML = "";
