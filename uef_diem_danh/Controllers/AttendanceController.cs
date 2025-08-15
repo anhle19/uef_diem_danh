@@ -273,6 +273,7 @@ namespace uef_diem_danh.Controllers
                     StudentFirstName = student.Ten,
                     StudentLastName = student.Ho,
                     StudentPhoneNumber = student.SoDienThoai,
+                    StudentDayOfBirth = student.NgaySinh,
                     AttendanceDateTime = newAttendance.ThoiGianDiemDanh
                 };
 

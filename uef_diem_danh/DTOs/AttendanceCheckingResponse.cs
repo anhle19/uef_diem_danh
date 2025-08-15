@@ -11,6 +11,8 @@
 
         public string StudentPhoneNumber { get; set; }
 
+        public DateOnly StudentDayOfBirth { get; set; }
+
         public DateTime AttendanceDateTime { get; set; }
 
 

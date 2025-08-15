@@ -37,7 +37,7 @@
             border-radius: 15px; /* Bo tròn góc */
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Tạo bóng đổ */
             overflow: hidden; /* Ẩn các phần nội dung tràn ra ngoài */
-            display: flex;
+            display: none;
             flex-direction: column;
             justify-content: space-between;
         }
@@ -91,7 +91,17 @@
             </p>
         </div>
 
-        <input type="text" class="form-control" id="studentBarcodeInput" name="studentBarcodeInput" oninput="updateStudentBarcode()" placeholder="Mã barcode của học viên...." />
+        <div class="d-flex justify-content-lg-center">
+            <input 
+                type="text" 
+                class="form-control w-50 fs-4" 
+                id="studentBarcodeInput" 
+                name="studentBarcodeInput" 
+                oninput="updateStudentBarcode()" 
+                placeholder="Mã barcode của học viên...." 
+                autofocus />
+            <input type="hidden" name="classSessionIdInput" id="classSessionIdInput" value="@Model.ClassSessionId" />
+        </div>
 
         <div class="px-3 py-2">
             <div class="bg-success p-2 text-white" id="checkingAttendanceSuccessfulMessage" style="display: none">
@@ -99,8 +109,8 @@
             <div class="bg-danger p-2 text-white" id="checkingAttendanceFailedMessage" style="display: none">
             </div>
         </div>
-@* 
-        <div class="row top-row">
+
+   @*      <div class="row top-row">
             <div class="box barcode-box">
                 <div class="barcode">
                     <svg id="studentBarcode"></svg>
@@ -109,13 +119,12 @@
             <div class="box info-box">
                 <p><strong>Lớp:</strong> <span id="studyClassNameInfo">@Model.StudyClassName</span></p>
                 <p><strong>Buổi:</strong> <span id="classSessionNumberInfo">@Model.ClassSessionNumber</span></p>
-                <input type="hidden" name="classSessionIdInput" id="classSessionIdInput" value="@Model.ClassSessionId" />
             </div>
         </div> *@
 
         <div class="row bottom-row">
             <div class="box history-box">
-                <h3>Lịch sử điểm danh</h3>
+                <h3>Danh sách điểm danh</h3>
                 <div class="table-wrapper">
                     <table class="fl-table">
                         <thead>
@@ -138,7 +147,7 @@
 
             <div class="box user-box">
                 <div id="sheet" class="d-flex justify-content-center align-items-center">
-                    <div class="card student-card text-center">
+                    <div id="student-card" class="card student-card text-center">
                         <div>
                             <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top mx-auto d-block" alt="Ảnh đại diện">
                             <div class="card-body">
