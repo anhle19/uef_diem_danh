@@ -7,6 +7,7 @@ let fiveLatestAttendances = [];
 let studentBarcode = "";
 
 
+
 // ============== Helper functions ==============
 function isNumberOnly(barcode) {
     return !isNaN(barcode) && Number.isInteger(Number(barcode));
@@ -18,18 +19,12 @@ function isNumberOnly(barcode) {
 
 async function updateStudentBarcode() {
 
-    const checkingAttendanceSuccessfulMessage = document.getElementById("checkingAttendanceSuccessfulMessage");
-    const checkingAttendanceFailedMessage = document.getElementById("checkingAttendanceFailedMessage");
+    const studentCard = document.getElementById("student-card");
 
     const updateStudentBarcodeInput = document.getElementById("studentBarcodeInput");
 
-    // Clear style
-    checkingAttendanceSuccessfulMessage.style.display = "none";
-    checkingAttendanceFailedMessage.style.display = "none";
-
-    // Clear success and fail message
-    checkingAttendanceSuccessfulMessage.innerText = "";
-    checkingAttendanceFailedMessage.innerText = "";
+    // Hide student card
+    studentCard.style.display = "none";
 
     studentBarcode = updateStudentBarcodeInput.value;
 
@@ -99,11 +94,13 @@ async function fakeBarcodeScannedEvent() {
         loadingRow.style.display = "block";
 
         let latestAttendanceTableRows = "";
+        const successfulToast = document.getElementById('successfulToast')
         const latestAttendenceTableBody = document.getElementById("latestAttendenceTableBody");
+
         const studentCard = document.getElementById("student-card");
         const fullNameInfo = document.getElementById("fullNameInfo");
         const dayOfBirthInfo = document.getElementById("dobInfo");
-        const phoneNumberInfo = document.getElementById("phoneNumberInfo");
+        //const phoneNumberInfo = document.getElementById("phoneNumberInfo");
 
         const studyClassName = document.getElementById("studyClassNameInfo").innerText;
         const classSessionId = document.getElementById("classSessionIdInput").value;
@@ -126,11 +123,13 @@ async function fakeBarcodeScannedEvent() {
 
         // Set successful message
         checkingAttendanceSuccessfulMessage.innerText = response.data.message;
+        // Enable successful toast
+        bootstrap.Toast.getOrCreateInstance(successfulToast).show();
 
         // Set student info
         fullNameInfo.innerText = `${response.data.studentLastName} ${response.data.studentFirstName}`;
-        dayOfBirthInfo.innerHTML = `<strong>Ngày sinh:</strong>: ${moment(response.data.studentDayOfBirth).format("DD/MM/YYYY")}`
-        phoneNumberInfo.innerHTML = `<strong>SĐT:</strong>: ${response.data.studentPhoneNumber}`;
+        dayOfBirthInfo.innerText = `${moment(response.data.studentDayOfBirth).format("DD/MM/YYYY")}`
+        //phoneNumberInfo.innerHTML = `<strong>SĐT:</strong>: ${response.data.studentPhoneNumber}`;
 
         // Generate barcode by phone number
         JsBarcode("#studentBarcode", response.data.studentPhoneNumber, {
@@ -175,9 +174,13 @@ async function fakeBarcodeScannedEvent() {
 
 
     } catch (ex) {
+        const failedToast = document.getElementById('failedToast')
+
         console.log(ex);
-        checkingAttendanceFailedMessage.style.display = "block";
         checkingAttendanceFailedMessage.innerText = ex.response.data;
+
+        // Enable failed toast
+        bootstrap.Toast.getOrCreateInstance(failedToast).show();
     } finally {
         loadingRow.style.display = "none";
     }
@@ -187,21 +190,15 @@ async function fakeBarcodeScannedEvent() {
 
 // ============== Attach Event listeners ==============
 document.getElementById("studentBarcodeInput").addEventListener("paste", async (e) => {
+
+    const studentCard = document.getElementById("student-card");
+
     const updateStudentBarcodeInput = document.getElementById("studentBarcodeInput");
 
-    const checkingAttendanceSuccessfulMessage = document.getElementById("checkingAttendanceSuccessfulMessage");
-    const checkingAttendanceFailedMessage = document.getElementById("checkingAttendanceFailedMessage");
-
+    studentCard.style.display = "none";
 
     e.preventDefault();
 
-    // Clear style
-    checkingAttendanceSuccessfulMessage.style.display = "none";
-    checkingAttendanceFailedMessage.style.display = "none";
-
-    // Clear success and fail message
-    checkingAttendanceSuccessfulMessage.innerText = "";
-    checkingAttendanceFailedMessage.innerText = "";
 
     updateStudentBarcodeInput.value = (e.clipboardData || window.clipboardData).getData("text");
 
