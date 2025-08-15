@@ -117,9 +117,14 @@
 
     <div id="print-btn-container" class="print-btn-container">
         <button class="print-btn px-3 py-2"
-                type="button"
-                onclick="printStudentCard('@ViewBag.StudentId')">
+                type="button" 
+                onclick="window.print()">
             <i class="bi bi-printer-fill" style="color: white; font-size: x-large;"></i>
+        </button>
+        <button class="print-btn px-3 py-2"
+                type="button"
+                onclick="downloadStudentCard('@ViewBag.StudentId')">
+            <i class="bi bi-download" style="color: white; font-size: x-large;"></i>
         </button>
     </div>
 

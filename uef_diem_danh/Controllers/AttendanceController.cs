@@ -296,9 +296,9 @@ namespace uef_diem_danh.Controllers
             }
         }
 
-        [Route("api/xuat-mot-the-hoc-vien")]
+        [Route("api/tai-ve-mot-the-hoc-vien")]
         [HttpPost]
-        public async Task<IActionResult> GenerateSingleStudentCard([FromBody] GenerateSingleStudentCardRequest request)
+        public IActionResult DownloadSingleStudentCard([FromBody] GenerateSingleStudentCardRequest request)
         {
 
             try

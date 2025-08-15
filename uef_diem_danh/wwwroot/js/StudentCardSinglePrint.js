@@ -3,7 +3,7 @@
 
 // ================== STUDENT CARD PDF PRINT ==================
 
-async function printStudentCard(id) {
+async function downloadStudentCard(id) {
 
     try {
         const printBtnContainer = document.getElementById("print-btn-container");
@@ -11,7 +11,7 @@ async function printStudentCard(id) {
         printBtnContainer.style.display = "none";
 
         const response = await axios.post(
-            "https://localhost:7045/api/xuat-mot-the-hoc-vien",
+            "https://localhost:7045/api/tai-ve-mot-the-hoc-vien",
             {
                 StudentId: parseInt(id)
             },
