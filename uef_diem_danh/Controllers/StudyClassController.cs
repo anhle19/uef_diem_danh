@@ -677,5 +677,15 @@ namespace uef_diem_danh.Controllers
 
 
 
+        // In thẻ học viên
+        [Route("in-mot-the-hoc-vien/{student_id}")]
+        public async Task<IActionResult> GetStudentCardSinglePrintPage(int student_id)
+        {
+
+            ViewBag.StudentId = student_id;
+
+            return View("~/Views/StudyClasses/StudentCardSinglePrintView.cshtml");
+        }
+
     }
 }

@@ -8,7 +8,7 @@ $(document).ready(function () {
 
 
 let studyClassTable = new DataTable('#studyClassTable', {
-    dom: 'lrt',    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
+    dom: 'rt',    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
     // Notice no "f" here, which is the default filter/search box
     columnDefs: [
         { orderable: false, targets: [4, 5, 6, 7] } // Disable button column

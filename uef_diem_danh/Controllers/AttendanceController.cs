@@ -6,6 +6,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System.Drawing.Printing;
 using System.Security.Policy;
+using System.Text.Json;
 using uef_diem_danh.Database;
 using uef_diem_danh.DTOs;
 using uef_diem_danh.Models;
@@ -295,9 +296,9 @@ namespace uef_diem_danh.Controllers
             }
         }
 
-        [Route("api/xuat-mot-the-hoc-vien")]
+        [Route("api/tai-ve-mot-the-hoc-vien")]
         [HttpPost]
-        public async Task<IActionResult> GenerateSingleStudentCard()
+        public IActionResult DownloadSingleStudentCard([FromBody] GenerateSingleStudentCardRequest request)
         {
 
             try
@@ -309,7 +310,9 @@ namespace uef_diem_danh.Controllers
                 options.AddArgument("--no-sandbox");
 
                 using var driver = new ChromeDriver(options);
-                driver.Navigate().GoToUrl("http://127.0.0.1:5500/html/page/barcode-card-single.html");
+                //driver.Navigate().GoToUrl("http://127.0.0.1:5500/html/page/barcode-card-single.html");
+                driver.Navigate().GoToUrl($"https://localhost:7045/in-mot-the-hoc-vien/{request.StudentId}");
+
 
                 var printOptions = new PrintOptions
                 {
@@ -319,16 +322,24 @@ namespace uef_diem_danh.Controllers
                     PageDimensions = new PrintOptions.PageSize { WidthInInches = 5.83, HeightInInches = 8.27 }
                 };
 
+                // Find HTML element by id
+                IWebElement element = driver.FindElement(By.Id("print-btn-container"));
+
+                // Change element style using JavaScript
+                IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+                js.ExecuteScript("arguments[0].style.display = 'none';", element);
+
                 // Convert to PDF
                 var pdf = driver.Print(printOptions);
 
+                byte[] pdfBytes = Convert.FromBase64String(pdf.AsBase64EncodedString);
+                //string pdfPath = Path.Combine(Directory.GetCurrentDirectory(), "GeneratedPdf", "localhost_report.pdf");
 
-                string pdfPath = Path.Combine(Directory.GetCurrentDirectory(), "GeneratedPdf", "localhost_report.pdf");
+                //// Save PDF to disk
+                //pdf.SaveAsFile(pdfPath);
 
-                // Save PDF to disk
-                pdf.SaveAsFile(pdfPath);
-
-                return Ok();
+                //return Ok("In 1 thẻ học viên thành công");
+                return File(pdfBytes, "application/pdf", "the_hoc_vien.pdf");
             } 
             catch (Exception ex)
             {
