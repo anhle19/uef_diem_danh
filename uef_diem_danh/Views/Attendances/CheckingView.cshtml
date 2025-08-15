@@ -16,7 +16,7 @@
           rel="stylesheet" />
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-            defer></script>
+            ></script>
 
      <!-- Moment JS -->
     <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>
@@ -33,7 +33,7 @@
         /* Tùy chỉnh kích thước thẻ để giống thẻ học viên */
         .student-card {
             width: 204px; /* Chiều rộng cố định */
-            height: 321px; /* Chiều cao cố định */
+            height: 300px; /* Chiều cao cố định */
             border-radius: 15px; /* Bo tròn góc */
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Tạo bóng đổ */
             overflow: hidden; /* Ẩn các phần nội dung tràn ra ngoài */
@@ -80,34 +80,53 @@
 
     <div class="container-fluid px-lg-5 py-lg-5">
 
+        <!-- Taost Message -->
+        <div class="toast-container position-fixed top-0 end-0 p-3">
+            <!-- Successful Toast Message -->
+            <div id="successfulToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-success text-white">
+                    <strong class="me-auto">Điểm danh học viên</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div id="checkingAttendanceSuccessfulMessage" class="toast-body">
+
+                </div>
+            </div>
+
+            <!-- Failed Toast Message -->
+            <div id="failedToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-danger text-white">
+                    <strong class="me-auto">Điểm danh học viên</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div id="checkingAttendanceFailedMessage" class="toast-body">
+
+                </div>
+            </div>
+        </div>
+
         <div id="attendance-checking-screen-info" class="text-center">
             <p class="fs-4">
                 <strong>Lớp:</strong> 
                 <span id="studyClassNameInfo">@Model.StudyClassName</span> 
-                <span id="classSessionNumberInfo">@Model.ClassSessionNumber</span>
+                <span id="classSessionNumberInfo"> - Buổi @Model.ClassSessionNumber</span>
             </p>
             <p class="fs-5">
                 Điểm danh học viên
             </p>
         </div>
 
-        <div class="d-flex justify-content-lg-center">
+        <div class="d-flex justify-content-lg-center mb-3">
             <input 
-                type="text" 
+                type="password" 
                 class="form-control w-50 fs-4" 
+                style="text-align: center"
                 id="studentBarcodeInput" 
                 name="studentBarcodeInput" 
                 oninput="updateStudentBarcode()" 
                 placeholder="Mã barcode của học viên...." 
                 autofocus />
             <input type="hidden" name="classSessionIdInput" id="classSessionIdInput" value="@Model.ClassSessionId" />
-        </div>
-
-        <div class="px-3 py-2">
-            <div class="bg-success p-2 text-white" id="checkingAttendanceSuccessfulMessage" style="display: none">
-            </div>
-            <div class="bg-danger p-2 text-white" id="checkingAttendanceFailedMessage" style="display: none">
-            </div>
         </div>
 
    @*      <div class="row top-row">
@@ -121,6 +140,7 @@
                 <p><strong>Buổi:</strong> <span id="classSessionNumberInfo">@Model.ClassSessionNumber</span></p>
             </div>
         </div> *@
+
 
         <div class="row bottom-row">
             <div class="box history-box">
@@ -152,8 +172,7 @@
                             <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top mx-auto d-block" alt="Ảnh đại diện">
                             <div class="card-body">
                                 <h5 id="fullNameInfo" class="card-title text-primary">Nguyễn Văn A</h5>
-                                <p id="dobInfo" class="card-text text-muted"><strong>Ngày sinh:</strong> 01/01/2000</p>
-                                <p id="phoneNumberInfo" class="card-text text-muted"><strong>SĐT:</strong> 0912345678</p>
+                                <p id="dobInfo" class="card-text text-muted">01/01/2000</p>
                             </div>
                         </div>
                         <div class="barcode-section">
