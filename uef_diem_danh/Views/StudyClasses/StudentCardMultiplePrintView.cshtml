@@ -27,8 +27,8 @@
         /* ========= Mặc định màn hình ========= */
         :root {
             /* Quy đổi 204x321 px ~ 54x85 mm (96dpi) để in ra đúng kích thước */
-            --card-w-mm: 54mm;
-            --card-h-mm: 85mm;
+            --card-w-mm: 40mm;
+            --card-h-mm: 60mm;
             --gap-mm: 3mm;
             --pad-x-mm: 7.5mm; /* 2 bên: 7.5 + 7.5 = 15mm, vừa khít 5 cột */
             --pad-y-mm: 12.5mm; /* trên + dưới, canh giữa dọc trang */
@@ -54,7 +54,7 @@
             margin-top: 30px;
             margin-bottom: 30px;
             display: grid;
-            grid-template-columns: repeat(2, var(--card-w-mm));
+            grid-template-columns: repeat(4, var(--card-w-mm));
             gap: var(--gap-mm);
         }
 
@@ -77,8 +77,8 @@
         }
 
         .card-img-top {
-            width: 120px;
-            height: 120px;
+            width: 90px;
+            height: 90px;
             object-fit: cover;
             border-radius: 10px;
             border: 4px solid #ffffff;
@@ -91,14 +91,14 @@
         }
 
         .card-body h5 {
-            font-size: 1.05rem; /* vừa mắt trên card 54x85mm */
+            font-size: 0.75rem; /* vừa mắt trên card 54x85mm */
             font-weight: 700;
             margin-bottom: 4px;
             color: #0d6efd;
         }
 
         .card-body p {
-            font-size: .85rem;
+            font-size: 0.55rem;
             margin: 0 0 4px 0;
             color: #6c757d;
         }
