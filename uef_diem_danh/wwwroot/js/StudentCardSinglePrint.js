@@ -234,6 +234,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
     try {
 
         const studentId = document.getElementById("studentIdInput").value;
+        const studentAvatarInfo = document.getElementById("studentAvatarInfo");
         const studentFullNameInfo = document.getElementById("studentFullNameInfo");
         const studentDobInfo = document.getElementById("studentDobInfo");
         const studentPhoneNumberInfo = document.getElementById("studentPhoneNumberInfo");
@@ -244,6 +245,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
 
         // Set student info to UI
+        studentAvatarInfo.src = `https://localhost:7045/${studentData.hinhAnh}`;
         studentFullNameInfo.innerText = `${studentData.ho} ${studentData.ten}`;
         studentDobInfo.innerHTML =
         `

@@ -415,16 +415,22 @@ namespace uef_diem_danh.Controllers
                     {
                         foreach (HocVien student in creatingStudents)
                         {
+                            const int IMAGE_MAX_SIZE = 10 * 1024 * 1024;
 
                             var studentAvatar = worksheet.Picture($"hv_{student.SoDienThoai}");
+
+                            if (studentAvatar.ImageStream.Length > IMAGE_MAX_SIZE)
+                            {
+                                TempData["StudentInStudyClassErrorMessage"] = $"Hình ảnh của học viên: {student.Ho} {student.Ten} - SĐT: {student.SoDienThoai} quá kích thước 10MB";
+                                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                            }
 
                             var imageBytes = studentAvatar.ImageStream.ToArray();
 
                             var fileName = $"hv_{student.SoDienThoai}.png";
 
-                            //Console.WriteLine($"Picture Name: {picture.Name}");
 
-                            student.HinhAnh = $"wwwroot/student_avatars/{fileName}";
+                            student.HinhAnh = $"student_pictures/{fileName}";
 
                             var imageFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures", fileName);
 
