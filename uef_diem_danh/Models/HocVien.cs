@@ -15,13 +15,15 @@ namespace uef_diem_danh.Models
 
         public string MaBarCode { get; set; }
 
-        public DateOnly NgaySinh { get; set; }
+        public string HinhAnh { get; set; }
 
         public string DiaChi { get; set; }
 
         public string Email { get; set; }
 
         public string SoDienThoai { get; set; }
+
+        public DateOnly NgaySinh { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
