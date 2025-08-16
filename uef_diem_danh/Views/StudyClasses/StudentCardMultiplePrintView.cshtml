@@ -7,490 +7,158 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <title>In Danh Sách Thẻ Học Viên</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>In Danh Sách Học Viên</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- (Tuỳ chọn) Bootstrap chỉ để dùng vài class tiện lợi -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- (Tuỳ chọn) Bootstrap chỉ để dùng vài class tiện lợi -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Bootstrap Icon -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!-- Bootstrap Icon -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
-  <!-- html2canvasd -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <!-- js Pdf -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
-  <style>
-    /* ========= Mặc định màn hình ========= */
-    :root{
-      /* Quy đổi 204x321 px ~ 54x85 mm (96dpi) để in ra đúng kích thước */
-      --card-w-mm: 54mm;
-      --card-h-mm: 85mm;
-      --gap-mm: 3mm;
-      --pad-x-mm: 7.5mm;  /* 2 bên: 7.5 + 7.5 = 15mm, vừa khít 5 cột */
-      --pad-y-mm: 12.5mm; /* trên + dưới, canh giữa dọc trang */
-    }
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-    html, body { height: 100%; }
-    body{
-      margin-top: 20px;
-      background: #f8f9fa;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
+    <!-- Moment JS -->
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>
 
-    /* Tờ A4 nằm ngang: 297 x 210 mm */
-    .sheet{
-      width: 297mm;
-      height: 210mm;
-      margin: 0 auto;
-      background: #fff;
-      box-sizing: border-box;
+    <style>
+        /* ========= Mặc định màn hình ========= */
+        :root {
+            /* Quy đổi 204x321 px ~ 54x85 mm (96dpi) để in ra đúng kích thước */
+            --card-w-mm: 54mm;
+            --card-h-mm: 85mm;
+            --gap-mm: 3mm;
+            --pad-x-mm: 7.5mm; /* 2 bên: 7.5 + 7.5 = 15mm, vừa khít 5 cột */
+            --pad-y-mm: 12.5mm; /* trên + dưới, canh giữa dọc trang */
+        }
 
-      display: grid;
-      grid-template-columns: repeat(5, var(--card-w-mm));
-      grid-auto-rows: var(--card-h-mm);
-      gap: var(--gap-mm);
-      padding: var(--pad-y-mm) var(--pad-x-mm);
+        html, body {
+            height: 100%;
+        }
 
-   
-      overflow: hidden;
+        body {
+            height: auto;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
 
-      /* chống cắt khi in */
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
+        /* Tờ A4 nằm ngang: 297 x 210 mm */
+        .sheet {
+            background: #fff;
+            box-sizing: border-box;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(2, var(--card-w-mm));
+            gap: var(--gap-mm);
+        }
 
-    /* Card theo đúng kích thước yêu cầu */
-    .student-card{
-      width: var(--card-w-mm);
-      height: var(--card-h-mm);
-      border-radius: 15px;
-      box-shadow: 0 4px 8px rgba(0,0,0,.10);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border: 2px solid #e9ecef;
+        /* Card theo đúng kích thước yêu cầu */
+        .student-card {
+            width: var(--card-w-mm);
+            height: var(--card-h-mm);
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,.10);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 2px solid #e9ecef;
+        }
 
-      /* chống cắt khi in */
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
+        .card-top {
+            padding-top: 14px;
+            text-align: center;
+        }
 
-    .card-top{
-      padding-top: 14px;
-      text-align: center;
-    }
-    .card-img-top{
-      width: 120px;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 10px;
-      border: 4px solid #ffffff;
-      display: block;
-      margin: 0 auto 6px;
-    }
-    .card-body{
-      padding: 6px 10px 8px;
-    }
-    .card-body h5{
-      font-size: 1.05rem; /* vừa mắt trên card 54x85mm */
-      font-weight: 700;
-      margin-bottom: 4px;
-      color: #0d6efd;
-    }
-    .card-body p{
-      font-size: .85rem;
-      margin: 0 0 4px 0;
-      color: #6c757d;
-    }
+        .card-img-top {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 4px solid #ffffff;
+            display: block;
+            margin: 0 auto 6px;
+        }
 
-    .barcode-section{
-      padding: 5px 0 7px;
-      background: #ffffff;
-      border-top: 1px solid #e9ecef;
-      text-align: center;
-    }
+        .card-body {
+            padding: 6px 10px 8px;
+        }
 
-    .print-btn-container {
-        position: fixed; 
-        bottom: 10px; 
-        right: 10px;
-    }
-    .print-btn {
-        background-color: #0d6efd; 
-        border: 0; 
-        border-radius: 50%;
+        .card-body h5 {
+            font-size: 1.05rem; /* vừa mắt trên card 54x85mm */
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #0d6efd;
+        }
 
-        transition: background-color 0.15s ease;
-    }
-    .print-btn:hover {
-        background-color: #0b55d4; 
-    }
+        .card-body p {
+            font-size: .85rem;
+            margin: 0 0 4px 0;
+            color: #6c757d;
+        }
 
-    /* ========= Chế độ in ========= */
-    @page{
-      size: A4 landscape;
-      margin: 0; /* giảm rìa trắng, trình in vẫn có thể ép margin tối thiểu */
-    }
-    @media print{
-      body{ background: #fff; }
+        .barcode-section {
+            padding: 5px 0 7px;
+            background: #ffffff;
+            border-top: 1px solid #e9ecef;
+            text-align: center;
+        }
 
-      /* Một số trình duyệt cũ */
-      .sheet, .student-card{
-        -webkit-region-break-inside: avoid;
-        -webkit-column-break-inside: avoid;
-      }
-    }
-  </style>
+        .print-btn-container {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+        }
+
+        .print-btn {
+            background-color: #0d6efd;
+            border: 0;
+            border-radius: 50%;
+            transition: background-color 0.15s ease;
+        }
+
+        .print-btn:hover {
+            background-color: #0b55d4;
+        }
+
+    </style>
 </head>
 <body>
 
-  <div class="sheet" id="sheet_1">
-    <!-- Lặp 10 thẻ = 5 cột × 2 hàng -->
-    <!-- Bạn thay data-code, tên, ngày sinh, SĐT, ảnh... theo dữ liệu thật -->
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Nguyễn Văn A</h5>
-          <p><strong>Ngày sinh:</strong> 01/01/2000</p>
-          <p><strong>SĐT:</strong> 0912345678</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0912345678"></svg>
-      </div>
+    <!-- STUDY CLASS ID HIDDEN INPUT -->
+    <input type="hidden" name="studyClassIdInput" id="studyClassIdInput" value="@ViewBag.StudyClassId" />
+
+    <div id="generateCardsArea">
+    </div>
+   
+    <div id="generateCardsResultArea">
     </div>
 
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Trần Thị B</h5>
-          <p><strong>Ngày sinh:</strong> 12/03/2001</p>
-          <p><strong>SĐT:</strong> 0987654321</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0987654321"></svg>
-      </div>
+
+
+
+    <div id="print-btn-container" class="print-btn-container">
+        <button class="print-btn px-3 py-2"
+                type="button"
+                onclick="openPrintDialog()">
+            <i class="bi bi-printer-fill" style="color: white; font-size: x-large;"></i>
+        </button>
+        <button class="print-btn px-3 py-2"
+                type="button"
+                onclick="downloadStudentCards('@ViewBag.StudyClassId')">
+            <i class="bi bi-download" style="color: white; font-size: x-large;"></i>
+        </button>
     </div>
 
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Lê Văn C</h5>
-          <p><strong>Ngày sinh:</strong> 15/07/2002</p>
-          <p><strong>SĐT:</strong> 0909009000</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0909009000"></svg>
-      </div>
-    </div>
+    <!-- JsBarcode -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Phạm D</h5>
-          <p><strong>Ngày sinh:</strong> 22/11/1999</p>
-          <p><strong>SĐT:</strong> 0933334444</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0933334444"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Đỗ E</h5>
-          <p><strong>Ngày sinh:</strong> 05/05/2003</p>
-          <p><strong>SĐT:</strong> 0977778888</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0977778888"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Nguyễn F</h5>
-          <p><strong>Ngày sinh:</strong> 10/10/2001</p>
-          <p><strong>SĐT:</strong> 0911001100</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0911001100"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Trần G</h5>
-          <p><strong>Ngày sinh:</strong> 02/02/2000</p>
-          <p><strong>SĐT:</strong> 0901234123</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0901234123"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Lê H</h5>
-          <p><strong>Ngày sinh:</strong> 23/08/2004</p>
-          <p><strong>SĐT:</strong> 0944445555</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0944445555"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Phạm I</h5>
-          <p><strong>Ngày sinh:</strong> 18/06/2002</p>
-          <p><strong>SĐT:</strong> 0922221111</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0922221111"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Đỗ K</h5>
-          <p><strong>Ngày sinh:</strong> 30/09/2005</p>
-          <p><strong>SĐT:</strong> 0955556666</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0955556666"></svg>
-      </div>
-    </div>
- 
-  </div>
-
-  <br>
-
-
-  <div class="sheet" id="sheet_2">
-    <!-- Lặp 10 thẻ = 5 cột × 2 hàng -->
-    <!-- Bạn thay data-code, tên, ngày sinh, SĐT, ảnh... theo dữ liệu thật -->
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Nguyễn Văn A</h5>
-          <p><strong>Ngày sinh:</strong> 01/01/2000</p>
-          <p><strong>SĐT:</strong> 0912345678</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0912345678"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Trần Thị B</h5>
-          <p><strong>Ngày sinh:</strong> 12/03/2001</p>
-          <p><strong>SĐT:</strong> 0987654321</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0987654321"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Lê Văn C</h5>
-          <p><strong>Ngày sinh:</strong> 15/07/2002</p>
-          <p><strong>SĐT:</strong> 0909009000</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0909009000"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Phạm D</h5>
-          <p><strong>Ngày sinh:</strong> 22/11/1999</p>
-          <p><strong>SĐT:</strong> 0933334444</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0933334444"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Đỗ E</h5>
-          <p><strong>Ngày sinh:</strong> 05/05/2003</p>
-          <p><strong>SĐT:</strong> 0977778888</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0977778888"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Nguyễn F</h5>
-          <p><strong>Ngày sinh:</strong> 10/10/2001</p>
-          <p><strong>SĐT:</strong> 0911001100</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0911001100"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Trần G</h5>
-          <p><strong>Ngày sinh:</strong> 02/02/2000</p>
-          <p><strong>SĐT:</strong> 0901234123</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0901234123"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Lê H</h5>
-          <p><strong>Ngày sinh:</strong> 23/08/2004</p>
-          <p><strong>SĐT:</strong> 0944445555</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0944445555"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Phạm I</h5>
-          <p><strong>Ngày sinh:</strong> 18/06/2002</p>
-          <p><strong>SĐT:</strong> 0922221111</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0922221111"></svg>
-      </div>
-    </div>
-
-    <div class="card student-card text-center">
-      <div class="card-top">
-        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-        <div class="card-body">
-          <h5>Đỗ K</h5>
-          <p><strong>Ngày sinh:</strong> 30/09/2005</p>
-          <p><strong>SĐT:</strong> 0955556666</p>
-        </div>
-      </div>
-      <div class="barcode-section">
-        <svg class="barcode" data-code="0955556666"></svg>
-      </div>
-    </div>
- 
-  </div>
-
-  <div class="print-btn-container">
-    <button 
-        class="print-btn px-3 py-2" 
-        type="button" 
-        onclick="printStudentCards()"
-    >
-        <i class="bi bi-printer-fill" style="color: white; font-size: x-large;"></i>
-    </button>
-  </div>
-
-  <!-- JsBarcode -->
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-  <script>
-    // Render barcode cho mọi SVG có class .barcode
-    document.querySelectorAll('.barcode').forEach(el => {
-      const code = el.getAttribute('data-code') || '';
-      JsBarcode(el, code, {
-        format: "CODE128",
-        displayValue: false,
-        width: 1.5,
-        height: 50,
-        margin: 5
-      });
-    });
-
-    async function printStudentCards() {
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pageWidth = pdf.internal.pageSize.getWidth();
-
-      const sheets = document.getElementsByClassName("sheet");
-
-      for (let i = 0; i < sheets.length; i++) {
-        const sheet = document.getElementById(`sheet_${i + 1}`);
-
-        const canvas = await html2canvas(sheet, { scale: 1.1, useCORS: true });
-        const imgData = canvas.toDataURL("image/png");
-
-        const imgWidth = pageWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        if (i > 0) {
-          pdf.addPage();
-        }
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      }
-
-      pdf.save("document.pdf");
-      alert("In thẻ học viên thành công");
-    }
-  </script>
+    <script src="~/js/StudentCardMultiplePrint.js"></script>
 </body>
 </html>

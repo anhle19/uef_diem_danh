@@ -687,5 +687,15 @@ namespace uef_diem_danh.Controllers
             return View("~/Views/StudyClasses/StudentCardSinglePrintView.cshtml");
         }
 
+        // In danh sách thẻ học viên
+        [Route("in-danh-sach-the-hoc-vien/{study_class_id}")]
+        public async Task<IActionResult> GetStudentCardsMultiplePrintPage(int study_class_id)
+        {
+
+            ViewBag.StudyClassId = study_class_id;
+
+            return View("~/Views/StudyClasses/StudentCardMultiplePrintView.cshtml");
+        }
+
     }
 }
