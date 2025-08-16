@@ -27,7 +27,6 @@
   <ItemGroup>
     <Folder Include="Migrations\" />
     <Folder Include="GeneratedPdf\" />
-    <Folder Include="UploadAvatars\" />
     <Folder Include="Views\Layout\" />
   </ItemGroup>
 
