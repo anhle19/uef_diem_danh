@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
                 `
                  <div class="card student-card text-center">
                     <div class="card-top">
-                        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
+                        <img src="https://localhost:7045/${processingStudentsData[j].studentAvatar}" class="card-img-top" alt="Ảnh đại diện">
                         <div class="card-body">
                             <h5>${processingStudentsData[j].studentLastName} ${processingStudentsData[j].studentFirstName}</h5>
                             <p><strong>Ngày sinh:</strong> ${moment(processingStudentsData[j].studentDayOfBirth).format("DD/MM/YYYY")}</p>
