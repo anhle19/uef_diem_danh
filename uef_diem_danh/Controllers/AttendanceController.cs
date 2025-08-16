@@ -58,11 +58,11 @@ namespace uef_diem_danh.Controllers
         public async Task<IActionResult> GetAttendanceCheckingPage([FromQuery] int studyClassId, [FromQuery] int classSessionId)
         {
 
-            // Get top 5 latest stundet attendances
             AttendanceCheckingViewResponse attendanceCheckingResponse = await context.BuoiHocs
                 .Where(bh => bh.MaBuoiHoc == classSessionId)
                 .Select(bh => new AttendanceCheckingViewResponse
                 {
+                    StudyClassId = studyClassId,
                     StudyClassName = bh.LopHoc.TenLopHoc,
                     ClassSessionId = bh.MaBuoiHoc,
                     ClassSessionNumber = bh.TietHoc
@@ -73,10 +73,11 @@ namespace uef_diem_danh.Controllers
             return View("~/Views/Attendances/CheckingView.cshtml", attendanceCheckingResponse);
         }
 
-        [Route("api/lay-nam-buoi-diem-danh-moi-nhat")]
-        public async Task<IActionResult> GetFiveLatestAttendances()
+        [Route("api/lay-nam-buoi-diem-danh-moi-nhat/{study_class_id}")]
+        public async Task<IActionResult> GetFiveLatestAttendances(int study_class_id)
         {
             List<AttendanceFiveLatestListResponse> latestAttendances = await context.DiemDanhs
+                .Where(dd => dd.BuoiHoc.MaLopHoc == study_class_id)
                 .Select(dd => new AttendanceFiveLatestListResponse
                 {
                     StudentFirstName = dd.HocVien.Ten,

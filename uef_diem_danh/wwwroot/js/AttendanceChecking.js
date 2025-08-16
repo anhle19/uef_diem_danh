@@ -51,8 +51,9 @@ async function fetchFiveLatestAttendances() {
         loadingRow.style.display = "block";
 
         let latestAttendanceTableRows = "";
+        const studyClassId = document.getElementById("studyClassIdInput").value;
         const latestAttendenceTableBody = document.getElementById("latestAttendenceTableBody");
-        const response = await axios.get(`https://localhost:7045/api/lay-nam-buoi-diem-danh-moi-nhat`)
+        const response = await axios.get(`https://localhost:7045/api/lay-nam-buoi-diem-danh-moi-nhat/${studyClassId}`)
 
         const data = response.data
 
