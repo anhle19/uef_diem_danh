@@ -20,12 +20,42 @@ namespace uef_diem_danh.Controllers
         }
 
         [HttpGet("hoc-vien")]
+        // Later refactor to get necessary fields
         public IActionResult StudentList()
         {
             var students = context.HocViens.ToList();
             return View(students);
         }
 
+        [Route("api/lay-danh-sach-hoc-vien-theo-lop/{study_class_id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetStudentsByStudyClass(int study_class_id)
+        {
+
+            try
+            {
+                var students = await context.ThamGias
+                    .Where(tg => tg.MaLopHoc == study_class_id)
+                    .Select(tg => new
+                    {
+                        StudentFirstName = tg.HocVien.Ten,
+                        StudentLastName = tg.HocVien.Ho,
+                        StudentEmail = tg.HocVien.Email,
+                        StudentPhoneNumber = tg.HocVien.SoDienThoai,
+                        StudentDayOfBirth = tg.HocVien.NgaySinh
+                    })
+                    .ToListAsync();
+
+                return Ok(students);
+            } 
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // Later refactor to get necessary fields
         [Route("api/lay-chi-tiet-hoc-vien/{student_id}")]
         [HttpGet]
         public async Task<IActionResult> GetDetailForUpdate(int student_id)
