@@ -244,7 +244,9 @@ document.addEventListener('DOMContentLoaded', async (event) => {
         const response = await axios.get(`https://localhost:7045/api/lay-danh-sach-hoc-vien-theo-lop/${studyClassId}`)
         let studentsData = response.data
 
-        const totalSheets = Math.ceil(studentsData.length / 4);
+        const totalSheets = Math.ceil(studentsData.length / 16);
+
+        console.log(studentsData)
 
         // Create sheet elements
         for (let i = 0; i < totalSheets; i++) {
@@ -255,7 +257,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
             `;
             
             // Get first 4 student
-            const processingStudentsData = studentsData.splice(0, 4);
+            const processingStudentsData = studentsData.splice(0, 16);
 
 
             // Create student card elements
@@ -283,8 +285,8 @@ document.addEventListener('DOMContentLoaded', async (event) => {
                 JsBarcode(`#barcode_${j}`, processingStudentsData[j].studentPhoneNumber, {
                     format: "CODE128",
                     displayValue: false, // Không hiển thị số điện thoại bên dưới barcode
-                    width: 1.5,
-                    height: 50,
+                    width: 1,
+                    height: 30,
                     margin: 5
                 });
 
