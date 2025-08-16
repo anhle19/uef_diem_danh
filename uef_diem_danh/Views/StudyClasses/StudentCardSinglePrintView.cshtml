@@ -22,10 +22,6 @@
     <!-- Moment JS -->
     <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>
 
-    <!-- html2canvasd -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!-- js Pdf -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
     <style>
         body {
             background-color: #f8f9fa;
@@ -76,7 +72,7 @@
 
         .print-btn-container {
             position: fixed;
-            bottom: 10px;
+            top: 10px;
             right: 10px;
         }
 
@@ -87,9 +83,9 @@
             transition: background-color 0.15s ease;
         }
 
-            .print-btn:hover {
-                background-color: #0b55d4;
-            }
+        .print-btn:hover {
+            background-color: #0b55d4;
+        }
     </style>
 </head>
 <body>
@@ -118,7 +114,7 @@
     <div id="print-btn-container" class="print-btn-container">
         <button class="print-btn px-3 py-2"
                 type="button" 
-                onclick="window.print()">
+                onclick="openPrintDialog()">
             <i class="bi bi-printer-fill" style="color: white; font-size: x-large;"></i>
         </button>
         <button class="print-btn px-3 py-2"

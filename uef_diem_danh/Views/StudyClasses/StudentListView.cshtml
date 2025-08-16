@@ -8,7 +8,7 @@
 	Layout = "~/Views/Layout/Main.cshtml";
 	ViewData["Title"] = "Quản lý học viên của lớp học";
 
-	var studentsList = JsonSerializer.Serialize(Model);
+	// var studentsList = JsonSerializer.Serialize(Model);
 }
 
 
@@ -183,11 +183,12 @@
 			</div>
 		</div>
 		<div>
-			<button type="button"
-					class="btn-next-secondary btn -sm btn-add"
-					onclick="printStudentCards(@studentsList)">
+			<a 
+				href="/in-danh-sach-the-hoc-vien/@ViewBag.StudyClassId" 
+				target="_blank"
+				class="btn-next-secondary btn -sm btn-add">
 				Xuất tất cả thẻ học viên
-			</button>
+			</a>
 			<button type="button"
 					class="btn-next-secondary btn -sm btn-add"
 					data-bs-toggle="modal"
@@ -243,7 +244,8 @@
 							<a 
 								class="btn btn-outline-primary btn-sm btn-delete"
 								data-id="@student.Id"
-								href="/in-mot-the-hoc-vien/@student.Id">
+								href="/in-mot-the-hoc-vien/@student.Id" 
+								target="_blank">
 								Xuất thẻ
 							</a>
 

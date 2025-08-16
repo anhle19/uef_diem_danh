@@ -11,7 +11,7 @@ function openPrintDialog() {
     window.print()
 }
 
-async function downloadStudentCard(studentId) {
+async function downloadStudentCards(studyClassId) {
 
     try {
         const printBtnContainer = document.getElementById("print-btn-container");
@@ -19,7 +19,7 @@ async function downloadStudentCard(studentId) {
         printBtnContainer.style.display = "none";
 
         const response = await axios.post(
-            `https://localhost:7045/api/tai-ve-mot-the-hoc-vien/${studentId}`,
+            `https://localhost:7045/api/tai-ve-danh-sach-the-hoc-vien/${studyClassId}`,
             null,
             { responseType: 'blob' }
         );
@@ -31,7 +31,7 @@ async function downloadStudentCard(studentId) {
         // Create a temporary link to trigger download
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'the_hoc_vien.pdf'; // filename
+        a.download = 'danh_sach_hoc_vien.pdf'; // filename
         document.body.appendChild(a);
         a.click();
 
@@ -233,34 +233,91 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
     try {
 
-        const studentId = document.getElementById("studentIdInput").value;
-        const studentFullNameInfo = document.getElementById("studentFullNameInfo");
-        const studentDobInfo = document.getElementById("studentDobInfo");
-        const studentPhoneNumberInfo = document.getElementById("studentPhoneNumberInfo");
+        const generateCardsArea = document.getElementById("generateCardsArea");
+        const generateCardsResultArea = document.getElementById("generateCardsResultArea");
+        const studyClassId = document.getElementById("studyClassIdInput").value;
+        //const studentFullNameInfo = document.getElementById("studentFullNameInfo");
+        //const studentDobInfo = document.getElementById("studentDobInfo");
+        //const studentPhoneNumberInfo = document.getElementById("studentPhoneNumberInfo");
 
-        // Call API fetch student info
-        const response = await axios.get(`https://localhost:7045/api/lay-chi-tiet-hoc-vien/${studentId}`)
-        const studentData = response.data
+        // Call API fetch students info
+        const response = await axios.get(`https://localhost:7045/api/lay-danh-sach-hoc-vien-theo-lop/${studyClassId}`)
+        let studentsData = response.data
 
+        const totalSheets = Math.ceil(studentsData.length / 4);
 
-        // Set student info to UI
-        studentFullNameInfo.innerText = `${studentData.ho} ${studentData.ten}`;
-        studentDobInfo.innerHTML =
-        `
-            <strong>Ngày sinh:</strong> ${moment(studentData.ngaySinh).format("DD/MM/YYYY")}
-        `;
-        studentPhoneNumberInfo.innerHTML =
+        // Create sheet elements
+        for (let i = 0; i < totalSheets; i++) {
+            generateCardsArea.innerHTML +=
             `
-            <strong>SĐT:</strong> ${studentData.soDienThoai}
-        `;
+            <div class="sheet" id="sheet_${i}"></div> 
+            <div style="break-after: page;"></div>
+            `;
+            
+            // Get first 4 student
+            const processingStudentsData = studentsData.splice(0, 4);
 
-        JsBarcode("#studentBarcode", studentData.soDienThoai, {
-            format: "CODE128",
-            displayValue: false, // Không hiển thị số điện thoại bên dưới barcode
-            width: 1.5,
-            height: 50,
-            margin: 5
-        });
+
+            // Create student card elements
+            for (let j = 0; j < processingStudentsData.length; j++) {
+                const sheet = document.getElementById(`sheet_${i}`)
+
+                sheet.innerHTML +=
+                `
+                 <div class="card student-card text-center">
+                    <div class="card-top">
+                        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
+                        <div class="card-body">
+                            <h5>${processingStudentsData[j].studentLastName} ${processingStudentsData[j].studentFirstName}</h5>
+                            <p><strong>Ngày sinh:</strong> ${moment(processingStudentsData[j].studentDayOfBirth).format("DD/MM/YYYY")}</p>
+                            <p><strong>SĐT:</strong> ${processingStudentsData[j].studentPhoneNumber}</p>
+                        </div>
+                    </div>
+                    <div class="barcode-section">
+                        <svg class="barcode" id="barcode_${j}"></svg>
+                    </div>
+                </div>
+                `;
+
+                // Generate Barcode
+                JsBarcode(`#barcode_${j}`, processingStudentsData[j].studentPhoneNumber, {
+                    format: "CODE128",
+                    displayValue: false, // Không hiển thị số điện thoại bên dưới barcode
+                    width: 1.5,
+                    height: 50,
+                    margin: 5
+                });
+
+            }
+
+        }
+
+        while (generateCardsArea.firstChild) {
+            generateCardsResultArea.after(generateCardsArea.lastChild);
+        }
+        //generateCardsArea.innerHTML = "";
+
+        // Move sheet to outer
+        
+
+        //// Set student info to UI
+        //studentFullNameInfo.innerText = `${studentData.ho} ${studentData.ten}`;
+        //studentDobInfo.innerHTML =
+        //    `
+        //    <strong>Ngày sinh:</strong> ${moment(studentData.ngaySinh).format("DD/MM/YYYY")}
+        //`;
+        //studentPhoneNumberInfo.innerHTML =
+        //    `
+        //    <strong>SĐT:</strong> ${studentData.soDienThoai}
+        //`;
+
+        //JsBarcode("#studentBarcode", studentData.soDienThoai, {
+        //    format: "CODE128",
+        //    displayValue: false, // Không hiển thị số điện thoại bên dưới barcode
+        //    width: 1.5,
+        //    height: 50,
+        //    margin: 5
+        //});
 
     } catch (ex) {
         console.log(ex)
