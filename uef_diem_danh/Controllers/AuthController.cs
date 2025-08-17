@@ -1,5 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Threading.Tasks;
 using uef_diem_danh.DTOs;
 using uef_diem_danh.Models;
 
@@ -25,6 +30,7 @@ namespace uef_diem_danh.Controllers
             Console.WriteLine("ĐĂNG NHẬP 1");
             return View();
         }
+
 
 
         [HttpPost("login")]
@@ -108,6 +114,169 @@ namespace uef_diem_danh.Controllers
 
             
             return RedirectToAction("GetListManagementPage", "StudyClass");
+        }
+
+        // Quản lí tài khoản nhân viên
+        [HttpGet("nhan-vien")]
+        public async Task<IActionResult> StaffList()
+        {
+            var staffs = await _userManager.GetUsersInRoleAsync("Staff");
+
+            return View(
+                staffs.Select(s => new StaffGetRequest
+                {
+                    Id = s.Id,
+                    FullName = s.FullName,
+                    Address = s.Address,
+                    PhoneNumber = s.PhoneNumber,
+                }).ToList()
+             );
+        }
+
+        [Route("api/lay-chi-tiet-nhan-vien/{staff_id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetDetailForUpdate(string staff_id)
+        {
+            var staff = await _userManager.Users
+                            .Where(u => u.Id == staff_id)
+                            .Select(u => new StaffGetRequest
+                            {
+                                Id = u.Id,
+                                FullName = u.FullName,
+                                Address = u.Address,
+                                PhoneNumber = u.PhoneNumber,
+                            })
+                            .FirstOrDefaultAsync();
+
+            return Ok(staff);
+        }
+
+        [Route("tao-nhan-vien")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([FromForm] StaffCreateRequest request)
+        {
+            if (_userManager.Users.Any(hv => hv.PhoneNumber == request.PhoneNumber))
+            {
+                TempData["StaffErrorMessage"] = "Số điện thoại đã tồn tại trong hệ thống!";
+                return Redirect("nhan-vien");
+            }
+
+            try
+            {
+
+                var staff = new NguoiDungUngDung
+                {
+                    UserName = request.PhoneNumber,
+                    FullName = request.FullName,
+                    Address = request.Address,
+                    PhoneNumber = request.PhoneNumber
+                };
+
+                await _userManager.CreateAsync(staff, request.PhoneNumber);
+                await _userManager.AddToRoleAsync(staff, "Staff");
+
+                TempData["StaffSuccessMessage"] = "Thêm nhân viên thành công!";
+                return Redirect("nhan-vien");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["StaffErrorMessage"] = "Có lỗi xảy ra khi thêm học viên: " + ex.Message;
+                return Redirect("nhan-vien");
+            }
+        }
+
+        [Route("cap-nhat-nhan-vien")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(int staff_id, [FromForm] StaffUpdateRequest request)
+        {
+
+            try
+            {
+                var staff = await _userManager.FindByIdAsync(request.Id);
+
+                if (staff == null)
+                {
+                    TempData["StaffErrorMessage"] = "Không tìm thấy nhân viên.";
+                    return Redirect("nhan-vien");
+                }
+
+                staff.FullName = request.FullName;
+                staff.Address = request.Address;
+                staff.PhoneNumber = request.PhoneNumber;
+
+                await _userManager.UpdateAsync(staff);
+
+                TempData["StaffSuccessMessage"] = "Cập nhật nhân viên thành công!";
+                return Redirect("nhan-vien");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["StaffErrorMessage"] = "Có lỗi xảy ra khi cập nhật nhân viên: " + ex.Message;
+                return Redirect("nhan-vien");
+            }
+
+        }
+
+        [HttpPost("dat-lai-mat-khau")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(StaffResetPasswordRequest request)
+        {
+            var staff = await _userManager.FindByIdAsync(request.Id);
+
+            if (staff == null)
+            {
+                TempData["StaffErrorMessage"] = "Không tìm thấy nhân viên này!";
+                return Redirect("nhan-vien");
+            }
+
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(staff);
+
+            var res = await _userManager.ResetPasswordAsync(staff, resetToken, staff.PhoneNumber??"boiduongchinhtri");
+
+            if (res.Succeeded)
+            {
+                TempData["StaffSuccessMessage"] = "Đặt lại mật khẩu thành công!";
+                return Redirect("nhan-vien");
+            }
+            else
+            {
+                TempData["StaffErrorMessage"] = "Đã xảy ra lỗi!";
+                return Redirect("nhan-vien");
+            }
+        }
+
+
+        [Route("xoa-nhan-vien")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete([FromForm] StaffDeleteRequest request)
+        {
+            Console.WriteLine("Delete staff with ID: " + request.Id);
+            try
+            {
+                var staff = await _userManager.FindByIdAsync(request.Id);
+
+                if (staff == null)
+                {
+                    TempData["StaffErrorMessage"] = "Không tìm thấy nhân viên.";
+                    return Redirect("nhan-vien");
+                }
+
+                await _userManager.DeleteAsync(staff);
+
+                TempData["StudentSuccessMessage"] = "Xóa học viên thành công!";
+                return Redirect("nhan-vien");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["StudentSuccessMessage"] = "Có lỗi xảy ra khi xóa học viên: " + ex.Message;
+                return Redirect("nhan-vien");
+            }
         }
     }
 }

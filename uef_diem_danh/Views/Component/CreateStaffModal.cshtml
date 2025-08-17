@@ -1,0 +1,68 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model uef_diem_danh.DTOs.StaffCreateRequest
+@{
+}
+<div class="modal fade"
+	 id="popupThemNhanVien"
+	 tabindex="-1"
+	 aria-labelledby="popupThemNhanVienLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="popupThemNhanVienLabel">Thêm nhân viên</h5>
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Đóng"></button>
+			</div>
+			<div class="modal-body">
+				<form method="POST" action="/tao-nhan-vien" id="createStaffForm">
+					@Html.AntiForgeryToken()
+					<div class="mb-2">
+						<label class="form-label">Họ tên <span class="text-danger">*</span></label>
+						<input type="text"
+							   id="themHoTen"
+							   name="FullName"
+							   class="form-control"
+							   placeholder="VD: Triệu Gia Khiêm" />
+					</div>
+					<div class="mb-2">
+						<label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+						<input type="text"
+							   id="themDiaChi"
+							   name="Address"
+							   class="form-control"
+							   placeholder="VD: TP.HCM" />
+					</div>
+					<div class="mb-2">
+						<label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+						<input type="text"
+							   id="themSoDienThoai"
+							   name="PhoneNumber"
+							   class="form-control"
+							   placeholder="VD: 098........" />
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button"
+						class="btn-next-secondary"
+						data-bs-dismiss="modal">
+					Đóng
+				</button>
+				<button type="button"
+						class="btn-next-primary"
+						id="btnLuuNhanVienMoi"
+						onclick="addStaff()"
+						form="createStaffForm">
+					Lưu
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

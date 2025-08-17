@@ -117,8 +117,22 @@ namespace uef_diem_danh.Controllers
             return Ok(studyClass);
         }
 
+        [HttpGet("hoc-vien/tim-theo-so-dien-thoai")]
+        public async Task<IActionResult> SearchStudentByPhoneNumber(string phoneNumber)
+        {
+            if (string.IsNullOrEmpty(phoneNumber))
+            {
+                return BadRequest("Số điện thoại không được để trống.");
+            }
+            var student = await context.HocViens
+                .FirstOrDefaultAsync(hv => hv.SoDienThoai == phoneNumber);
+            if (student == null)
+            {
+                return NotFound("Không tìm thấy học viên với số điện thoại này.");
+            }
+            return Ok(student);
+        }
 
-        
         [Route("tao-moi-lop-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
