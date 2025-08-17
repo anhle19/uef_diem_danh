@@ -2,20 +2,20 @@
 {
     public class StudentUpdateRequest
     {
-        public int MaHocVien { get; set; }
+        public int StudentId { get; set; }
 
-        public IFormFile? HinhAnh { get; set; }
+        public IFormFile? UpdateStudentAvatar { get; set; }
 
-        public string Ho { get; set; }
+        public string UpdateStudentLastName { get; set; }
 
-        public string Ten { get; set; }
+        public string UpdateStudentFirstName { get; set; }
 
-        public string NgaySinh { get; set; }
+        public string UpdateStudentDob { get; set; }
 
-        public string DiaChi { get; set; }
+        public string UpdateStudentAddress { get; set; }
 
-        public string Email { get; set; }
+        public string UpdateStudentEmail { get; set; }
 
-        public string SoDienThoai { get; set; }
+        public string UpdateStudentPhoneNumber { get; set; }
     }
 }

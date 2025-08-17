@@ -99,7 +99,7 @@ namespace uef_diem_danh.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromForm] StudentCreateRequest request)
         {
-            if(context.HocViens.Any(hv => hv.SoDienThoai == request.SoDienThoai))
+            if(context.HocViens.Any(hv => hv.SoDienThoai == request.CreateStudentPhoneNumber))
             {
                 TempData["StudentErrorMessage"] = "Số điện thoại đã tồn tại trong hệ thống!";
                 return Redirect("hoc-vien");
@@ -110,14 +110,25 @@ namespace uef_diem_danh.Controllers
 
                 HocVien student = new HocVien
                 {
-                    Ho = request.Ho,
-                    Ten = request.Ten,
-                    NgaySinh = DateOnly.Parse(request.NgaySinh, CultureInfo.InvariantCulture),
-                    DiaChi = request.DiaChi,
-                    MaBarCode = request.SoDienThoai, 
-                    Email = request.Email,
-                    SoDienThoai = request.SoDienThoai,
+                    HinhAnh = $"student_pictures/hv_{request.CreateStudentPhoneNumber}{Path.GetExtension(request.CreateStudentAvatar.FileName)}",
+                    Ho = request.CreateStudentLastName,
+                    Ten = request.CreateStudentFirstName,
+                    NgaySinh = DateOnly.Parse(request.CreateStudentDob, CultureInfo.InvariantCulture),
+                    DiaChi = request.CreateStudentAddress,
+                    MaBarCode = request.CreateStudentPhoneNumber, 
+                    Email = request.CreateStudentEmail,
+                    SoDienThoai = request.CreateStudentPhoneNumber,
                 };
+
+                // Init student avatar file path
+                string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
+                string studentAvatarPath = Path.Combine(uploadFilePath, $"hv_{student.SoDienThoai}.png");
+
+                // Save new uploaded student avatar
+                using (var stream = new FileStream(studentAvatarPath, FileMode.Create))
+                {
+                    await request.CreateStudentAvatar.CopyToAsync(stream);
+                }
 
                 context.HocViens.Add(student);
                 await context.SaveChangesAsync();
@@ -144,18 +155,25 @@ namespace uef_diem_danh.Controllers
             try
             {
                 HocVien student = await context.HocViens
-                    .FirstOrDefaultAsync(lh => lh.MaHocVien == request.MaHocVien);
+                    .FirstOrDefaultAsync(lh => lh.MaHocVien == request.StudentId);
 
-                student.Ho = request.Ho;
-                student.Ten = request.Ten;
-                student.NgaySinh = DateOnly.Parse(request.NgaySinh, CultureInfo.InvariantCulture);
-                student.DiaChi = request.DiaChi;
-                student.Email = request.Email;
-                student.SoDienThoai = request.SoDienThoai;
-
-                // Update student avatar
-                if (request.HinhAnh != null)
+                if (context.HocViens.Any(hv => hv.SoDienThoai == request.UpdateStudentPhoneNumber))
                 {
+                    TempData["StudentErrorMessage"] = "Số điện thoại cập nhật bị trùng. Vui lòng nhập số điện thoại khác";
+                    return Redirect("hoc-vien");
+                }
+
+                if (request.UpdateStudentAvatar != null)
+                {
+                    student.HinhAnh = $"student_pictures/hv_{request.UpdateStudentPhoneNumber}.{Path.GetExtension(request.UpdateStudentAvatar.FileName)}";
+                    student.Ho = request.UpdateStudentLastName;
+                    student.Ten = request.UpdateStudentFirstName;
+                    student.NgaySinh = DateOnly.Parse(request.UpdateStudentDob, CultureInfo.InvariantCulture);
+                    student.DiaChi = request.UpdateStudentAddress;
+                    student.Email = request.UpdateStudentEmail;
+                    student.SoDienThoai = request.UpdateStudentPhoneNumber;
+                    student.MaBarCode = request.UpdateStudentPhoneNumber;
+
                     // Find existing student avatar
                     string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
                     string existedStudentAvatarPath = Path.Combine(uploadFilePath, $"hv_{student.SoDienThoai}.png");
@@ -166,10 +184,21 @@ namespace uef_diem_danh.Controllers
                     // Save new uploaded student avatar
                     using (var stream = new FileStream(existedStudentAvatarPath, FileMode.Create))
                     {
-                        await request.HinhAnh.CopyToAsync(stream);
+                        await request.UpdateStudentAvatar.CopyToAsync(stream);
                     }
-
                 }
+                else
+                {
+                    student.Ho = request.UpdateStudentLastName;
+                    student.Ten = request.UpdateStudentFirstName;
+                    student.NgaySinh = DateOnly.Parse(request.UpdateStudentDob, CultureInfo.InvariantCulture);
+                    student.DiaChi = request.UpdateStudentAddress;
+                    student.Email = request.UpdateStudentEmail;
+                    student.SoDienThoai = request.UpdateStudentPhoneNumber;
+                    student.MaBarCode = request.UpdateStudentPhoneNumber;
+                }
+
+
 
                 await context.SaveChangesAsync();
 
@@ -179,7 +208,7 @@ namespace uef_diem_danh.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                TempData["StudentSuccessMessage"] = "Có lỗi xảy ra khi cập nhật học viên: " + ex.Message;
+                TempData["StudentErrorMessage"] = "Có lỗi xảy ra khi cập nhật học viên: " + ex.Message;
                 return Redirect("hoc-vien");
             }
 
