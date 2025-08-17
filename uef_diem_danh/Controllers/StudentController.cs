@@ -157,7 +157,7 @@ namespace uef_diem_danh.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                TempData["StudentSuccessMessage"] = "Có lỗi xảy ra khi cập nhật học viên: " + ex.Message;
+                TempData["StudentErrorMessage"] = "Có lỗi xảy ra khi cập nhật học viên: " + ex.Message;
                 return Redirect("hoc-vien");
             }
 
