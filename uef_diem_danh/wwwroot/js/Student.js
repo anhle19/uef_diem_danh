@@ -57,7 +57,11 @@ function changeCreatePreviewStudentAvatar() {
 
     const studentAvatarFile = document.getElementById("themHinhAnh").files[0];
 
-    if (studentAvatarFile.type === "image/png" || studentAvatarFile.type === "image/jpg") {
+    if (
+        studentAvatarFile.type === "image/png" ||
+        studentAvatarFile.type === "image/jpg" || 
+        studentAvatarFile.type === "image/jpeg"
+    ) {
         const themHinhAnhPreview = document.getElementById("themHinhAnhPreview");
 
         themHinhAnhPreview.src = URL.createObjectURL(studentAvatarFile);
@@ -71,7 +75,7 @@ function changeCreatePreviewStudentAvatar() {
     } else {
         Swal.fire(
             "Lỗi",
-            "Định dạng file không hợp lệ. Phải là PNG hoặc JPG",
+            "Định dạng file không hợp lệ. Phải là PNG hoặc JPG / JPEG",
             "warning"
         );
         return;
@@ -175,7 +179,11 @@ function changeUpdatePreviewStudentAvatar() {
 
     const studentAvatarFile = document.getElementById("suaHinhAnh").files[0];
 
-    if (studentAvatarFile.type === "image/png" || studentAvatarFile.type === "image/jpg") {
+    if (
+        studentAvatarFile.type === "image/png" ||
+        studentAvatarFile.type === "image/jpg" ||
+        studentAvatarFile.type === "image/jpeg"
+    ) {
         const suaHinhAnhPreview = document.getElementById("suaHinhAnhPreview");
 
         suaHinhAnhPreview.src = URL.createObjectURL(studentAvatarFile);
@@ -189,7 +197,7 @@ function changeUpdatePreviewStudentAvatar() {
     } else {
         Swal.fire(
             "Lỗi",
-            "Định dạng file không hợp lệ. Phải là PNG hoặc JPG",
+            "Định dạng file không hợp lệ. Phải là PNG hoặc JPG / JPEG",
             "warning"
         );
         return;
