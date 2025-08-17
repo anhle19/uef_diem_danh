@@ -33,7 +33,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredLength = 3; 
     options.Password.RequiredUniqueChars = 0;
 
-    options.User.RequireUniqueEmail = true;
+    options.User.RequireUniqueEmail = false;
 });
 
 //builder.Services.AddScoped<TakeHashedPasswordRunner>();
@@ -104,6 +104,46 @@ app.MapControllerRoute(
 
 //    Console.WriteLine("ADMIN ACCOUNT CREATED !!!");
 //}
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<NguoiDungUngDung>>();
+
+    string[] roles = { "Admin", "Staff" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    string adminEmail = "admin@example.com";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+    if (adminUser == null)
+    {
+        adminUser = new NguoiDungUngDung
+        {
+            UserName = "admin",
+            Email = adminEmail,
+            EmailConfirmed = true
+        };
+
+        var result = await userManager.CreateAsync(adminUser, "123");  
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+            Console.WriteLine("ADMIN ACCOUNT CREATED !!!");
+        }
+        else
+        {
+            Console.WriteLine("Error creating ADMIN: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+        }
+    }
+}
 
 
 app.Run();
