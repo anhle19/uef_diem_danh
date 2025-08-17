@@ -4,6 +4,8 @@
     {
         public int MaHocVien { get; set; }
 
+        public IFormFile? HinhAnh { get; set; }
+
         public string Ho { get; set; }
 
         public string Ten { get; set; }

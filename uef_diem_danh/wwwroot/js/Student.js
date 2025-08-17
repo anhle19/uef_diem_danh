@@ -94,6 +94,7 @@ async function initUpdateStudentFields(id) {
     // Call API to get study class detail
     try {
         const studentIdInput = document.getElementById("suaMaHocVien");
+        const suaHinhAnhPreview = document.getElementById("suaHinhAnhPreview");
         const studentLastNameInput = document.getElementById("suaHo");
         const studentFirstNameInput = document.getElementById("suaTen");
         const studentDobInput = document.getElementById("suaNgaySinh");
@@ -106,6 +107,7 @@ async function initUpdateStudentFields(id) {
         const fetchedStudent = response.data;
 
         console.log(fetchedStudent);
+        suaHinhAnhPreview.src = `https://localhost:7045/${fetchedStudent.hinhAnh}`
         studentIdInput.value = fetchedStudent.maHocVien;
         studentLastNameInput.value = fetchedStudent.ho;
         studentFirstNameInput.value = fetchedStudent.ten;
@@ -122,9 +124,46 @@ async function initUpdateStudentFields(id) {
 
 }
 
+function changeUpdatePreviewStudentAvatar() {
+    const MAX_AVATAR_FILE_SIZE = 10 * 1024 * 1024;
+
+    const studentAvatarFile = document.getElementById("suaHinhAnh").files[0];
+
+    if (studentAvatarFile.type === "image/png" || studentAvatarFile.type === "image/jpg") {
+        const suaHinhAnhPreview = document.getElementById("suaHinhAnhPreview");
+
+        suaHinhAnhPreview.src = URL.createObjectURL(studentAvatarFile);
+
+        // Clean up object URL when student avatar is loaded
+        // Prevent too much object URL => Lead to use more memory
+        suaHinhAnhPreview.onload = function () {
+            URL.revokeObjectURL(suaHinhAnhPreview.src);
+        };
+
+    } else {
+        Swal.fire(
+            "Lỗi",
+            "Định dạng file không hợp lệ. Phải là PNG hoặc JPG",
+            "warning"
+        );
+        return;
+    }
+
+    if (studentAvatarFile.size > MAX_AVATAR_FILE_SIZE) {
+        Swal.fire(
+            "Lỗi",
+            "Hình ảnh học viên không được vượt quá 10MB",
+            "warning"
+        );
+        return;
+    }
+
+}
+
 function updateStudent() {
     const updateStudyClassForm = document.getElementById("updateStudentForm");
 
+    const studentAvatarInput = document.getElementById("suaHinhAnh");
     const studentLastNameInput = document.getElementById("suaHo");
     const studentFirstNameInput = document.getElementById("suaTen");
     const studentDobInput = document.getElementById("suaNgaySinh");
@@ -132,6 +171,7 @@ function updateStudent() {
     const studentEmailInput = document.getElementById("suaEmail");
     const studentPhoneNumberInput = document.getElementById("suaSoDienThoai");
 
+    const studentAvatar = studentAvatarInput.files[0];
     const studentLastName = studentLastNameInput.value.trim();
     const studentFirstName = studentFirstNameInput.value.trim();
     const studentDob = studentDobInput.value;
