@@ -4,8 +4,7 @@
 @{
 }
 @model uef_diem_danh.DTOs.StudentCreateRequest
-@{
-}
+
 
 <style>
 
@@ -13,6 +12,7 @@
 		width: 100px;
 		height: 100px;
 		border-radius: 10px;
+		border: 1px dashed black
 	}
 
 	.overlay-layer {
@@ -53,20 +53,25 @@
 						aria-label="Đóng"></button>
 			</div>
 			<div class="modal-body">
-				<form method="POST" action="/tao-hoc-vien" id="createStudentForm">
+				<form method="POST" action="/tao-hoc-vien" id="createStudentForm" enctype="multipart/form-data">
 					@Html.AntiForgeryToken()
 
 					<div class="d-flex justify-content-center mb-2">
 						<label class="form-label position-relative" for="themHinhAnh">
-							<img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" alt="Thêm hình ảnh học viên" class="create-student-avatar-input" />
+							<img 
+								src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" 
+								alt="Thêm hình ảnh học viên"
+								id="themHinhAnhPreview"
+								class="create-student-avatar-input" />
 							<div class="overlay-layer">
 								<i class="bi bi-upload"></i>
 							</div>
 							<input type="file"
 								   id="themHinhAnh"
-								   name="HinhAnh"
+								   name="CreateStudentAvatar"
 								   class="form-control" 
-								   style="display: none"/>
+								   style="display: none" 
+								   onchange="changeCreatePreviewStudentAvatar()" />
 						</label>
 					</div>
 
@@ -74,7 +79,7 @@
 						<label class="form-label">Họ <span class="text-danger">*</span></label>
 						<input type="text"
 							   id="themHo"
-							   name="Ho"
+							   name="CreateStudentLastName"
 							   class="form-control"
 							   placeholder="VD: Triệu Gia" />
 					</div>
@@ -82,7 +87,7 @@
 						<label class="form-label">Tên  <span class="text-danger">*</span></label>
 						<input type="text"
 							   id="themTen"
-							   name="Ten"
+							   name="CreateStudentFirstName"
 							   class="form-control"
 							   placeholder="VD: Khiêm" />
 					</div>
@@ -90,14 +95,14 @@
 						<label class="form-label">Ngày sinh <span class="text-danger">*</span></label>
 						<input type="date"
 								id="themNgaySinh"
-								name="NgaySinh"
+								name="CreateStudentDob"
 								class="form-control" />
 					</div>
 					<div class="mb-2">
 						<label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
 						<input type="text"
 							   id="themDiaChi"
-							   name="DiaChi"
+							   name="CreateStudentAddress"
 							   class="form-control"
 							   placeholder="VD: TP.HCM" />
 					</div>
@@ -105,7 +110,7 @@
 						<label class="form-label">Email <span class="text-danger">*</span></label>
 						<input type="text"
 							   id="themEmail"
-							   name="Email"
+							   name="CreateStudentEmail"
 							   class="form-control"
 							   placeholder="VD: abc@gmail.com" />
 					</div>
@@ -113,7 +118,7 @@
 						<label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
 						<input type="text"
 							   id="themSoDienThoai"
-							   name="SoDienThoai"
+							   name="CreateStudentPhoneNumber"
 							   class="form-control"
 							   placeholder="VD: 098........" />
 					</div>

@@ -51,6 +51,44 @@ async function searchStudent() {
 
 
 // ================== ADD STUDY CLASS ==================
+
+function changeCreatePreviewStudentAvatar() {
+    const MAX_AVATAR_FILE_SIZE = 10 * 1024 * 1024;
+
+    const studentAvatarFile = document.getElementById("themHinhAnh").files[0];
+
+    if (studentAvatarFile.type === "image/png" || studentAvatarFile.type === "image/jpg") {
+        const themHinhAnhPreview = document.getElementById("themHinhAnhPreview");
+
+        themHinhAnhPreview.src = URL.createObjectURL(studentAvatarFile);
+
+        // Clean up object URL when student avatar is loaded
+        // Prevent too much object URL => Lead to use more memory
+        themHinhAnhPreview.onload = function () {
+            URL.revokeObjectURL(themHinhAnhPreview.src);
+        };
+
+    } else {
+        Swal.fire(
+            "Lỗi",
+            "Định dạng file không hợp lệ. Phải là PNG hoặc JPG",
+            "warning"
+        );
+        return;
+    }
+
+    if (studentAvatarFile.size > MAX_AVATAR_FILE_SIZE) {
+        Swal.fire(
+            "Lỗi",
+            "Hình ảnh học viên không được vượt quá 10MB",
+            "warning"
+        );
+        return;
+    }
+
+}
+
+
 function addStudent() {
     const createStudentForm = document.getElementById("createStudentForm");
     const popup = document.getElementById("popupThemHocVien");
@@ -63,6 +101,7 @@ function addStudent() {
     const studentPhoneNumberInput = popup.querySelector("#themSoDienThoai");
 
 
+    const studentAvatarFile = document.getElementById("themHinhAnh").files;
     const studentLastName = studentLastNameInput.value.trim();
     const studentFirstName = studentFirstNameInput.value.trim();
     const studentDob = studentDobInput.value;
@@ -80,7 +119,14 @@ function addStudent() {
         );
         return;
     }
-
+    if (studentAvatarFile.length == 0) {
+        Swal.fire(
+            "Lỗi",
+            "Vui lòng tải lên hình ảnh học viên",
+            "warning"
+        );
+        return;
+    }
 
     // Submit form
     createStudentForm.requestSubmit();
@@ -211,20 +257,23 @@ function initTablePagination() {
     const currentPage = studentTable.page();
 
 
-    // Init pagination items
-    for (let i = 0; i < tablePageInfo.pages; i++) {
-        paginationContainer.innerHTML +=
-        `
-            <ol class="paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-        `;
+    if (tablePageInfo.pages > 0) {
+        // Init pagination items
+        for (let i = 0; i < tablePageInfo.pages; i++) {
+            paginationContainer.innerHTML +=
+                `
+                <ol class="paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
+            `;
+        }
+
+        // Set current active page
+        const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
+        currentPaginationItem.classList.add("paginationActive");
+    } else {
+        return;
     }
 
-    // Set current active page
-    const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
-    currentPaginationItem.classList.add("paginationActive");
 
-
-    console.log(currentPage);
 }
 
 function goToPage(targetPage) {
