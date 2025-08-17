@@ -195,19 +195,19 @@
 					data-bs-target="#popupThemHocVienCuaLopHocTuFileExcel">
 				Thêm học viên từ file Excel
 			</button>
-			<button type="button"
+			@* <button type="button"
 					class="btn-next-secondary btn -sm btn-add"
 					data-bs-toggle="modal"
 					data-bs-target="#popupHocVienCuaLopHoc">
 				Thêm học viên có sẵn
-			</button>
+			</button> *@
 			<button type="button"
 					class="btn-next-secondary btn -sm btn-add"
 					data-bs-toggle="modal"
 					data-bs-target="#popupThemHocVien"
 					data-id="@ViewBag.StudyClassId"
 					onclick="initAddStudentFields(@ViewBag.StudyClassId)">
-				Thêm học viên mới
+				Thêm học viên
 			</button>
 		</div>
 	</div>
@@ -268,7 +268,7 @@
 
 
 <!-- Modal: Thêm học viên vào lớp học -->
-@await Html.PartialAsync("/Views/Component/AddStudentToStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassAddStudentRequest())
+@* @await Html.PartialAsync("/Views/Component/AddStudentToStudyClassModal.cshtml", new uef_diem_danh.DTOs.StudyClassAddStudentRequest()) *@
 
 <!-- Modal: Thêm học viên vào lớp học từ file Excel -->
 @await Html.PartialAsync("/Views/Component/AddStudentFromExcelToStudyClassModal.cshtml", new uef_diem_danh.DTOs.ImportStudentToStudyClassByExcelRequest())

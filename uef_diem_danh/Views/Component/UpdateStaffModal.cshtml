@@ -1,0 +1,67 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div class="modal fade"
+	 id="popupSuaNhanVien"
+	 tabindex="-1"
+	 aria-labelledby="popupSuaNhanVienLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="popupSuaNhanVienLabel">Sửa nhân viên</h5>
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Đóng"></button>
+			</div>
+			<div class="modal-body">
+				<form method="POST" action="/cap-nhat-nhan-vien" id="updateStaffForm">
+					@Html.AntiForgeryToken()
+					<input type="hidden" id="suaMaNhanVien" name="Id" class="form-control" />
+
+					<div class="mb-2">
+						<label class="form-label">Họ tên <span class="text-danger">*</span></label>
+						<input type="text"
+							   id="suaHoTen"
+							   name="FullName"
+							   class="form-control"
+							   placeholder="VD: Triệu Gia Khiêm" />
+					</div>
+					<div class="mb-2">
+						<label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+						<input type="text"
+							   id="suaDiaChi"
+							   name="Address"
+							   class="form-control"
+							   placeholder="VD: TP.HCM" />
+					</div>
+					<div class="mb-2">
+						<label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+						<input type="text"
+							   id="suaSoDienThoai"
+							   name="PhoneNumber"
+							   class="form-control"
+							   placeholder="VD: 098........" />
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button"
+						class="btn-next-secondary"
+						data-bs-dismiss="modal">
+					Đóng
+				</button>
+				<button type="button"
+						class="btn-next-primary"
+						id="btnLuuSuaNhanVien"
+						onclick="updateStaff()"
+						form="updateStaffForm">
+					Lưu thay đổi
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
