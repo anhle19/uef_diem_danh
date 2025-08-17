@@ -135,7 +135,10 @@ using (var scope = app.Services.CreateScope())
         var result = await userManager.CreateAsync(adminUser, "123");  
         if (result.Succeeded)
         {
-            await userManager.AddToRoleAsync(adminUser, "Admin");
+
+            var createdAdminUser = await userManager.FindByEmailAsync(adminEmail);
+
+            await userManager.AddToRoleAsync(createdAdminUser, "Admin");
             Console.WriteLine("ADMIN ACCOUNT CREATED !!!");
         }
         else
