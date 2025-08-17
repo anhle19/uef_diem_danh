@@ -128,6 +128,7 @@ namespace uef_diem_danh.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.InnerException.Message);
                 TempData["StudentErrorMessage"] = "Có lỗi xảy ra khi thêm học viên: " + ex.Message;
                 return Redirect("hoc-vien");
             }
@@ -151,6 +152,24 @@ namespace uef_diem_danh.Controllers
                 student.DiaChi = request.DiaChi;
                 student.Email = request.Email;
                 student.SoDienThoai = request.SoDienThoai;
+
+                // Update student avatar
+                if (request.HinhAnh != null)
+                {
+                    // Find existing student avatar
+                    string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
+                    string existedStudentAvatarPath = Path.Combine(uploadFilePath, $"hv_{student.SoDienThoai}.png");
+
+                    // Delete existed student avatar
+                    System.IO.File.Delete(existedStudentAvatarPath);
+
+                    // Save new uploaded student avatar
+                    using (var stream = new FileStream(existedStudentAvatarPath, FileMode.Create))
+                    {
+                        await request.HinhAnh.CopyToAsync(stream);
+                    }
+
+                }
 
                 await context.SaveChangesAsync();
 
