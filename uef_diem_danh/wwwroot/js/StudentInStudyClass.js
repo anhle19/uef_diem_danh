@@ -48,25 +48,65 @@ function preventSearchAvailableStudentInputSubmit() {
     return false;
 }
 
-async function searchAvailableStudent() {
-    const search = document
-        .getElementById("searchAvailableStudentInput")
-        .value
-        .trim();
+function searchAvailableStudent() {
+    const phone = document.getElementById("timSdt").value;
 
-    try {
+    const messageBox = document.getElementById("searchMessage");
 
-        if (!search) {
-            return;
-        } else {
-            addStudentToStudyClassTable.search(search).draw();
-        }
+    // Xóa thông báo cũ
+    messageBox.innerHTML = "";
 
-    } catch (ex) {
-        console.error(ex);
+    if (!phone) {
+        messageBox.innerHTML = `<div class="alert alert-warning p-2 mb-2">
+            Vui lòng nhập số điện thoại
+        </div>`;
+        return;
     }
 
+    axios.get(`/hoc-vien/tim-theo-so-dien-thoai?phoneNumber=${phone}`)
+        .then(res => {
+            const data = res.data;
+            // Đổ dữ liệu vào form
+            document.getElementById("themHo").value = data.ho;
+            document.getElementById("themTen").value = data.ten;
+            document.getElementById("themNgaySinh").value = data.ngaySinh;
+            document.getElementById("themDiaChi").value = data.diaChi;
+            document.getElementById("themEmail").value = data.email;
+            document.getElementById("themSoDienThoai").value = data.soDienThoai;
+        })
+        .catch(err => {
+            if (err.response && err.response.status === 404) {
+                messageBox.innerHTML = `<div class="alert alert-danger p-2 mb-2">
+                    Không tìm thấy học viên này!
+                </div>`;
+            } else {
+                messageBox.innerHTML = `<div class="alert alert-danger p-2 mb-2">
+                    Có lỗi xảy ra khi tìm học viên
+                </div>`;
+            }
+        });
 }
+
+
+//async function searchAvailableStudent() {
+//    const search = document
+//        .getElementById("searchAvailableStudentInput")
+//        .value
+//        .trim();
+
+//    try {
+
+//        if (!search) {
+//            return;
+//        } else {
+//            addStudentToStudyClassTable.search(search).draw();
+//        }
+
+//    } catch (ex) {
+//        console.error(ex);
+//    }
+
+//}
 
 
 
