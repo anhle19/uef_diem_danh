@@ -3,6 +3,8 @@
 *@
 @{
 }
+@model uef_diem_danh.DTOs.StudentUpdateRequest
+
 
 <style>
 
@@ -52,7 +54,7 @@
 			<div class="modal-body">
 				<form method="POST" action="/cap-nhat-hoc-vien" id="updateStudentForm" enctype="multipart/form-data">
 					@Html.AntiForgeryToken()
-					<input type="hidden" id="suaMaHocVien" name="MaHocVien" class="form-control"/>
+					<input type="hidden" id="suaMaHocVien" name="StudentId" class="form-control" />
 
 					<div class="d-flex justify-content-center mb-2">
 						<label class="form-label position-relative" for="suaHinhAnh">
@@ -66,7 +68,7 @@
 							</div>
 							<input type="file"
 								   id="suaHinhAnh"
-								   name="HinhAnh"
+								   name="UpdateStudentAvatar"
 								   class="form-control"
 								   style="display: none" 
 								   onchange="changeUpdatePreviewStudentAvatar()" />
@@ -77,7 +79,7 @@
 						<label class="form-label">Họ <span class="text-danger">*</span></label>
 						<input type="text"
 							   id="suaHo"
-							   name="Ho"
+							   name="UpdateStudentLastName"
 							   class="form-control"
 							   placeholder="VD: Nguyễn Văn" />
 					</div>
@@ -85,7 +87,7 @@
 						<label class="form-label">Tên  <span class="text-danger">*</span></label>
 						<input type="text"
 							   id="suaTen"
-							   name="Ten"
+							   name="UpdateStudentFirstName"
 							   class="form-control"
 							   placeholder="VD: Khiêm" />
 					</div>
@@ -93,14 +95,14 @@
 						<label class="form-label">Ngày sinh <span class="text-danger">*</span></label>
 						<input type="date"
 							   id="suaNgaySinh"
-							   name="NgaySinh"
+							   name="UpdateStudentDob"
 							   class="form-control" />
 					</div>
 					<div class="mb-2">
 						<label class="form-label">Địa chỉ <span class="text-danger">*</span></label>
 						<input type="text"
 							   id="suaDiaChi"
-							   name="DiaChi"
+							   name="UpdateStudentAddress"
 							   class="form-control"
 							   placeholder="VD: TP.HCM" />
 					</div>
@@ -108,7 +110,7 @@
 						<label class="form-label">Email <span class="text-danger">*</span></label>
 						<input type="text"
 							   id="suaEmail"
-							   name="Email"
+							   name="UpdateStudentEmail"
 							   class="form-control"
 							   placeholder="VD: abc@gmail.com" />
 					</div>
@@ -116,7 +118,7 @@
 						<label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
 						<input type="text"
 							   id="suaSoDienThoai"
-							   name="SoDienThoai"
+							   name="UpdateStudentPhoneNumber"
 							   class="form-control"
 							   placeholder="VD: 098........" />
 					</div>
