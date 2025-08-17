@@ -157,7 +157,8 @@ namespace uef_diem_danh.Controllers
                 HocVien student = await context.HocViens
                     .FirstOrDefaultAsync(lh => lh.MaHocVien == request.StudentId);
 
-                if (context.HocViens.Any(hv => hv.SoDienThoai == request.UpdateStudentPhoneNumber))
+
+                if (context.HocViens.Any(hv => hv.SoDienThoai == request.UpdateStudentPhoneNumber && hv.MaHocVien == student_id ))
                 {
                     TempData["StudentErrorMessage"] = "Số điện thoại cập nhật bị trùng. Vui lòng nhập số điện thoại khác";
                     return Redirect("hoc-vien");
@@ -165,7 +166,16 @@ namespace uef_diem_danh.Controllers
 
                 if (request.UpdateStudentAvatar != null)
                 {
-                    student.HinhAnh = $"student_pictures/hv_{request.UpdateStudentPhoneNumber}.{Path.GetExtension(request.UpdateStudentAvatar.FileName)}";
+
+                    // Find existing student avatar
+                    string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/");
+                    string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh);
+
+                    // Delete existed student avatar
+                    System.IO.File.Delete(existedStudentAvatarPath);
+
+
+                    student.HinhAnh = $"student_pictures/hv_{request.UpdateStudentPhoneNumber}{Path.GetExtension(request.UpdateStudentAvatar.FileName)}";
                     student.Ho = request.UpdateStudentLastName;
                     student.Ten = request.UpdateStudentFirstName;
                     student.NgaySinh = DateOnly.Parse(request.UpdateStudentDob, CultureInfo.InvariantCulture);
@@ -174,18 +184,15 @@ namespace uef_diem_danh.Controllers
                     student.SoDienThoai = request.UpdateStudentPhoneNumber;
                     student.MaBarCode = request.UpdateStudentPhoneNumber;
 
-                    // Find existing student avatar
-                    string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
-                    string existedStudentAvatarPath = Path.Combine(uploadFilePath, $"hv_{student.SoDienThoai}.png");
-
-                    // Delete existed student avatar
-                    System.IO.File.Delete(existedStudentAvatarPath);
+                    // New student avatar file
+                    string newStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh);
 
                     // Save new uploaded student avatar
-                    using (var stream = new FileStream(existedStudentAvatarPath, FileMode.Create))
+                    using (var stream = new FileStream(newStudentAvatarPath, FileMode.Create))
                     {
                         await request.UpdateStudentAvatar.CopyToAsync(stream);
                     }
+
                 }
                 else
                 {
@@ -226,6 +233,15 @@ namespace uef_diem_danh.Controllers
                 HocVien student = await context.HocViens
                     .FirstOrDefaultAsync(lh => lh.MaHocVien == request.MaHocVien);
 
+
+                // Find existing student avatar
+                string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/");
+                string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh);
+
+                // Delete student avatar
+                System.IO.File.Delete(existedStudentAvatarPath);
+
+
                 context.HocViens.Remove(student);
                 await context.SaveChangesAsync();
 
@@ -235,7 +251,7 @@ namespace uef_diem_danh.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                TempData["StudentSuccessMessage"] = "Có lỗi xảy ra khi xóa học viên: " + ex.Message;
+                TempData["StudentErrorMessage"] = "Có lỗi xảy ra khi xóa học viên: " + ex.Message;
                 return Redirect("hoc-vien");
             }
         }
