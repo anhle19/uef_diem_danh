@@ -6,10 +6,11 @@
 
 <style>
 
-	.create-student-avatar-input {
+	.update-student-avatar-input {
 		width: 100px;
 		height: 100px;
 		border-radius: 10px;
+		border: 1px dashed black
 	}
 
 	.overlay-layer {
@@ -49,21 +50,26 @@
 						aria-label="Đóng"></button>
 			</div>
 			<div class="modal-body">
-				<form method="POST" action="/cap-nhat-hoc-vien" id="updateStudentForm">
+				<form method="POST" action="/cap-nhat-hoc-vien" id="updateStudentForm" enctype="multipart/form-data">
 					@Html.AntiForgeryToken()
-					<input type="hidden" id="suaMaHocVien" name="MaHocVien" class="form-control" />
+					<input type="hidden" id="suaMaHocVien" name="MaHocVien" class="form-control"/>
 
 					<div class="d-flex justify-content-center mb-2">
-						<label class="form-label position-relative" for="themHinhAnh">
-							<img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" alt="Thêm hình ảnh học viên" class="create-student-avatar-input" />
+						<label class="form-label position-relative" for="suaHinhAnh">
+							<img 
+								src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" 
+								alt="Thêm hình ảnh học viên" 
+								id="suaHinhAnhPreview"
+								class="update-student-avatar-input" />
 							<div class="overlay-layer">
 								<i class="bi bi-upload"></i>
 							</div>
 							<input type="file"
-								   id="themHinhAnh"
+								   id="suaHinhAnh"
 								   name="HinhAnh"
 								   class="form-control"
-								   style="display: none" />
+								   style="display: none" 
+								   onchange="changeUpdatePreviewStudentAvatar()" />
 						</label>
 					</div>
 

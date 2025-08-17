@@ -101,7 +101,6 @@ function enableSubmitButton() {
     submitImportingStudentBtn.style.display = "block"
 }
 
- //================== ADD NEW STUDENT TO STUDY CLASS ==================
 async function initAddStudentFields(id) {
     // Call API to get study class detail
     const classIdInput = document.getElementById("themMaLopHoc");
