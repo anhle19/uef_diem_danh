@@ -1,31 +1,43 @@
 <div class="d-flex flex-column flex-shrink-0 sidebar-custom">
   <h5 class="text-center mb-4 mt-3 fw-bold">Admin</h5>
   <ul class="nav nav-pills flex-column mb-auto px-2">
-    <li class="nav-item">
-        <a href="/" class="nav-link-custom">
-            <i class="bi bi-speedometer2 me-2"></i> Trang chủ
-        </a>
-    </li>
-        <li class="nav-item">
-            <a href="/nhan-vien" class="nav-link-custom">
-                <i class="bi bi-person-vcard me-2"></i> Nhân viên
-            </a>
-        </li>
-    <li class="nav-item">
-        <a href="/" class="nav-link-custom">
-            <i class="bi bi-easel2 me-2"></i> Lớp học
-        </a>
-    </li>
-    <li>
-        <a href="/hoc-vien" class="nav-link-custom">
-            <i class="bi bi-person-fill me-2"></i> Học viên
-        </a>
-    </li>
-    <li>
-        <a href="/quan-ly-dien-danh" class="nav-link-custom">
-            <i class="bi bi-graph-up-arrow me-2"></i> Điểm danh
-        </a>
-    </li>
+    
+        @{
+            if (User.IsInRole("Admin"))
+            {
+                <li class="nav-item">
+                    <a href="/" class="nav-link-custom">
+                        <i class="bi bi-speedometer2 me-2"></i> Trang chủ
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/nhan-vien" class="nav-link-custom">
+                        <i class="bi bi-person-vcard me-2"></i> Nhân viên
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/" class="nav-link-custom">
+                        <i class="bi bi-easel2 me-2"></i> Lớp học
+                    </a>
+                </li>
+                <li>
+                    <a href="/hoc-vien" class="nav-link-custom">
+                        <i class="bi bi-person-fill me-2"></i> Học viên
+                    </a>
+                </li>
+                <li>
+                    <a href="/quan-ly-dien-danh" class="nav-link-custom">
+                        <i class="bi bi-graph-up-arrow me-2"></i> Điểm danh
+                    </a>
+                </li>
+            }else if(User.IsInRole("Staff")){
+                <li class="nav-item">
+                    <a href="/" class="nav-link-custom">
+                        <i class="bi bi-easel2 me-2"></i> Lớp học
+                    </a>
+                </li>
+            }
+        }
   </ul>
 
     <div class="dropdown mt-auto pt-3 text-end">

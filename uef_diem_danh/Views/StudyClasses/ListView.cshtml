@@ -20,40 +20,48 @@
 			@TempData["StudyClassErrorMessage"]
 		</div>
 	}
-	<div class="d-flex justify-content-between align-items-start mb-3">
-		<div style="width: 20rem">
+	<div class="mb-3 flex-column">
+		<div>
 			<h2 class="table-title">Quản lý lớp học</h2>
-			<div class="d-flex search-row">
-				<form
-					id="searchOrderStudyClassForm"
-					style="width: 100%"
-					onsubmit="return preventSearchStudyClassSubmit()">
+		</div>
+		<div class="d-flex justify-content-between align-items-center mb-3">
+			<!-- Khối tìm kiếm bên trái -->
+			<div class="d-flex search-row" style="flex: 1">
+				<form id="searchOrderStudyClassForm"
+					  class="d-flex w-100"
+					  onsubmit="return preventSearchStudyClassSubmit()">
 
 					<input id="studyClassSearchInput"
-						   class="form-control form-control-sm" 
+						   class="form-control form-control-sm me-2"
 						   name="StudyClassName"
 						   placeholder="Tìm theo tên lớp..."
-						   style="width: 70%; display: inline"/>
-					<button 
-						type="button"
-						class="btn-next-secondary btn-sm" 
-						id="btnSearch" 
-						onclick="searchStudyClass()">
+						   style="width: 20rem;" />
+					<button type="button"
+							class="btn-next-secondary btn-sm"
+							id="btnSearch"
+							onclick="searchStudyClass()">
 						Tìm
 					</button>
 				</form>
 			</div>
-		</div>
-		<div>
-			<button type="button"
-					class="btn-next-secondary btn -sm btn-add"
-					data-bs-toggle="modal"
-					data-bs-target="#popupThemLop">
-				Thêm lớp học
-			</button>
-		</div>
-	</div>
 
+			<!-- Nút thêm nhân viên bên phải -->
+			@{
+				if (User.IsInRole("Admin"))
+				{
+					<div>
+						<button type="button"
+								class="btn-next-secondary btn -sm btn-add"
+								data-bs-toggle="modal"
+								data-bs-target="#popupThemLop">
+							Thêm lớp học
+						</button>
+					</div>
+				}
+			}
+		</div>
+
+	</div>
 	<div class="table-wrapper">
 		<div id="searchResultLabel" style="display: none">Kết quả tìm kiếm: </div>
 		<table id="studyClassTable" class="fl-table">
@@ -64,10 +72,16 @@
 					<th class="text-center">Giáo viên phụ trách</th>
 					<th class="text-center">Ngày bắt đầu</th>
 					<th class="text-center">Ngày kết thúc</th>
+					<th class="text-center">Số học viên</th>
 					<th class="text-center">DS Học viên</th>
 					<th class="text-center">DS Buổi học</th>
-					<th class="text-center"></th>
-					<th class="text-center"></th>
+					@{
+						if (User.IsInRole("Admin"))
+						{
+							<th class="text-center"></th>
+							<th class="text-center"></th>
+						}
+					}
 				</tr>
 			</thead>
 			<tbody id="classesTableBody">
@@ -85,6 +99,7 @@
 						<td class="text-center">@studyClass.TeacherFullName</td>
 						<td class="text-center">@studyClass.StartDate.ToString("dd/MM/yyyy")</td>
 						<td class="text-center">@studyClass.EndDate.ToString("dd/MM/yyyy")</td>
+						<td class="text-center">@studyClass.StudyClassName</td>
 						<td class="text-center">
 							<a 
 								class="btn btn-outline-primary btn-sm btn-view-students" 
@@ -99,37 +114,40 @@
 								Xem
 							</a>
 						</td>
-						@if(studyClass.NumberOfAttendaces == 0)
-						{
-							<td class="text-center">
-								<button 
-									class="btn btn-outline-secondary btn-sm btn-edit" 
-									data-id="@studyClass.Id"
-									data-bs-toggle="modal" 
-									data-bs-target="#popupSuaLop" 
-									onclick="initUpdateStudyClassFields(@studyClass.Id)">
-									Sửa
-								</button>
-							</td>
-						} 
-						else
-						{
-							<td class="text-center">
-								<button class="btn btn-outline-danger bg-danger text-white btn-sm" disabled>
-									Sửa
-								</button>
-							</td>
+						@{
+							if (User.IsInRole("Admin"))
+							{
+								if (studyClass.NumberOfAttendaces == 0)
+								{
+									<td class="text-center">
+										<button class="btn btn-outline-secondary btn-sm btn-edit"
+												data-id="@studyClass.Id"
+												data-bs-toggle="modal"
+												data-bs-target="#popupSuaLop"
+												onclick="initUpdateStudyClassFields(@studyClass.Id)">
+											Sửa
+										</button>
+									</td>
+								}
+								else
+								{
+									<td class="text-center">
+										<button class="btn btn-outline-danger bg-danger text-white btn-sm" disabled>
+											Sửa
+										</button>
+									</td>
+								}
+								<td class="text-center">
+									<button class="btn btn-outline-danger btn-sm btn-delete"
+											data-id="@studyClass.Id"
+											data-bs-toggle="modal"
+											data-bs-target="#popupXoaLop"
+											onclick="initDeleteStudyClassField(@studyClass.Id)">
+										Xoá
+									</button>
+								</td>
+							}
 						}
-						<td class="text-center">
-							<button 
-								class="btn btn-outline-danger btn-sm btn-delete" 
-								data-id="@studyClass.Id" 
-								data-bs-toggle="modal" 
-								data-bs-target="#popupXoaLop" 
-								onclick="initDeleteStudyClassField(@studyClass.Id)">
-								Xoá
-							</button>
-						</td>
 					</tr>
 				}
 			</tbody>

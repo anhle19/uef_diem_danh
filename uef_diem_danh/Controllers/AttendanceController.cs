@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using uef_diem_danh.Database;
@@ -18,6 +19,7 @@ namespace uef_diem_danh.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
         [Route("quan-ly-dien-danh")]
         public async Task<IActionResult> GetListManagementPage()
         {
@@ -48,6 +50,7 @@ namespace uef_diem_danh.Controllers
         }
 
 
+        [Authorize(Roles = "Admin,Staff")]
         [Route("diem-danh-hoc-vien")]
         public async Task<IActionResult> GetAttendanceCheckingPage([FromQuery] int studyClassId, [FromQuery] int classSessionId)
         {
@@ -67,6 +70,8 @@ namespace uef_diem_danh.Controllers
             return View("~/Views/Attendances/CheckingView.cshtml", attendanceCheckingResponse);
         }
 
+        
+        [Authorize(Roles = "Admin,Staff")]
         [Route("api/lay-nam-buoi-diem-danh-moi-nhat/{study_class_id}")]
         public async Task<IActionResult> GetFiveLatestAttendances(int study_class_id)
         {

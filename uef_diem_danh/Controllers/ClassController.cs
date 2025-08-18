@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -17,6 +18,8 @@ namespace uef_diem_danh.Controllers
             this._context = _context;
         }
 
+
+        [Authorize(Roles = "Admin")]
         [HttpGet("buoi-hoc")]
         public IActionResult ClassList()
         {
