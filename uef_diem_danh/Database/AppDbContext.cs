@@ -55,13 +55,6 @@ namespace uef_diem_danh.Database
                 .HasForeignKey(dd => dd.MaBuoiHoc);
 
 
-            //modelBuilder.Entity<NguoiDungUngDung>()
-            //    .HasMany<LopHoc>(ndud => ndud.LopHocs)
-            //    .WithOne(lh => lh.GiaoVien);
-            //modelBuilder.Entity<LopHoc>()
-            //    .HasOne(lh => lh.GiaoVien)
-            //    .WithMany()
-
             base.OnModelCreating(modelBuilder);
         }
     }
