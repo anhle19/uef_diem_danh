@@ -149,7 +149,7 @@ namespace uef_diem_danh.Controllers
         [Route("cap-nhat-hoc-vien")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int student_id, [FromForm] StudentUpdateRequest request)
+        public async Task<IActionResult> Update([FromForm] StudentUpdateRequest request)
         {
 
             try
@@ -158,7 +158,7 @@ namespace uef_diem_danh.Controllers
                     .FirstOrDefaultAsync(lh => lh.MaHocVien == request.StudentId);
 
 
-                if (context.HocViens.Any(hv => hv.SoDienThoai == request.UpdateStudentPhoneNumber && hv.MaHocVien == student_id ))
+                if (context.HocViens.Any(hv => hv.SoDienThoai == request.UpdateStudentPhoneNumber && hv.MaHocVien != request.StudentId ))
                 {
                     TempData["StudentErrorMessage"] = "Số điện thoại cập nhật bị trùng. Vui lòng nhập số điện thoại khác";
                     return Redirect("hoc-vien");
