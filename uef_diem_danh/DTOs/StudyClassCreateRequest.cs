@@ -2,6 +2,8 @@
 {
     public class StudyClassCreateRequest
     {
+        public string TeacherPhoneNumber { get; set; }
+
         public string StudyClassName { get; set; }
 
         public string StartDate { get; set; }
