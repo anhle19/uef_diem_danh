@@ -61,6 +61,7 @@
 				<tr>
                     <th class="text-center">STT</th>
 					<th class="text-center">Tên lớp</th>
+					<th class="text-center">Giáo viên phụ trách</th>
 					<th class="text-center">Ngày bắt đầu</th>
 					<th class="text-center">Ngày kết thúc</th>
 					<th class="text-center">DS Học viên</th>
@@ -81,6 +82,7 @@
 							count++;
 						}
                         <td class="text-center">@studyClass.StudyClassName</td>
+						<td class="text-center">@studyClass.TeacherFullName</td>
 						<td class="text-center">@studyClass.StartDate.ToString("dd/MM/yyyy")</td>
 						<td class="text-center">@studyClass.EndDate.ToString("dd/MM/yyyy")</td>
 						<td class="text-center">
@@ -97,16 +99,27 @@
 								Xem
 							</a>
 						</td>
-						<td class="text-center">
-							<button 
-								class="btn btn-outline-secondary btn-sm btn-edit" 
-								data-id="@studyClass.Id"
-								data-bs-toggle="modal" 
-								data-bs-target="#popupSuaLop" 
-								onclick="initUpdateStudyClassFields(@studyClass.Id)">
-								Sửa
-							</button>
-						</td>
+						@if(studyClass.NumberOfAttendaces == 0)
+						{
+							<td class="text-center">
+								<button 
+									class="btn btn-outline-secondary btn-sm btn-edit" 
+									data-id="@studyClass.Id"
+									data-bs-toggle="modal" 
+									data-bs-target="#popupSuaLop" 
+									onclick="initUpdateStudyClassFields(@studyClass.Id)">
+									Sửa
+								</button>
+							</td>
+						} 
+						else
+						{
+							<td class="text-center">
+								<button class="btn btn-outline-danger bg-danger text-white btn-sm" disabled>
+									Sửa
+								</button>
+							</td>
+						}
 						<td class="text-center">
 							<button 
 								class="btn btn-outline-danger btn-sm btn-delete" 
