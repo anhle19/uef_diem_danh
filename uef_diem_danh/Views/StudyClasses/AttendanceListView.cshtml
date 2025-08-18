@@ -79,10 +79,28 @@
                             </a>
                         </td>
                         <td>
-                            <a class="btn btn-outline-primary btn-sm"
-                               href="#">
-                                Khóa
-                            </a>
+                            @if (classSession.ClassSessionStatus == true)
+                            {      
+                                <form method="POST" action="/khoa-diem-danh-buoi-hoc?studyClassId=@Model.StudyClassId&classSessionId=@classSession.ClassSessionId">
+                                    @Html.AntiForgeryToken()
+
+                                    <button 
+                                        type="submit"
+                                        class="btn btn-outline-primary btn-sm"
+                                       >
+                                        Khóa
+                                    </button>
+                                </form>
+                            } 
+                            else
+                            {
+                                <button 
+                                    class="btn btn-outline-danger bg-danger text-white btn-sm"
+                                    href="#" 
+                                    disabled>
+                                    Đã Khóa
+                                </button>
+                            }
                         </td>
                         <td>
                             <button class="btn btn-outline-secondary btn-sm btn-edit"

@@ -676,7 +676,8 @@ namespace uef_diem_danh.Controllers
                         ClassSessionNumber = bh.TietHoc,
                         ClassSessionTime = bh.NgayHoc,
                         ClassTotalStudent = lh.ThamGias.Count(),
-                        ClassSessionAttendanceCount = bh.DiemDanhs.Count(dd => dd.TrangThai == true)
+                        ClassSessionAttendanceCount = bh.DiemDanhs.Count(dd => dd.TrangThai == true),
+                        ClassSessionStatus = bh.TrangThai
                     }).ToList()
                 })
                 .FirstOrDefaultAsync();
@@ -723,6 +724,79 @@ namespace uef_diem_danh.Controllers
                 Console.WriteLine(ex.Message);
                 TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi thêm buổi học: " + ex.Message;
                 return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-buoi-hoc");
+            }
+
+        }
+
+        [Route("khoa-diem-danh-buoi-hoc")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LockAttendanceCheckingInClassSession([FromQuery] int studyClassId, [FromQuery] int classSessionId)
+        {
+            try
+            {
+
+                BuoiHoc classSession = await context.BuoiHocs
+                    .FirstOrDefaultAsync(bh => bh.MaLopHoc == studyClassId && bh.MaBuoiHoc ==  classSessionId);
+
+                classSession.TrangThai = false;
+
+                // Get all student of current study class
+                List<HocVien> studentsInCurrentStudyClass = context.ThamGias
+                    .Where(tg => tg.MaLopHoc == studyClassId)
+                    .Select(tg => new HocVien
+                    {
+                        MaHocVien = tg.MaHocVien
+                    })
+                    .ToList();
+
+                // Get all student that absent
+                List<HocVien> absentStudents = new List<HocVien>();
+                foreach (var studentInCurrentStudyClass in studentsInCurrentStudyClass)
+                {
+                    if (
+                        !context.DiemDanhs.Any(dd => 
+                            dd.MaHocVien == studentInCurrentStudyClass.MaHocVien &&
+                            dd.MaBuoiHoc == classSessionId && 
+                            dd.TrangThai == true
+                        )
+                    )
+                        absentStudents.Add(
+                            new HocVien
+                            {
+                                MaHocVien = studentInCurrentStudyClass.MaHocVien
+                            }
+                        );
+                }
+
+                if (absentStudents.Count > 0)
+                {
+                    // Save absent student
+                    foreach (HocVien absentStudent in absentStudents)
+                    {
+                        context.DiemDanhs.Add(
+                            new DiemDanh
+                            {
+                                MaBuoiHoc = classSessionId,
+                                MaHocVien = absentStudent.MaHocVien,
+                                TrangThai = false,
+                                ThoiGianDiemDanh = DateTime.Now
+                            }
+                        );
+
+                    }
+                }
+
+                await context.SaveChangesAsync();
+
+                TempData["ClassSuccessMessage"] = "Khóa điểm danh buổi học thành công!";
+                return Redirect("quan-ly-danh-sach-lop-hoc/" + studyClassId + "/quan-ly-danh-sach-buoi-hoc");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi khóa điểm danh buổi học: " + ex.Message;
+                return Redirect("quan-ly-danh-sach-lop-hoc/" + studyClassId + "/quan-ly-danh-sach-buoi-hoc");
             }
 
         }

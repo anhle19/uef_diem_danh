@@ -23,5 +23,7 @@ namespace uef_diem_danh.DTOs
 
         public int ClassSessionAttendanceCount { get; set; }
 
+        public bool ClassSessionStatus { get; set; }
+
     }
 }
