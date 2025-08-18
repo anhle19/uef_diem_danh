@@ -31,6 +31,7 @@ namespace uef_diem_danh.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
+
             modelBuilder.Entity<ThamGia>()
                 .HasOne<HocVien>(tg => tg.HocVien)
                 .WithMany(hv => hv.ThamGias)
@@ -52,6 +53,7 @@ namespace uef_diem_danh.Database
                 .HasOne<BuoiHoc>(dd => dd.BuoiHoc)
                 .WithMany(bh => bh.DiemDanhs)
                 .HasForeignKey(dd => dd.MaBuoiHoc);
+
 
             base.OnModelCreating(modelBuilder);
         }

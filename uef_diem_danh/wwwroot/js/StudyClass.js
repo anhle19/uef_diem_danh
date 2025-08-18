@@ -12,7 +12,11 @@ let studyClassTable = new DataTable('#studyClassTable', {
     // Notice no "f" here, which is the default filter/search box
     columnDefs: [
         { orderable: false, targets: [4, 5, 6, 7] } // Disable button column
-    ]
+    ],
+    language: {
+        emptyTable: "Hiện không có dữ liệu lớp học nào",
+        zeroRecords: "Không tìm thấy lớp học nào",
+    }
 });
 
 // ================== ADD STUDY CLASS ==================
@@ -20,19 +24,21 @@ let studyClassTable = new DataTable('#studyClassTable', {
 function addStudyClass() {
     const createStudyClassForm = document.getElementById("createStudyClassForm");
     const popup = document.getElementById("popupThemLop");
+    const teacherPhoneNumberInput = popup.querySelector("#themGiaoVien");
     const studyClassNameInput = popup.querySelector("#themTenLop");
     const studyClassStartDayInput = popup.querySelector("#themNgayBD");
     const studyClassEndDayInput = popup.querySelector("#themNgayKT");
 
+    const teacherPhoneNumber = teacherPhoneNumberInput.value.trim();
     const studyClassName = studyClassNameInput.value.trim();
     const studyClassStartDay = studyClassStartDayInput.value;
     const studyClassEndDay = studyClassEndDayInput.value;
 
     // Validate inputs
-    if (!studyClassName || !studyClassStartDay || !studyClassEndDay) {
+    if (!studyClassName || !studyClassStartDay || !studyClassEndDay || !teacherPhoneNumber) {
         Swal.fire(
             "Lỗi",
-            "Vui lòng nhập đầy đủ Tên lớp, Ngày bắt đầu và Ngày kết thúc",
+            "Vui lòng nhập đầy đủ Số điện thoại giáo viên, Tên lớp, Ngày bắt đầu hoặc Ngày kết thúc",
             "warning"
         );
         return;
@@ -72,6 +78,7 @@ async function initUpdateStudyClassFields(id) {
 
     // Call API to get study class detail
     try {
+        const teacherPhoneNumberInput = document.getElementById("suaGiaoVien");
         const studyClassIdInput = document.getElementById("suaMaLop");
         const studyClassNameInput = document.getElementById("suaTenLop");
         const studyClassStartDayInput = document.getElementById("suaNgayBD");
@@ -80,6 +87,8 @@ async function initUpdateStudyClassFields(id) {
         const response = await axios.get(`https://localhost:7045/api/lay-chi-tiet-lop-hoc/${id}`)
         const fetchedStudyClass = response.data;
 
+        console.log(fetchedStudyClass);
+        teacherPhoneNumberInput.value = fetchedStudyClass.teacherPhoneNumber;
         studyClassIdInput.value = fetchedStudyClass.maLopHoc;
         studyClassNameInput.value = fetchedStudyClass.tenLopHoc;
         studyClassStartDayInput.value = fetchedStudyClass.thoiGianBatDau;
@@ -95,19 +104,21 @@ async function initUpdateStudyClassFields(id) {
 
 function updateStudyClass() {
     const updateStudyClassForm = document.getElementById("updateStudyClassForm");
+    const teacherPhoneNumberInput = document.getElementById("suaGiaoVien");
     const studyClassNameInput = document.getElementById("suaTenLop");
     const studyClassStartDayInput = document.getElementById("suaNgayBD");
     const studyClassEndDayInput = document.getElementById("suaNgayKT");
 
+    const teacherPhoneNumber = teacherPhoneNumberInput.value.trim();
     const studyClassName = studyClassNameInput.value.trim();
     const studyClassStartDay = studyClassStartDayInput.value;
     const studyClassEndDay = studyClassEndDayInput.value;
 
     // Validate inputs
-    if (!studyClassName || !studyClassStartDay || !studyClassEndDay) {
+    if (!studyClassName || !studyClassStartDay || !studyClassEndDay || !teacherPhoneNumber) {
         Swal.fire(
             "Lỗi",
-            "Vui lòng nhập đầy đủ Tên lớp, Ngày bắt đầu và Ngày kết thúc",
+            "Vui lòng nhập đầy đủ Số điện thoại giáo viên, Tên lớp, Ngày bắt đầu hoặc Ngày kết thúc",
             "warning"
         );
         return;

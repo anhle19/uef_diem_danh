@@ -37,7 +37,9 @@ namespace uef_diem_danh.Controllers
                 .Select(lh => new StudyClassListManagementResponse
                 {
                     Id = lh.MaLopHoc,
+                    NumberOfAttendaces = context.DiemDanhs.Where(dd => dd.BuoiHoc.LopHoc.MaLopHoc == lh.MaLopHoc).Count(),
                     StudyClassName = lh.TenLopHoc,
+                    TeacherFullName = lh.GiaoVien.FullName,
                     StartDate = lh.ThoiGianBatDau,
                     EndDate = lh.ThoiGianKetThuc,
                     CreatedAt = lh.CreatedAt
@@ -112,7 +114,16 @@ namespace uef_diem_danh.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDetailForUpdate(int study_class_id)
         {
-            LopHoc studyClass = await context.LopHocs.FindAsync(study_class_id);
+            StudyClassGetDetailResponse studyClass = await context.LopHocs
+                .Select(lh => new StudyClassGetDetailResponse
+                {
+                    TeacherPhoneNumber = lh.GiaoVien.PhoneNumber,
+                    MaLopHoc = lh.MaLopHoc,
+                    TenLopHoc = lh.TenLopHoc,
+                    ThoiGianBatDau = lh.ThoiGianBatDau,
+                    ThoiGianKetThuc = lh.ThoiGianKetThuc
+                })
+                .FirstOrDefaultAsync(lh => lh.MaLopHoc == study_class_id);
 
             return Ok(studyClass);
         }
@@ -141,12 +152,18 @@ namespace uef_diem_danh.Controllers
 
             try
             {
-                Console.WriteLine($"StudyClassName: {request.StudyClassName}");
-                Console.WriteLine($"StartDate: {request.StartDate}");
-                Console.WriteLine($"EndDate: {request.EndDate}");
+                NguoiDungUngDung teacher = context.NguoiDungUngDungs.FirstOrDefault(ndud => ndud.PhoneNumber == request.TeacherPhoneNumber);
+
+
+                if (teacher == null)
+                {
+                    TempData["StudyClassErrorMessage"] = "Giáo viên không tồn tại";
+                    return RedirectToAction("GetListManagementPage");
+                }
 
                 LopHoc studyClass = new LopHoc
                 {
+                    MaGiaoVien = teacher.Id,
                     TenLopHoc = request.StudyClassName,
                     ThoiGianBatDau = DateOnly.Parse(request.StartDate, CultureInfo.InvariantCulture),
                     ThoiGianKetThuc = DateOnly.Parse(request.EndDate, CultureInfo.InvariantCulture),
@@ -553,9 +570,20 @@ namespace uef_diem_danh.Controllers
 
             try
             {
+                NguoiDungUngDung teacher = context.NguoiDungUngDungs.FirstOrDefault(ndud => ndud.PhoneNumber == request.TeacherPhoneNumber);
+
+
+                if (teacher == null)
+                {
+                    TempData["StudyClassErrorMessage"] = "Giáo viên không tồn tại";
+                    return RedirectToAction("GetListManagementPage");
+                }
+
+
                 LopHoc studyClass = await context.LopHocs
                     .FirstOrDefaultAsync(lh => lh.MaLopHoc == request.Id);
 
+                studyClass.MaGiaoVien = teacher.Id;
                 studyClass.TenLopHoc = request.StudyClassName;
                 studyClass.ThoiGianBatDau = DateOnly.Parse(request.StartDate, CultureInfo.InvariantCulture);
                 studyClass.ThoiGianKetThuc = DateOnly.Parse(request.EndDate, CultureInfo.InvariantCulture);
@@ -648,7 +676,8 @@ namespace uef_diem_danh.Controllers
                         ClassSessionNumber = bh.TietHoc,
                         ClassSessionTime = bh.NgayHoc,
                         ClassTotalStudent = lh.ThamGias.Count(),
-                        ClassSessionAttendanceCount = bh.DiemDanhs.Count(dd => dd.TrangThai == true)
+                        ClassSessionAttendanceCount = bh.DiemDanhs.Count(dd => dd.TrangThai == true),
+                        ClassSessionStatus = bh.TrangThai
                     }).ToList()
                 })
                 .FirstOrDefaultAsync();
@@ -695,6 +724,79 @@ namespace uef_diem_danh.Controllers
                 Console.WriteLine(ex.Message);
                 TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi thêm buổi học: " + ex.Message;
                 return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-buoi-hoc");
+            }
+
+        }
+
+        [Route("khoa-diem-danh-buoi-hoc")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LockAttendanceCheckingInClassSession([FromQuery] int studyClassId, [FromQuery] int classSessionId)
+        {
+            try
+            {
+
+                BuoiHoc classSession = await context.BuoiHocs
+                    .FirstOrDefaultAsync(bh => bh.MaLopHoc == studyClassId && bh.MaBuoiHoc ==  classSessionId);
+
+                classSession.TrangThai = false;
+
+                // Get all student of current study class
+                List<HocVien> studentsInCurrentStudyClass = context.ThamGias
+                    .Where(tg => tg.MaLopHoc == studyClassId)
+                    .Select(tg => new HocVien
+                    {
+                        MaHocVien = tg.MaHocVien
+                    })
+                    .ToList();
+
+                // Get all student that absent
+                List<HocVien> absentStudents = new List<HocVien>();
+                foreach (var studentInCurrentStudyClass in studentsInCurrentStudyClass)
+                {
+                    if (
+                        !context.DiemDanhs.Any(dd => 
+                            dd.MaHocVien == studentInCurrentStudyClass.MaHocVien &&
+                            dd.MaBuoiHoc == classSessionId && 
+                            dd.TrangThai == true
+                        )
+                    )
+                        absentStudents.Add(
+                            new HocVien
+                            {
+                                MaHocVien = studentInCurrentStudyClass.MaHocVien
+                            }
+                        );
+                }
+
+                if (absentStudents.Count > 0)
+                {
+                    // Save absent student
+                    foreach (HocVien absentStudent in absentStudents)
+                    {
+                        context.DiemDanhs.Add(
+                            new DiemDanh
+                            {
+                                MaBuoiHoc = classSessionId,
+                                MaHocVien = absentStudent.MaHocVien,
+                                TrangThai = false,
+                                ThoiGianDiemDanh = DateTime.Now
+                            }
+                        );
+
+                    }
+                }
+
+                await context.SaveChangesAsync();
+
+                TempData["ClassSuccessMessage"] = "Khóa điểm danh buổi học thành công!";
+                return Redirect("quan-ly-danh-sach-lop-hoc/" + studyClassId + "/quan-ly-danh-sach-buoi-hoc");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi khóa điểm danh buổi học: " + ex.Message;
+                return Redirect("quan-ly-danh-sach-lop-hoc/" + studyClassId + "/quan-ly-danh-sach-buoi-hoc");
             }
 
         }
