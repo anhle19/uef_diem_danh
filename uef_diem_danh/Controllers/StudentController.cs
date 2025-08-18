@@ -122,7 +122,7 @@ namespace uef_diem_danh.Controllers
 
                 // Init student avatar file path
                 string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
-                string studentAvatarPath = Path.Combine(uploadFilePath, $"hv_{student.SoDienThoai}.png");
+                string studentAvatarPath = Path.Combine(uploadFilePath, $"hv_{student.SoDienThoai}{Path.GetExtension(request.CreateStudentAvatar.FileName)}");
 
                 // Save new uploaded student avatar
                 using (var stream = new FileStream(studentAvatarPath, FileMode.Create))
