@@ -20,19 +20,21 @@ let studyClassTable = new DataTable('#studyClassTable', {
 function addStudyClass() {
     const createStudyClassForm = document.getElementById("createStudyClassForm");
     const popup = document.getElementById("popupThemLop");
+    const teacherPhoneNumberInput = popup.querySelector("#themGiaoVien");
     const studyClassNameInput = popup.querySelector("#themTenLop");
     const studyClassStartDayInput = popup.querySelector("#themNgayBD");
     const studyClassEndDayInput = popup.querySelector("#themNgayKT");
 
+    const teacherPhoneNumber = teacherPhoneNumberInput.value.trim();
     const studyClassName = studyClassNameInput.value.trim();
     const studyClassStartDay = studyClassStartDayInput.value;
     const studyClassEndDay = studyClassEndDayInput.value;
 
     // Validate inputs
-    if (!studyClassName || !studyClassStartDay || !studyClassEndDay) {
+    if (!studyClassName || !studyClassStartDay || !studyClassEndDay || !teacherPhoneNumber) {
         Swal.fire(
             "Lỗi",
-            "Vui lòng nhập đầy đủ Tên lớp, Ngày bắt đầu và Ngày kết thúc",
+            "Vui lòng nhập đầy đủ Số điện thoại giáo viên, Tên lớp, Ngày bắt đầu hoặc Ngày kết thúc",
             "warning"
         );
         return;

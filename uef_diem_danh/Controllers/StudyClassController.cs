@@ -141,12 +141,18 @@ namespace uef_diem_danh.Controllers
 
             try
             {
-                Console.WriteLine($"StudyClassName: {request.StudyClassName}");
-                Console.WriteLine($"StartDate: {request.StartDate}");
-                Console.WriteLine($"EndDate: {request.EndDate}");
+                NguoiDungUngDung teacher = context.NguoiDungUngDungs.FirstOrDefault(ndud => ndud.PhoneNumber == request.TeacherPhoneNumber);
+
+
+                if (teacher == null)
+                {
+                    TempData["StudyClassErrorMessage"] = "Giáo viên không tồn tại";
+                    return RedirectToAction("GetListManagementPage");
+                }
 
                 LopHoc studyClass = new LopHoc
                 {
+                    MaGiaoVien = teacher.Id,
                     TenLopHoc = request.StudyClassName,
                     ThoiGianBatDau = DateOnly.Parse(request.StartDate, CultureInfo.InvariantCulture),
                     ThoiGianKetThuc = DateOnly.Parse(request.EndDate, CultureInfo.InvariantCulture),
