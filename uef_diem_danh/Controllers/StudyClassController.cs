@@ -1,14 +1,16 @@
-using ExcelDataReader;
-using Microsoft.AspNetCore.Authorization;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using ExcelDataReader;
+using ExcelDataReader;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Drawing.Imaging;
 using System.Globalization;
+using System.Security.Claims;
 using System.Text;
 using uef_diem_danh.Database;
 using uef_diem_danh.DTOs;
@@ -22,35 +24,81 @@ namespace uef_diem_danh.Controllers
         private readonly AppDbContext context;
 
 
-        public StudyClassController(AppDbContext context)
+
+        public StudyClassController(AppDbContext context, UserManager<NguoiDungUngDung> _userManager)
         {
             this.context = context;
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin,Staff")]
         [Route("")]
         [HttpGet]
         public async Task<IActionResult> GetListManagementPage()
         {
-
-            List<StudyClassListManagementResponse> studyClasses = await context.LopHocs
-                .Select(lh => new StudyClassListManagementResponse
-                {
-                    Id = lh.MaLopHoc,
-                    NumberOfAttendaces = context.DiemDanhs.Where(dd => dd.BuoiHoc.LopHoc.MaLopHoc == lh.MaLopHoc).Count(),
-                    StudyClassName = lh.TenLopHoc,
-                    TeacherFullName = lh.GiaoVien.FullName,
-                    StartDate = lh.ThoiGianBatDau,
-                    EndDate = lh.ThoiGianKetThuc,
-                    CreatedAt = lh.CreatedAt
-                })
-                .OrderBy(lh => lh.CreatedAt)
-                .ToListAsync();
-
+            List<StudyClassListManagementResponse> studyClasses = new List<StudyClassListManagementResponse>();
+            if (User.IsInRole("Admin"))
+            {
+                studyClasses = await context.LopHocs
+                    .Select(lh => new StudyClassListManagementResponse
+                    {
+                        Id = lh.MaLopHoc,
+                        NumberOfAttendaces = context.DiemDanhs.Where(dd => dd.BuoiHoc.LopHoc.MaLopHoc == lh.MaLopHoc).Count(),
+                        StudyClassName = lh.TenLopHoc,
+                        TeacherFullName = lh.GiaoVien.FullName,
+                        StartDate = lh.ThoiGianBatDau,
+                        EndDate = lh.ThoiGianKetThuc,
+                        CreatedAt = lh.CreatedAt,
+                        StudentQuantity = lh.ThamGias.Count(),
+                    })
+                    .OrderBy(lh => lh.CreatedAt)
+                    .ToListAsync();
+            }
+            else if (User.IsInRole("Staff"))
+            {
+                studyClasses = await context.LopHocs
+                    .Where(lh => lh.MaGiaoVien == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                    .Select(lh => new StudyClassListManagementResponse
+                    {
+                        Id = lh.MaLopHoc,
+                        NumberOfAttendaces = context.DiemDanhs.Where(dd => dd.BuoiHoc.LopHoc.MaLopHoc == lh.MaLopHoc).Count(),
+                        StudyClassName = lh.TenLopHoc,
+                        TeacherFullName = lh.GiaoVien.FullName,
+                        StartDate = lh.ThoiGianBatDau,
+                        EndDate = lh.ThoiGianKetThuc,
+                        CreatedAt = lh.CreatedAt
+                    })
+                    .OrderBy(lh => lh.CreatedAt)
+                    .ToListAsync();
+            }
 
             return View("~/Views/StudyClasses/ListView.cshtml", studyClasses);
         }
 
+        //[Authorize(Roles = "Admin,Staff")]
+        //[Route("")]
+        //[HttpGet]
+        //public async Task<IActionResult> GetListManagementPage()
+        //{
+
+        //    List<StudyClassListManagementResponse> studyClasses = await context.LopHocs
+        //        .Select(lh => new StudyClassListManagementResponse
+        //        {
+        //            Id = lh.MaLopHoc,
+        //            NumberOfAttendaces = context.DiemDanhs.Where(dd => dd.BuoiHoc.LopHoc.MaLopHoc == lh.MaLopHoc).Count(),
+        //            StudyClassName = lh.TenLopHoc,
+        //            TeacherFullName = lh.GiaoVien.FullName,
+        //            StartDate = lh.ThoiGianBatDau,
+        //            EndDate = lh.ThoiGianKetThuc,
+        //            CreatedAt = lh.CreatedAt
+        //        })
+        //        .OrderBy(lh => lh.CreatedAt)
+        //        .ToListAsync();
+
+
+        //    return View("~/Views/StudyClasses/ListView.cshtml", studyClasses);
+        //}
+
+        [Authorize(Roles = "Admin,Staff")]
         [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-hoc-vien")]
         [HttpGet]
         public async Task<IActionResult> GetListOfStudentsManagementPage(int study_class_id)
@@ -77,6 +125,7 @@ namespace uef_diem_danh.Controllers
         }
 
         
+        [Authorize(Roles = "Admin")]
         [Route("api/quan-ly-danh-sach-lop-hoc/danh-sach-hoc-vien-con-trong")]
         [HttpGet]
         public async Task<IActionResult> GetListOfAvailableStudents()
@@ -110,6 +159,7 @@ namespace uef_diem_danh.Controllers
             return Ok(students);
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         [Route("api/lay-chi-tiet-lop-hoc/{study_class_id}")]
         [HttpGet]
         public async Task<IActionResult> GetDetailForUpdate(int study_class_id)
@@ -117,7 +167,7 @@ namespace uef_diem_danh.Controllers
             StudyClassGetDetailResponse studyClass = await context.LopHocs
                 .Select(lh => new StudyClassGetDetailResponse
                 {
-                    TeacherPhoneNumber = lh.GiaoVien.PhoneNumber,
+                    TeacherPhoneNumber = lh.GiaoVien.FullName,
                     MaLopHoc = lh.MaLopHoc,
                     TenLopHoc = lh.TenLopHoc,
                     ThoiGianBatDau = lh.ThoiGianBatDau,
@@ -128,6 +178,7 @@ namespace uef_diem_danh.Controllers
             return Ok(studyClass);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("hoc-vien/tim-theo-so-dien-thoai")]
         public async Task<IActionResult> SearchStudentByPhoneNumber(string phoneNumber)
         {
@@ -144,6 +195,7 @@ namespace uef_diem_danh.Controllers
             return Ok(student);
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("tao-moi-lop-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -183,7 +235,7 @@ namespace uef_diem_danh.Controllers
             }
 
         }
-
+        [Authorize(Roles = "Admin")]
         [Route("api/quan-ly-danh-sach-lop-hoc/{study_class_id}/them-hoc-vien-vao-lop-hoc")]
         [HttpPost]
         public async Task<IActionResult> AddStudent(int study_class_id, [FromBody] StudyClassAddStudentRequest request)
@@ -215,6 +267,7 @@ namespace uef_diem_danh.Controllers
 
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/them-hoc-vien-vao-lop-hoc-bang-excel")]
         [HttpPost]
         public async Task<IActionResult> ImportStudentsFromExcel(int study_class_id, [FromForm] ImportStudentToStudyClassByExcelRequest request)
@@ -491,6 +544,7 @@ namespace uef_diem_danh.Controllers
 
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("tao-hoc-vien-moi-vao-lop")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -562,6 +616,7 @@ namespace uef_diem_danh.Controllers
 
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("cap-nhat-lop-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -603,6 +658,7 @@ namespace uef_diem_danh.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
         [Route("xoa-lop-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -627,6 +683,7 @@ namespace uef_diem_danh.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/xoa-hoc-vien-khoi-lop-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -659,6 +716,7 @@ namespace uef_diem_danh.Controllers
 
 
         // Quản lí buổi học của lớp học
+        [Authorize(Roles = "Admin,Staff")]
         [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-buoi-hoc")]
         [HttpGet]
         public async Task<IActionResult> GetListOfClassSessionManagementPage(int study_class_id)
@@ -686,6 +744,7 @@ namespace uef_diem_danh.Controllers
             return View("~/Views/StudyClasses/AttendanceListView.cshtml", classSessions);
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("api/lay-chi-tiet-buoi-hoc/{class_id}")]
         [HttpGet]
         public async Task<IActionResult> GetClassDetailForUpdate(int class_id)
@@ -695,6 +754,7 @@ namespace uef_diem_danh.Controllers
             return Ok(await context.BuoiHocs.FindAsync(class_id));
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("tao-buoi-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -727,6 +787,7 @@ namespace uef_diem_danh.Controllers
 
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("cap-nhat-buoi-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -756,6 +817,7 @@ namespace uef_diem_danh.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
         [Route("xoa-buoi-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -784,6 +846,7 @@ namespace uef_diem_danh.Controllers
 
 
         // In thẻ học viên
+        [Authorize(Roles = "Admin")]
         [Route("in-mot-the-hoc-vien/{student_id}")]
         public async Task<IActionResult> GetStudentCardSinglePrintPage(int student_id)
         {
@@ -794,6 +857,7 @@ namespace uef_diem_danh.Controllers
         }
 
         // In danh sách thẻ học viên
+        [Authorize(Roles = "Admin")]
         [Route("in-danh-sach-the-hoc-vien/{study_class_id}")]
         public async Task<IActionResult> GetStudentCardsMultiplePrintPage(int study_class_id)
         {

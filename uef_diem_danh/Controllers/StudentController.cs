@@ -1,4 +1,5 @@
 ﻿using ExcelDataReader;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OpenQA.Selenium;
@@ -21,6 +22,9 @@ namespace uef_diem_danh.Controllers
             this.context = context;
         }
 
+        
+
+        [Authorize(Roles = "Admin")]
         [HttpGet("hoc-vien")]
         // Later refactor to get necessary fields
         public IActionResult StudentList()
@@ -29,6 +33,7 @@ namespace uef_diem_danh.Controllers
             return View(students);
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("api/lay-danh-sach-hoc-vien-theo-lop/{study_class_id}")]
         [HttpGet]
         public async Task<IActionResult> GetStudentsByStudyClass(int study_class_id)
@@ -59,6 +64,7 @@ namespace uef_diem_danh.Controllers
         }
 
         // Later refactor to get necessary fields
+        [Authorize(Roles = "Admin")]
         [Route("api/lay-chi-tiet-hoc-vien/{student_id}")]
         [HttpGet]
         public async Task<IActionResult> GetDetailForUpdate(int student_id)
@@ -69,6 +75,7 @@ namespace uef_diem_danh.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         [Route("download-excel-file-importing-student-to-study-class")]
         public IActionResult DownloadExcelFileImportingStudentToStudyClass()
         {
@@ -94,6 +101,7 @@ namespace uef_diem_danh.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
         [Route("tao-hoc-vien")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -146,6 +154,7 @@ namespace uef_diem_danh.Controllers
 
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("cap-nhat-hoc-vien")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -222,6 +231,7 @@ namespace uef_diem_danh.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
         [Route("xoa-hoc-vien")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -257,6 +267,7 @@ namespace uef_diem_danh.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
         [Route("api/tai-ve-mot-the-hoc-vien/{student_id}")]
         [HttpPost]
         // Later change this to get student id via path variable
@@ -311,6 +322,7 @@ namespace uef_diem_danh.Controllers
 
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("api/tai-ve-danh-sach-the-hoc-vien/{study_class_id}")]
         [HttpPost]
         public IActionResult DownloadMultipleStudentCards(int study_class_id)
