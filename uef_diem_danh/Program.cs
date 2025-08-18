@@ -21,7 +21,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
     options.LoginPath = "/login"; 
     options.LogoutPath = "/logout";
-    //options.AccessDeniedPath = "/Auth/AccessDenied"; 
+    options.AccessDeniedPath = "/Auth/AccessDenied";
 });
 
 builder.Services.Configure<IdentityOptions>(options =>
@@ -165,33 +165,33 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    foreach (dynamic staffInfo in staffInfos)
-    {
-        NguoiDungUngDung staffUser = new NguoiDungUngDung
-        {
-            UserName = staffInfo.UserName,
-            FullName = staffInfo.FullName,
-            Address = staffInfo.Address,
-            PhoneNumber = staffInfo.PhoneNumber,
-            Email = staffInfo.Email,
-            EmailConfirmed = true
-        };
+    //foreach (dynamic staffInfo in staffInfos)
+    //{
+    //    NguoiDungUngDung staffUser = new NguoiDungUngDung
+    //    {
+    //        UserName = staffInfo.UserName,
+    //        FullName = staffInfo.FullName,
+    //        Address = staffInfo.Address,
+    //        PhoneNumber = staffInfo.PhoneNumber,
+    //        Email = staffInfo.Email,
+    //        EmailConfirmed = true
+    //    };
 
-        var result = await userManager.CreateAsync(staffUser, "123");
+    //    var result = await userManager.CreateAsync(staffUser, "123");
 
-        if (result.Succeeded)
-        {
+    //    if (result.Succeeded)
+    //    {
 
-            var createdStaffUser = await userManager.FindByEmailAsync(staffInfo.Email);
+    //        var createdStaffUser = await userManager.FindByEmailAsync(staffInfo.Email);
 
-            await userManager.AddToRoleAsync(createdStaffUser, "Staff");
-            Console.WriteLine("STAFF ACCOUNT CREATED !!!");
-        }
-        else
-        {
-            Console.WriteLine("Error creating STAFF: " + string.Join(", ", result.Errors.Select(e => e.Description)));
-        }
-    }
+    //        await userManager.AddToRoleAsync(createdStaffUser, "Staff");
+    //        Console.WriteLine("STAFF ACCOUNT CREATED !!!");
+    //    }
+    //    else
+    //    {
+    //        Console.WriteLine("Error creating STAFF: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+    //    }
+    //}
 }
 
 

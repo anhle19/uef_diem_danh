@@ -1,8 +1,10 @@
 ﻿using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OpenQA.Selenium.Interactions;
 using System.Globalization;
 using System.Threading.Tasks;
 using uef_diem_danh.DTOs;
@@ -30,7 +32,6 @@ namespace uef_diem_danh.Controllers
             Console.WriteLine("ĐĂNG NHẬP 1");
             return View();
         }
-
 
 
         [HttpPost("login")]
@@ -117,6 +118,7 @@ namespace uef_diem_danh.Controllers
         }
 
         // Quản lí tài khoản nhân viên
+        [Authorize(Roles = "Admin")]
         [HttpGet("nhan-vien")]
         public async Task<IActionResult> StaffList()
         {
@@ -133,6 +135,7 @@ namespace uef_diem_danh.Controllers
              );
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("api/lay-chi-tiet-nhan-vien/{staff_id}")]
         [HttpGet]
         public async Task<IActionResult> GetDetailForUpdate(string staff_id)
@@ -151,6 +154,7 @@ namespace uef_diem_danh.Controllers
             return Ok(staff);
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("tao-nhan-vien")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -164,7 +168,6 @@ namespace uef_diem_danh.Controllers
 
             try
             {
-
                 var staff = new NguoiDungUngDung
                 {
                     UserName = request.PhoneNumber,
@@ -187,6 +190,7 @@ namespace uef_diem_danh.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [Route("cap-nhat-nhan-vien")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -221,6 +225,7 @@ namespace uef_diem_danh.Controllers
 
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("dat-lai-mat-khau")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(StaffResetPasswordRequest request)
@@ -250,6 +255,7 @@ namespace uef_diem_danh.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
         [Route("xoa-nhan-vien")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -277,6 +283,11 @@ namespace uef_diem_danh.Controllers
                 TempData["StudentSuccessMessage"] = "Có lỗi xảy ra khi xóa học viên: " + ex.Message;
                 return Redirect("nhan-vien");
             }
+        }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

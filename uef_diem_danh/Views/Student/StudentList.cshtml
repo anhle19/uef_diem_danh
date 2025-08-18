@@ -20,26 +20,27 @@
 		</div>
 	}
 	<div class="d-flex justify-content-between align-items-start mb-3">
-		<div style="width: 20rem">
+		<div style="width: 35rem">
 			<h2 class="table-title">Quản lý học viên</h2>
 			<div class="d-flex search-row">
-				<form id="searchOrderStudentForm" style="width: 100%" onsubmit="return preventSearchStudentSubmit()">
+				<form id="searchOrderStudentForm" class="d-flex w-100" onsubmit="return preventSearchStudentSubmit()">
 
-					<input id="studentSearchInput" class="form-control form-control-sm" name="StudentName"
-						placeholder="Tìm theo tên học viên..." style="width: 70%; display: inline" />
+					<input id="studentSearchInput" class="form-control form-control-sm me-2" name="StudentName"
+						placeholder="Tìm theo tên học viên..." style="width: 20rem; display: inline" />
 					<button type="button" class="btn-next-secondary btn-sm" id="btnSearch" onclick="searchStudent()">
 						Tìm
 					</button>
 				</form>
 			</div>
 		</div>
-		<div>
+		@* <div>
 			<button type="button" class="btn-next-secondary btn -sm btn-add" data-bs-toggle="modal"
 				data-bs-target="#popupThemHocVien">
 				Thêm Học Viên
 			</button>
-		</div>
+		</div> *@
 	</div>
+
 
 	<div class="table-wrapper">
 		<div id="searchResultLabel" style="display: none">Kết quả tìm kiếm: </div>

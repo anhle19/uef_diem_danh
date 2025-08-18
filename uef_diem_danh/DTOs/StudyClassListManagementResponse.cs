@@ -14,6 +14,8 @@
 
         public DateOnly EndDate { get; set; }
 
+        public int StudentQuantity { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
     }
