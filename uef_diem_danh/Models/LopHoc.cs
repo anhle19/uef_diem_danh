@@ -17,7 +17,15 @@ namespace uef_diem_danh.Models
 
         public DateTime CreatedAt { get; set;} = DateTime.UtcNow;
 
-        // relationships
+
+
+        // Relationships
+
+        [ForeignKey("MaGiaoVien")]
+        public NguoiDungUngDung GiaoVien { get; set;}
+        public string MaGiaoVien { get; set;}
+
+
         public ICollection<ThamGia> ThamGias { get; set; }
         public ICollection<BuoiHoc> BuoiHocs { get; set; }
 
