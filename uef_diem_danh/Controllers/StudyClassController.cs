@@ -788,7 +788,7 @@ namespace uef_diem_danh.Controllers
 
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Staff")]
         [Route("khoa-diem-danh-buoi-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
