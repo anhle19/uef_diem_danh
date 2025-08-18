@@ -74,6 +74,7 @@ async function initUpdateStudyClassFields(id) {
 
     // Call API to get study class detail
     try {
+        const teacherPhoneNumberInput = document.getElementById("suaGiaoVien");
         const studyClassIdInput = document.getElementById("suaMaLop");
         const studyClassNameInput = document.getElementById("suaTenLop");
         const studyClassStartDayInput = document.getElementById("suaNgayBD");
@@ -82,6 +83,8 @@ async function initUpdateStudyClassFields(id) {
         const response = await axios.get(`https://localhost:7045/api/lay-chi-tiet-lop-hoc/${id}`)
         const fetchedStudyClass = response.data;
 
+        console.log(fetchedStudyClass);
+        teacherPhoneNumberInput.value = fetchedStudyClass.teacherPhoneNumber;
         studyClassIdInput.value = fetchedStudyClass.maLopHoc;
         studyClassNameInput.value = fetchedStudyClass.tenLopHoc;
         studyClassStartDayInput.value = fetchedStudyClass.thoiGianBatDau;
@@ -97,19 +100,21 @@ async function initUpdateStudyClassFields(id) {
 
 function updateStudyClass() {
     const updateStudyClassForm = document.getElementById("updateStudyClassForm");
+    const teacherPhoneNumberInput = popup.querySelector("#suaGiaoVien");
     const studyClassNameInput = document.getElementById("suaTenLop");
     const studyClassStartDayInput = document.getElementById("suaNgayBD");
     const studyClassEndDayInput = document.getElementById("suaNgayKT");
 
+    const teacherPhoneNumber = teacherPhoneNumberInput.value.trim();
     const studyClassName = studyClassNameInput.value.trim();
     const studyClassStartDay = studyClassStartDayInput.value;
     const studyClassEndDay = studyClassEndDayInput.value;
 
     // Validate inputs
-    if (!studyClassName || !studyClassStartDay || !studyClassEndDay) {
+    if (!studyClassName || !studyClassStartDay || !studyClassEndDay || !teacherPhoneNumber) {
         Swal.fire(
             "Lỗi",
-            "Vui lòng nhập đầy đủ Tên lớp, Ngày bắt đầu và Ngày kết thúc",
+            "Vui lòng nhập đầy đủ Số điện thoại giáo viên, Tên lớp, Ngày bắt đầu hoặc Ngày kết thúc",
             "warning"
         );
         return;
