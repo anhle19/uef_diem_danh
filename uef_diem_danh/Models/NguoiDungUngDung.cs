@@ -7,5 +7,12 @@ namespace uef_diem_danh.Models
         public string? FullName { get; set; }
 
         public string? Address { get; set; }
+
+
+
+        // Relationships
+
+        public ICollection<LopHoc>? LopHocs { get; set; }
+
     }
 }
