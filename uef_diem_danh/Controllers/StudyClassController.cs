@@ -37,7 +37,9 @@ namespace uef_diem_danh.Controllers
                 .Select(lh => new StudyClassListManagementResponse
                 {
                     Id = lh.MaLopHoc,
+                    NumberOfAttendaces = context.DiemDanhs.Where(dd => dd.BuoiHoc.LopHoc.MaLopHoc == lh.MaLopHoc).Count(),
                     StudyClassName = lh.TenLopHoc,
+                    TeacherFullName = lh.GiaoVien.FullName,
                     StartDate = lh.ThoiGianBatDau,
                     EndDate = lh.ThoiGianKetThuc,
                     CreatedAt = lh.CreatedAt
