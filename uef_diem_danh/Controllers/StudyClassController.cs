@@ -112,7 +112,16 @@ namespace uef_diem_danh.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDetailForUpdate(int study_class_id)
         {
-            LopHoc studyClass = await context.LopHocs.FindAsync(study_class_id);
+            StudyClassGetDetailResponse studyClass = await context.LopHocs
+                .Select(lh => new StudyClassGetDetailResponse
+                {
+                    TeacherPhoneNumber = lh.GiaoVien.PhoneNumber,
+                    MaLopHoc = lh.MaLopHoc,
+                    TenLopHoc = lh.TenLopHoc,
+                    ThoiGianBatDau = lh.ThoiGianBatDau,
+                    ThoiGianKetThuc = lh.ThoiGianKetThuc
+                })
+                .FirstOrDefaultAsync(lh => lh.MaLopHoc == study_class_id);
 
             return Ok(studyClass);
         }
@@ -559,9 +568,20 @@ namespace uef_diem_danh.Controllers
 
             try
             {
+                NguoiDungUngDung teacher = context.NguoiDungUngDungs.FirstOrDefault(ndud => ndud.PhoneNumber == request.TeacherPhoneNumber);
+
+
+                if (teacher == null)
+                {
+                    TempData["StudyClassErrorMessage"] = "Giáo viên không tồn tại";
+                    return RedirectToAction("GetListManagementPage");
+                }
+
+
                 LopHoc studyClass = await context.LopHocs
                     .FirstOrDefaultAsync(lh => lh.MaLopHoc == request.Id);
 
+                studyClass.MaGiaoVien = teacher.Id;
                 studyClass.TenLopHoc = request.StudyClassName;
                 studyClass.ThoiGianBatDau = DateOnly.Parse(request.StartDate, CultureInfo.InvariantCulture);
                 studyClass.ThoiGianKetThuc = DateOnly.Parse(request.EndDate, CultureInfo.InvariantCulture);
