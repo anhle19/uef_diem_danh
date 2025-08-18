@@ -101,7 +101,7 @@ namespace uef_diem_danh.Controllers
         {
             if(context.HocViens.Any(hv => hv.SoDienThoai == request.CreateStudentPhoneNumber))
             {
-                TempData["StudentErrorMessage"] = "Số điện thoại đã tồn tại trong hệ thống!";
+                TempData["StudentErrorMessage"] = "Số điện thoại của học viên đã tồn tại trong hệ thống!";
                 return Redirect("hoc-vien");
             }
 

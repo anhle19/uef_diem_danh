@@ -12,7 +12,11 @@ let studyClassTable = new DataTable('#studyClassTable', {
     // Notice no "f" here, which is the default filter/search box
     columnDefs: [
         { orderable: false, targets: [4, 5, 6, 7] } // Disable button column
-    ]
+    ],
+    language: {
+        emptyTable: "Hiện không có dữ liệu lớp học nào",
+        zeroRecords: "Không tìm thấy lớp học nào",
+    }
 });
 
 // ================== ADD STUDY CLASS ==================
@@ -100,7 +104,7 @@ async function initUpdateStudyClassFields(id) {
 
 function updateStudyClass() {
     const updateStudyClassForm = document.getElementById("updateStudyClassForm");
-    const teacherPhoneNumberInput = popup.querySelector("#suaGiaoVien");
+    const teacherPhoneNumberInput = document.getElementById("suaGiaoVien");
     const studyClassNameInput = document.getElementById("suaTenLop");
     const studyClassStartDayInput = document.getElementById("suaNgayBD");
     const studyClassEndDayInput = document.getElementById("suaNgayKT");

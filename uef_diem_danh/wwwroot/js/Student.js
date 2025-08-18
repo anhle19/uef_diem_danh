@@ -8,7 +8,11 @@ let studentTable = new DataTable('#studentTable', {
     'dom': 'rt',    // "l" = length, "r" = processing, "t" = table, "p" = pagination
     columnDefs: [
         { orderable: false, targets: [6, 7] } // Disable button column
-    ]
+    ],
+    language: {
+        emptyTable: "Hiện không có dữ liệu học viên nào",
+        zeroRecords: "Không tìm thấy học viên nào",
+    }
 });
 // ================== SEARCH ==================
 
