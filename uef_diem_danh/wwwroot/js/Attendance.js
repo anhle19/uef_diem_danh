@@ -9,7 +9,11 @@ let attendanceManagementTable = new DataTable('#attendanceManagementTable', {
     // Notice no "f" here, which is the default filter/search box
     columnDefs: [
         { orderable: false, targets: [3] } // Disable button column
-    ]
+    ],
+    language: {
+        emptyTable: "Hiện không có dữ liệu điểm danh nào",
+        zeroRecords: "Không tìm thấy điểm danh nào",
+    }
 });
 
 
