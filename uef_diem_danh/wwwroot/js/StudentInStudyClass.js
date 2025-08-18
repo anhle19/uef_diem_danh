@@ -2,46 +2,66 @@
     //// ================== INIT ==================
     $.fn.dataTable.moment('DD/MM/YYYY');
 
-    initAddStudentToStudyClassTable();
 })
 
 
+let studentManagementInStudyClassTable = new DataTable('#studentManagementInStudyClassTable', {
+    dom: 'rt',    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
+    // Notice no "f" here, which is the default filter/search box
+    paging: false,
+    columnDefs: [
+        {
+            targets: 4,
+            render: function (data, type) {
+                if (type === 'sort' || type === 'type') {
+                    return moment(data, "DD/MM/YYYY").year();
+                }
+                return data;
+            }
+        }, // Sort NgaySinh column based on Year
+        { orderable: false, targets: [5] } // Disable button column
+    ],
+    language: {
+        emptyTable: "Hiện không có dữ liệu học viên nào của lớp học",
+        zeroRecords: "Không tìm thấy học viên nào của lớp học",
+    }
+});
 let addStudentToStudyClassTable = new DataTable('#addStudentToStudyClassTable', {
     dom: 'rtp'    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
     // Notice no "f" here, which is the default filter/search box
 });
 
 
-async function initAddStudentToStudyClassTable() {
+
+
+// ================== SEARCH ==================
+function preventSearchStudentManagementInStudyClassSubmit() {
+    searchStudentManagementInStudyClass();
+
+    return false;
+}
+
+async function searchStudentManagementInStudyClass() {
+
+    const studentManagementInStudyClassSearchInputValue = document
+        .getElementById("studentManagementInStudyClassSearchInput")
+        .value
+        .trim();
+
     try {
-        const addStudentToStudyClassTableBody = document.getElementById("addStudentToStudyClassTableBody");
 
-        const response = await axios.get(`https://localhost:7045/api/quan-ly-danh-sach-lop-hoc/danh-sach-hoc-vien-con-trong`)
-        const data = response.data;
-
-
-        addStudentToStudyClassTable.rows.add(data.map(student => [
-            student.id,
-            `${student.lastName} ${student.firstName}`,
-            student.email,
-            student.phoneNumber,
-            student.barCode,
-            `<button
-                type="button"
-                id="add-student-${student.id}"
-                class="btn btn-outline-primary btn-sm"
-                onclick="addStudentToStudyClass(${student.id})">
-                    Thêm
-            </button>`
-        ]));
-        addStudentToStudyClassTable.draw();
+        if (!studentManagementInStudyClassSearchInputValue) {
+            return;
+        } else {
+            studentManagementInStudyClassTable.search(studentManagementInStudyClassSearchInputValue).draw();
+        }
 
     } catch (ex) {
         console.error(ex);
     }
+
 }
 
-// ================== SEARCH ==================
 function preventSearchAvailableStudentInputSubmit() {
     searchAvailableStudent();
 
@@ -87,26 +107,6 @@ function searchAvailableStudent() {
         });
 }
 
-
-//async function searchAvailableStudent() {
-//    const search = document
-//        .getElementById("searchAvailableStudentInput")
-//        .value
-//        .trim();
-
-//    try {
-
-//        if (!search) {
-//            return;
-//        } else {
-//            addStudentToStudyClassTable.search(search).draw();
-//        }
-
-//    } catch (ex) {
-//        console.error(ex);
-//    }
-
-//}
 
 
 
