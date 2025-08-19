@@ -33,7 +33,6 @@ namespace uef_diem_danh.Controllers
             return View(students);
         }
 
-        [Authorize(Roles = "Admin")]
         [Route("api/lay-danh-sach-hoc-vien-theo-lop/{study_class_id}")]
         [HttpGet]
         public async Task<IActionResult> GetStudentsByStudyClass(int study_class_id)
@@ -64,7 +63,6 @@ namespace uef_diem_danh.Controllers
         }
 
         // Later refactor to get necessary fields
-        [Authorize(Roles = "Admin")]
         [Route("api/lay-chi-tiet-hoc-vien/{student_id}")]
         [HttpGet]
         public async Task<IActionResult> GetDetailForUpdate(int student_id)
@@ -283,8 +281,10 @@ namespace uef_diem_danh.Controllers
                 options.AddArgument("--no-sandbox");
 
                 using var driver = new ChromeDriver(options);
+
+
                 //driver.Navigate().GoToUrl("http://127.0.0.1:5500/html/page/barcode-card-single.html");
-                driver.Navigate().GoToUrl($"https://localhost:7045/in-mot-the-hoc-vien/{student_id}");
+                driver.Navigate().GoToUrl($"https://laitsolution.id.vn/in-mot-the-hoc-vien/{student_id}");
 
 
                 var printOptions = new PrintOptions
@@ -316,7 +316,7 @@ namespace uef_diem_danh.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
 
 
@@ -338,7 +338,7 @@ namespace uef_diem_danh.Controllers
 
                 using var driver = new ChromeDriver(options);
                 //driver.Navigate().GoToUrl("http://127.0.0.1:5500/html/page/barcode-card-multiple.html");
-                driver.Navigate().GoToUrl($"https://localhost:7045/in-danh-sach-the-hoc-vien/{study_class_id}");
+                driver.Navigate().GoToUrl($"https://laitsolution.id.vn/in-danh-sach-the-hoc-vien/{study_class_id}");
 
 
                 var printOptions = new PrintOptions

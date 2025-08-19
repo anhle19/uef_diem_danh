@@ -921,7 +921,6 @@ namespace uef_diem_danh.Controllers
 
 
         // In thẻ học viên
-        [Authorize(Roles = "Admin")]
         [Route("in-mot-the-hoc-vien/{student_id}")]
         public async Task<IActionResult> GetStudentCardSinglePrintPage(int student_id)
         {
@@ -932,7 +931,6 @@ namespace uef_diem_danh.Controllers
         }
 
         // In danh sách thẻ học viên
-        [Authorize(Roles = "Admin")]
         [Route("in-danh-sach-the-hoc-vien/{study_class_id}")]
         public async Task<IActionResult> GetStudentCardsMultiplePrintPage(int study_class_id)
         {

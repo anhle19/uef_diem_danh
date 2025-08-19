@@ -487,3 +487,5 @@ _ReSharper.*
 bin
 obj
 packages
+/uef_diem_danh/appsettings.json
+/uef_diem_danh/appsettings.json
