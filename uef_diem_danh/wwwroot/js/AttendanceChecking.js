@@ -53,7 +53,7 @@ async function fetchFiveLatestAttendances() {
         let latestAttendanceTableRows = "";
         const studyClassId = document.getElementById("studyClassIdInput").value;
         const latestAttendenceTableBody = document.getElementById("latestAttendenceTableBody");
-        const response = await axios.get(`https://localhost:7045/api/lay-nam-buoi-diem-danh-moi-nhat/${studyClassId}`)
+        const response = await axios.get(`https://laitsolution.id.vn/api/lay-nam-buoi-diem-danh-moi-nhat/${studyClassId}`)
 
         const data = response.data
 
@@ -120,7 +120,7 @@ async function fakeBarcodeScannedEvent() {
         console.log(checkingAttendanceRequest);
 
         //// Call API to save checked attendance
-        const response = await axios.post(`https://localhost:7045/api/diem-danh-hoc-vien`, checkingAttendanceRequest)
+        const response = await axios.post(`https://laitsolution.id.vn/api/diem-danh-hoc-vien`, checkingAttendanceRequest)
 
         // Set successful message
         checkingAttendanceSuccessfulMessage.innerText = response.data.message;

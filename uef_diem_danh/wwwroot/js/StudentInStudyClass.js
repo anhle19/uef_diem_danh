@@ -120,7 +120,7 @@ async function addStudentToStudyClass(studentId) {
         const addStudentToStudyClassRequest = {
             StudentId: studentId
         }
-        const response = await axios.post(`https://localhost:7045/api/quan-ly-danh-sach-lop-hoc/${studyClassId}/them-hoc-vien-vao-lop-hoc`, addStudentToStudyClassRequest);
+        const response = await axios.post(`https://laitsolution.id.vn/api/quan-ly-danh-sach-lop-hoc/${studyClassId}/them-hoc-vien-vao-lop-hoc`, addStudentToStudyClassRequest);
         console.log(response)
         addStudentBtn.innerText = "Đã thêm";
         addStudentBtn.disabled = true;
