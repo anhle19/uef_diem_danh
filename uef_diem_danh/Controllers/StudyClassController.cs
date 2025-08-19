@@ -30,8 +30,9 @@ namespace uef_diem_danh.Controllers
             this.context = context;
         }
 
+
         [Authorize(Roles = "Admin,Staff")]
-        [Route("")]
+        [Route("quan-ly-danh-sach-lop-hoc")]
         [HttpGet]
         public async Task<IActionResult> GetListManagementPage()
         {

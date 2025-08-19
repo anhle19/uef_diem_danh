@@ -367,3 +367,13 @@ body {
     border: 1px solid #0d6efd;
     color: #0d6efd;
 }
+
+.charts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.chart-card {
+    flex: 0 0 calc(50% - 1rem);
+}
