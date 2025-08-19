@@ -157,11 +157,11 @@ async function initUpdateStudentFields(id) {
         const studentPhoneNumberInput = document.getElementById("suaSoDienThoai");
 
 
-        const response = await axios.get(`https://localhost:7045/api/lay-chi-tiet-hoc-vien/${id}`)
+        const response = await axios.get(`https://laitsolution.id.vn/api/lay-chi-tiet-hoc-vien/${id}`)
         const fetchedStudent = response.data;
 
         console.log(fetchedStudent);
-        suaHinhAnhPreview.src = `https://localhost:7045/${fetchedStudent.hinhAnh}`
+        suaHinhAnhPreview.src = `https://laitsolution.id.vn/${fetchedStudent.hinhAnh}`
         studentIdInput.value = fetchedStudent.maHocVien;
         studentLastNameInput.value = fetchedStudent.ho;
         studentFirstNameInput.value = fetchedStudent.ten;
