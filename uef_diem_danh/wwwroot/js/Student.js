@@ -16,8 +16,8 @@ let studentTable = new DataTable('#studentTable', {
 });
 // ================== SEARCH ==================
 
-function preventSearchStudyClassSubmit() {
-    searchStudyClass();
+function preventSearchStudentSubmit() {
+    searchStudent();
 
     return false;
 }
