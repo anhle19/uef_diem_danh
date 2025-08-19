@@ -92,7 +92,7 @@ async function initUpdateClassFields(id) {
         const studentFirstNameInput = document.getElementById("suaTietHoc");
 
 
-        const response = await axios.get(`https://localhost:7045/api/lay-chi-tiet-buoi-hoc/${id}`)
+        const response = await axios.get(`https://laitsolution.id.vn/api/lay-chi-tiet-buoi-hoc/${id}`)
         const fetchedStudent = response.data;
 
         console.log(fetchedStudent.maBuoiHoc);
