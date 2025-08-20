@@ -1,4 +1,8 @@
-﻿$(document).ready(function () {
+﻿import { BASE_URL } from '../js/Utils.js';
+
+
+
+$(document).ready(function () {
     //// ================== INIT ==================
     $.fn.dataTable.moment('DD/MM/YYYY');
 
@@ -116,7 +120,7 @@ async function initUpdateStaffFields(id) {
         const staffPhoneNumberInput = document.getElementById("suaSoDienThoai");
 
 
-        const response = await axios.get(`https://laitsolution.id.vn/api/lay-chi-tiet-nhan-vien/${id}`)
+        const response = await axios.get(`${BASE_URL}/api/lay-chi-tiet-nhan-vien/${id}`)
         const fetchedStudent = response.data;
 
         console.log(fetchedStudent);
