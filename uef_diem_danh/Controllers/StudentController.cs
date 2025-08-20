@@ -116,7 +116,7 @@ namespace uef_diem_danh.Controllers
 
                 HocVien student = new HocVien
                 {
-                    HinhAnh = $"student_pictures/hv_{request.CreateStudentPhoneNumber}{Path.GetExtension(request.CreateStudentAvatar.FileName)}",
+                    HinhAnh = $"hv_{request.CreateStudentPhoneNumber}{Path.GetExtension(request.CreateStudentAvatar.FileName)}",
                     Ho = request.CreateStudentLastName,
                     Ten = request.CreateStudentFirstName,
                     NgaySinh = DateOnly.Parse(request.CreateStudentDob, CultureInfo.InvariantCulture),
@@ -175,14 +175,14 @@ namespace uef_diem_danh.Controllers
                 {
 
                     // Find existing student avatar
-                    string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/");
+                    string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
                     string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh);
 
                     // Delete existed student avatar
                     System.IO.File.Delete(existedStudentAvatarPath);
 
 
-                    student.HinhAnh = $"student_pictures/hv_{request.UpdateStudentPhoneNumber}{Path.GetExtension(request.UpdateStudentAvatar.FileName)}";
+                    student.HinhAnh = $"hv_{request.UpdateStudentPhoneNumber}{Path.GetExtension(request.UpdateStudentAvatar.FileName)}";
                     student.Ho = request.UpdateStudentLastName;
                     student.Ten = request.UpdateStudentFirstName;
                     student.NgaySinh = DateOnly.Parse(request.UpdateStudentDob, CultureInfo.InvariantCulture);

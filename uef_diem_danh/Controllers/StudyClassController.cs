@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.Security.Claims;
@@ -510,12 +511,30 @@ namespace uef_diem_danh.Controllers
                                 return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
                             }
 
+
+                            string extension = "";
                             var imageBytes = studentAvatar.ImageStream.ToArray();
 
-                            var fileName = $"hv_{student.SoDienThoai}.png";
+                            using (var ms = new MemoryStream(imageBytes))
+                            {
+                                Image img = Image.FromStream(ms);
+
+                                // Get image format
+                                if (img.RawFormat.Equals(ImageFormat.Jpeg))
+                                {
+                                    extension = ".jpg";
+                                }
+                                if (img.RawFormat.Equals(ImageFormat.Png))
+                                {
+                                    extension = ".png";
+                                }
+ 
+                            }
+
+                            var fileName = $"hv_{student.SoDienThoai}{extension}";
 
 
-                            student.HinhAnh = $"student_pictures/{fileName}";
+                            student.HinhAnh = $"{fileName}";
 
                             var imageFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures", fileName);
 
@@ -582,8 +601,15 @@ namespace uef_diem_danh.Controllers
             try
             {
 
+                if (context.HocViens.Any(hv => hv.SoDienThoai == request.SoDienThoai))
+                {
+                    TempData["StudentInStudyClassErrorMessage"] = "Số điện thoại của học viên đã tồn tại trong hệ thống!";
+                    return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-hoc-vien");
+                }
+
                 HocVien student = new HocVien
                 {
+                    HinhAnh = $"hv_{request.SoDienThoai}{Path.GetExtension(request.AddStudentToStudyClassAvatar.FileName)}",
                     Ho = request.Ho,
                     Ten = request.Ten,
                     NgaySinh = DateOnly.Parse(request.NgaySinh, CultureInfo.InvariantCulture),
@@ -592,6 +618,18 @@ namespace uef_diem_danh.Controllers
                     Email = request.Email,
                     SoDienThoai = request.SoDienThoai,
                 };
+
+
+                // Init student avatar file path
+                string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
+                string studentAvatarPath = Path.Combine(uploadFilePath, $"hv_{student.SoDienThoai}{Path.GetExtension(request.AddStudentToStudyClassAvatar.FileName)}");
+
+                // Save new uploaded student avatar
+                using (var stream = new FileStream(studentAvatarPath, FileMode.Create))
+                {
+                    await request.AddStudentToStudyClassAvatar.CopyToAsync(stream);
+                }
+
 
                 context.HocViens.Add(student);
                 await context.SaveChangesAsync();

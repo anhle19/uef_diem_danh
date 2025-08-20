@@ -19,7 +19,7 @@ async function downloadStudentCard(studentId) {
         printBtnContainer.style.display = "none";
 
         const response = await axios.post(
-            `https://laitsolution.id.vn/api/tai-ve-mot-the-hoc-vien/${studentId}`,
+            `/api/tai-ve-mot-the-hoc-vien/${studentId}`,
             null,
             { responseType: 'blob', withCredentials: true }
         );
@@ -157,12 +157,12 @@ document.addEventListener('DOMContentLoaded', async (event) => {
         const studentPhoneNumberInfo = document.getElementById("studentPhoneNumberInfo");
 
         // Call API fetch student info
-        const response = await axios.get(`https://laitsolution.id.vn/api/lay-chi-tiet-hoc-vien/${studentId}`)
+        const response = await axios.get(`/api/lay-chi-tiet-hoc-vien/${studentId}`)
         const studentData = response.data
 
 
         // Set student info to UI
-        studentAvatarInfo.src = `https://laitsolution.id.vn/${studentData.hinhAnh}`;
+        studentAvatarInfo.src = `https://laitsolution.id.vn/student_pictures/${studentData.hinhAnh}`;
         studentFullNameInfo.innerText = `${studentData.ho} ${studentData.ten}`;
         studentDobInfo.innerHTML =
         `

@@ -87,6 +87,7 @@ function searchAvailableStudent() {
         .then(res => {
             const data = res.data;
             // Đổ dữ liệu vào form
+            document.getElementById("hinhAnhHocVienLopHocPreview").src = `https://laitsolution.id.vn/student_pictures/${data.hinhAnh}`
             document.getElementById("themHo").value = data.ho;
             document.getElementById("themTen").value = data.ten;
             document.getElementById("themNgaySinh").value = data.ngaySinh;
@@ -112,22 +113,61 @@ function searchAvailableStudent() {
 
 // ================== ADD STUDENT TO STUDY CLASS ==================
 
-async function addStudentToStudyClass(studentId) {
-    try {
-        const studyClassId = document.getElementById("studyClassId").value;
-        const addStudentBtn = document.getElementById(`add-student-${studentId}`);
+//async function addStudentToStudyClass(studentId) {
+//    try {
+//        const studyClassId = document.getElementById("studyClassId").value;
+//        const addStudentBtn = document.getElementById(`add-student-${studentId}`);
 
-        const addStudentToStudyClassRequest = {
-            StudentId: studentId
-        }
-        const response = await axios.post(`https://laitsolution.id.vn/api/quan-ly-danh-sach-lop-hoc/${studyClassId}/them-hoc-vien-vao-lop-hoc`, addStudentToStudyClassRequest);
-        console.log(response)
-        addStudentBtn.innerText = "Đã thêm";
-        addStudentBtn.disabled = true;
+//        const addStudentToStudyClassRequest = {
+//            StudentId: studentId
+//        }
+//        const response = await axios.post(`https://laitsolution.id.vn/api/quan-ly-danh-sach-lop-hoc/${studyClassId}/them-hoc-vien-vao-lop-hoc`, addStudentToStudyClassRequest);
+//        console.log(response)
+//        addStudentBtn.innerText = "Đã thêm";
+//        addStudentBtn.disabled = true;
 
-        console.log(studyClassId)
-    } catch (ex) {
-        console.log(ex);
+//        console.log(studyClassId)
+//    } catch (ex) {
+//        console.log(ex);
+//    }
+//}
+
+function changeAddStudentToStudyClassPreviewAvatar() {
+    const MAX_AVATAR_FILE_SIZE = 10 * 1024 * 1024;
+
+    const studentAvatarFile = document.getElementById("hinhAnhHocVienLopHoc").files[0];
+
+    if (
+        studentAvatarFile.type === "image/png" ||
+        studentAvatarFile.type === "image/jpg" ||
+        studentAvatarFile.type === "image/jpeg"
+    ) {
+        const themHinhAnhPreview = document.getElementById("hinhAnhHocVienLopHocPreview");
+
+        themHinhAnhPreview.src = URL.createObjectURL(studentAvatarFile);
+
+        // Clean up object URL when student avatar is loaded
+        // Prevent too much object URL => Lead to use more memory
+        themHinhAnhPreview.onload = function () {
+            URL.revokeObjectURL(themHinhAnhPreview.src);
+        };
+
+    } else {
+        Swal.fire(
+            "Lỗi",
+            "Định dạng file không hợp lệ. Phải là PNG hoặc JPG / JPEG",
+            "warning"
+        );
+        return;
+    }
+
+    if (studentAvatarFile.size > MAX_AVATAR_FILE_SIZE) {
+        Swal.fire(
+            "Lỗi",
+            "Hình ảnh học viên không được vượt quá 10MB",
+            "warning"
+        );
+        return;
     }
 }
 

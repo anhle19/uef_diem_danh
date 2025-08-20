@@ -1,11 +1,41 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@{
-}
+
 @model uef_diem_danh.DTOs.StudentCreateNewToClassRequest
 @{
 }
+
+<style>
+	.add-student-to-study-class-avatar-input {
+		width: 100px;
+		height: 100px;
+		border-radius: 10px;
+		border: 1px dashed black
+	}
+
+	.overlay-layer {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		text-align: center;
+		color: rgba(255, 255, 255, 0);
+		background-color: rgba(0, 0, 0, 0);
+		width: 100%;
+		height: 100%;
+		border-radius: 10px;
+		position: absolute;
+		top: 0;
+		left: 0;
+		transition: background-color 0.2s ease, color 0.2s ease;
+	}
+
+	.overlay-layer:hover {
+		color: rgba(255, 255, 255, 1);
+		background-color: rgba(0, 0, 0, 0.7);
+	}
+</style>
+
 <div class="modal fade"
 	 id="popupThemHocVien"
 	 tabindex="-1"
@@ -49,9 +79,27 @@
 				</div>
 				<br class="mb-0"/>
 				<div>
-					<form method="POST" action="/tao-hoc-vien-moi-vao-lop" id="createStudentForm">
+					<form method="POST" action="/tao-hoc-vien-moi-vao-lop" id="createStudentForm" enctype="multipart/form-data">
 						@Html.AntiForgeryToken()
 						<input type="hidden" id="themMaLopHoc" name="MaLopHoc" class="form-control" />
+
+						<div class="d-flex justify-content-center mb-2">
+							<label class="form-label position-relative" for="hinhAnhHocVienLopHoc">
+								<img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR"
+									 alt="Thêm hình ảnh học viên"
+									 id="hinhAnhHocVienLopHocPreview"
+									 class="add-student-to-study-class-avatar-input" />
+								<div class="overlay-layer">
+									<i class="bi bi-upload"></i>
+								</div>
+								<input type="file"
+									   id="hinhAnhHocVienLopHoc"
+									   name="AddStudentToStudyClassAvatar"
+									   class="form-control"
+									   style="display: none"
+									   onchange="changeAddStudentToStudyClassPreviewAvatar()" />
+							</label>
+						</div>
 
 						<div class="mb-2">
 							<label class="form-label">Họ <span class="text-danger">*</span></label>

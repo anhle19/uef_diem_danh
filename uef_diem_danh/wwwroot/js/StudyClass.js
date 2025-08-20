@@ -84,7 +84,7 @@ async function initUpdateStudyClassFields(id) {
         const studyClassStartDayInput = document.getElementById("suaNgayBD");
         const studyClassEndDayInput = document.getElementById("suaNgayKT");
 
-        const response = await axios.get(`https://laitsolution.id.vn/api/lay-chi-tiet-lop-hoc/${id}`)
+        const response = await axios.get(`/api/lay-chi-tiet-lop-hoc/${id}`)
         const fetchedStudyClass = response.data;
 
         console.log(fetchedStudyClass);
