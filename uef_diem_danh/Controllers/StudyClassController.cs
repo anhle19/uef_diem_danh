@@ -1,4 +1,5 @@
 using ClosedXML.Excel;
+using ClosedXML.Excel.Drawings;
 using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
@@ -336,7 +337,8 @@ namespace uef_diem_danh.Controllers
                                 string email = excelReader.GetValue(EMAIL_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty;
                                 string phoneNumber = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty;
                                 string address = excelReader.GetValue(ADDRESS_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty;
-                                string dateOfBirth = excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? string.Empty;
+                                string extractedDateOfBirth = excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? string.Empty;
+                                DateTime dateOfBirth;
 
                                 // Check if whole row is empty
                                 if (
@@ -345,7 +347,7 @@ namespace uef_diem_danh.Controllers
                                     string.IsNullOrEmpty(email) &&
                                     string.IsNullOrEmpty(phoneNumber) &&
                                     string.IsNullOrEmpty(address) &&
-                                    string.IsNullOrEmpty(dateOfBirth)
+                                    string.IsNullOrEmpty(extractedDateOfBirth)
                                 )
                                 {
                                     break;
@@ -372,9 +374,14 @@ namespace uef_diem_danh.Controllers
                                     TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Địa chỉ học viên ở dòng: {currentRow}";
                                     return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
                                 }
-                                if (string.IsNullOrEmpty(dateOfBirth))
+                                if (string.IsNullOrEmpty(extractedDateOfBirth))
                                 {
                                     TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Ngày sinh học viên ở dòng: {currentRow}";
+                                    return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                                }
+
+                                if (!DateTime.TryParse(extractedDateOfBirth, out dateOfBirth)) {
+                                    TempData["StudentInStudyClassErrorMessage"] = $"Ngày sinh học viên không hợp lệ ở dòng: {currentRow}. Vui lòng nhập đúng định dạng dd/MM/yyyy";
                                     return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
                                 }
 
@@ -382,7 +389,7 @@ namespace uef_diem_danh.Controllers
                                 {
                                     DateOnly
                                         .ParseExact(
-                                            excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? "01/01/1900",
+                                            $"{dateOfBirth.ToString("dd")}/{dateOfBirth.ToString("MM")}/{dateOfBirth.ToString("yyyy")}",
                                             "dd/MM/yyyy",
                                             CultureInfo.InvariantCulture);
                                 } 
@@ -401,7 +408,7 @@ namespace uef_diem_danh.Controllers
                                     SoDienThoai = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
                                     NgaySinh = DateOnly
                                         .ParseExact(
-                                            excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? "01/01/1900",
+                                            $"{dateOfBirth.ToString("dd")}/{dateOfBirth.ToString("MM")}/{dateOfBirth.ToString("yyyy")}",
                                             "dd/MM/yyyy",
                                             CultureInfo.InvariantCulture
                                     ),
@@ -503,7 +510,13 @@ namespace uef_diem_danh.Controllers
                         {
                             const int IMAGE_MAX_SIZE = 10 * 1024 * 1024;
 
-                            var studentAvatar = worksheet.Picture($"hv_{student.SoDienThoai}");
+                            if (!worksheet.Pictures.Contains($"hv_{student.SoDienThoai}"))
+                            {
+                                TempData["StudentInStudyClassErrorMessage"] = $"Không có hình ảnh của học viên: {student.Ho} {student.Ten} - SĐT: {student.SoDienThoai}";
+                                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                            }
+
+                            IXLPicture studentAvatar = worksheet.Picture($"hv_{student.SoDienThoai}");
 
                             if (studentAvatar.ImageStream.Length > IMAGE_MAX_SIZE)
                             {

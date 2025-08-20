@@ -129,7 +129,7 @@ async function fakeBarcodeScannedEvent() {
         bootstrap.Toast.getOrCreateInstance(successfulToast).show();
 
         // Set student info
-        avatar.src = `https://laitsolution.id.vn/student_pictures/{response.data.studentAvatar}`
+        avatar.src = `https://laitsolution.id.vn/student_pictures/${response.data.studentAvatar}`
         fullNameInfo.innerText = `${response.data.studentLastName} ${response.data.studentFirstName}`;
         dayOfBirthInfo.innerText = `${moment(response.data.studentDayOfBirth).format("DD/MM/YYYY")}`
         //phoneNumberInfo.innerHTML = `<strong>SĐT:</strong>: ${response.data.studentPhoneNumber}`;

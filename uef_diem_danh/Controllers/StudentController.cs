@@ -178,8 +178,11 @@ namespace uef_diem_danh.Controllers
                     string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
                     string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh);
 
-                    // Delete existed student avatar
-                    System.IO.File.Delete(existedStudentAvatarPath);
+                    if (System.IO.File.Exists(existedStudentAvatarPath))
+                    {
+                        // Delete existed student avatar
+                        System.IO.File.Delete(existedStudentAvatarPath);
+                    }
 
 
                     student.HinhAnh = $"hv_{request.UpdateStudentPhoneNumber}{Path.GetExtension(request.UpdateStudentAvatar.FileName)}";
@@ -246,8 +249,11 @@ namespace uef_diem_danh.Controllers
                 string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
                 string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh);
 
-                // Delete student avatar
-                System.IO.File.Delete(existedStudentAvatarPath);
+                if (System.IO.File.Exists(existedStudentAvatarPath))
+                {
+                    // Delete existed student avatar
+                    System.IO.File.Delete(existedStudentAvatarPath);
+                }
 
 
                 context.HocViens.Remove(student);
