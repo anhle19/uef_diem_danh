@@ -243,7 +243,7 @@ namespace uef_diem_danh.Controllers
 
 
                 // Find existing student avatar
-                string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/");
+                string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
                 string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh);
 
                 // Delete student avatar
