@@ -53,7 +53,7 @@ async function fetchFiveLatestAttendances() {
         let latestAttendanceTableRows = "";
         const studyClassId = document.getElementById("studyClassIdInput").value;
         const latestAttendenceTableBody = document.getElementById("latestAttendenceTableBody");
-        const response = await axios.get(`https://laitsolution.id.vn/api/lay-nam-buoi-diem-danh-moi-nhat/${studyClassId}`)
+        const response = await axios.get(`/api/lay-nam-buoi-diem-danh-moi-nhat/${studyClassId}`)
 
         const data = response.data
 
@@ -99,6 +99,7 @@ async function fakeBarcodeScannedEvent() {
         const latestAttendenceTableBody = document.getElementById("latestAttendenceTableBody");
 
         const studentCard = document.getElementById("student-card");
+        const avatar = document.getElementById("avatar");
         const fullNameInfo = document.getElementById("fullNameInfo");
         const dayOfBirthInfo = document.getElementById("dobInfo");
         //const phoneNumberInfo = document.getElementById("phoneNumberInfo");
@@ -120,7 +121,7 @@ async function fakeBarcodeScannedEvent() {
         console.log(checkingAttendanceRequest);
 
         //// Call API to save checked attendance
-        const response = await axios.post(`https://laitsolution.id.vn/api/diem-danh-hoc-vien`, checkingAttendanceRequest)
+        const response = await axios.post(`/api/diem-danh-hoc-vien`, checkingAttendanceRequest)
 
         // Set successful message
         checkingAttendanceSuccessfulMessage.innerText = response.data.message;
@@ -128,6 +129,7 @@ async function fakeBarcodeScannedEvent() {
         bootstrap.Toast.getOrCreateInstance(successfulToast).show();
 
         // Set student info
+        avatar.src = `https://laitsolution.id.vn/student_pictures/{response.data.studentAvatar}`
         fullNameInfo.innerText = `${response.data.studentLastName} ${response.data.studentFirstName}`;
         dayOfBirthInfo.innerText = `${moment(response.data.studentDayOfBirth).format("DD/MM/YYYY")}`
         //phoneNumberInfo.innerHTML = `<strong>SĐT:</strong>: ${response.data.studentPhoneNumber}`;
