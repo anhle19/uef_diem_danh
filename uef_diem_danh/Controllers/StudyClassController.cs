@@ -449,12 +449,6 @@ namespace uef_diem_danh.Controllers
                                         if (existedStudent != null)
                                         {
 
-                                            // Validate if student avatar file existed
-                                            if (context.HocViens.Any(hv => hv.HinhAnh.Contains($"hv_{phoneNumber}")))
-                                            {
-                                                TempData["StudentInStudyClassErrorMessage"] = $"Hình ảnh của học viên bị trùng ở dòng: {currentRow}";
-                                                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
-                                            }
 
                                             // If student not participated in study class yet
                                             if (!context.ThamGias.Any(tg => tg.MaHocVien == existedStudent.MaHocVien && tg.MaLopHoc == studyClass.MaLopHoc)) {
@@ -489,19 +483,12 @@ namespace uef_diem_danh.Controllers
                     //    foreach (HocVien student in existedStudents)
                     //    {
 
-                    //        var studentAvatar = worksheet.Picture($"hv_{student.SoDienThoai}");
-
-                    //        var imageBytes = studentAvatar.ImageStream.ToArray();
-
-                    //        var fileName = $"hv_{student.SoDienThoai}.png";
-
-                    //        //Console.WriteLine($"Picture Name: {picture.Name}");
-
-                    //        student.HinhAnh = $"wwwroot/student_avatars/{fileName}";
-
-                    //        var imageFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures", fileName);
-
-                    //        await System.IO.File.WriteAllBytesAsync(imageFilePath, imageBytes);
+                    //        // Validate if student avatar file existed
+                    //        if (context.HocViens.Any(hv => hv.HinhAnh.Contains($"hv_{student.SoDienThoai}")))
+                    //        {
+                    //            TempData["StudentInStudyClassErrorMessage"] = $"Hình ảnh của học viên {student.Ho} {student.Ten} - {student.SoDienThoai} bị trùng";
+                    //            return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                    //        }
                     //    }
                     //}
                     if (creatingStudents.Count > 0)
@@ -509,6 +496,13 @@ namespace uef_diem_danh.Controllers
                         foreach (HocVien student in creatingStudents)
                         {
                             const int IMAGE_MAX_SIZE = 10 * 1024 * 1024;
+
+                            // Validate if student avatar file existed
+                            if (context.HocViens.Any(hv => hv.HinhAnh.Contains($"hv_{student.SoDienThoai}")))
+                            {
+                                TempData["StudentInStudyClassErrorMessage"] = $"Hình ảnh của học viên {student.Ho} {student.Ten} - {student.SoDienThoai} bị trùng";
+                                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                            }
 
                             if (!worksheet.Pictures.Contains($"hv_{student.SoDienThoai}"))
                             {
@@ -558,10 +552,7 @@ namespace uef_diem_danh.Controllers
    
                 }
 
-                // Delete excel file after processing
-                System.IO.File.Delete(filePath);
-
-                // Save students to database
+                // Save creating students to database
                 context.HocViens.AddRange(creatingStudents);
                 await context.SaveChangesAsync();
 
@@ -573,6 +564,13 @@ namespace uef_diem_danh.Controllers
                 Console.WriteLine(ex.ToString());
                 TempData["StudentInStudyClassErrorMessage"] = "Nhập học viên vào lớp học từ file excel không thành công " + ex.Message;
                 return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+            } 
+            finally
+            {
+                var filePath = Path.Combine("UploadExcels", excelFileName);
+
+                // Delete excel file after processing
+                System.IO.File.Delete(filePath);
             }
 
         }
