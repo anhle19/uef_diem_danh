@@ -30,8 +30,7 @@
                     class="btn-next-secondary btn -sm btn-add"
                     data-bs-toggle="modal"
                     data-bs-target="#popupThemBuoiHoc"
-                    data-id="@Model.StudyClassId"
-                    onclick="initAddClassFields(@Model.StudyClassId)">
+                    data-id="@Model.StudyClassId">
                 Thêm Buổi Học
             </button>
         </div>
@@ -137,4 +136,4 @@
 @await Html.PartialAsync("/Views/Component/DeleteClassModal.cshtml", new uef_diem_danh.DTOs.ClassDeleteRequest())
 
 
-<script src="~/js/Class.js"></script>
+<script type="module" src="~/js/Class.js"></script>

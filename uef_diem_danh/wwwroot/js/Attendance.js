@@ -1,4 +1,8 @@
-﻿//// ================== INIT ==================
+﻿import { BASE_URL } from '../js/Utils.js';
+
+
+
+//// ================== INIT ==================
 $(document).ready(function () {
     $.fn.dataTable.moment('DD/MM/YYYY');
 })

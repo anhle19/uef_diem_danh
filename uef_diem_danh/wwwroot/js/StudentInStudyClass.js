@@ -1,4 +1,8 @@
-﻿$(document).ready(function () {
+﻿import { BASE_URL } from '../js/Utils.js';
+
+
+
+$(document).ready(function () {
     //// ================== INIT ==================
     $.fn.dataTable.moment('DD/MM/YYYY');
 
@@ -83,11 +87,11 @@ function searchAvailableStudent() {
         return;
     }
 
-    axios.get(`/hoc-vien/tim-theo-so-dien-thoai?phoneNumber=${phone}`)
+    axios.get(`${BASE_URL}/hoc-vien/tim-theo-so-dien-thoai?phoneNumber=${phone}`)
         .then(res => {
             const data = res.data;
             // Đổ dữ liệu vào form
-            document.getElementById("hinhAnhHocVienLopHocPreview").src = `https://laitsolution.id.vn/student_pictures/${data.hinhAnh}`
+            document.getElementById("hinhAnhHocVienLopHocPreview").src = `${BASE_URL}/student_pictures/${data.hinhAnh}`
             document.getElementById("themHo").value = data.ho;
             document.getElementById("themTen").value = data.ten;
             document.getElementById("themNgaySinh").value = data.ngaySinh;

@@ -1,4 +1,8 @@
-﻿$(document).ready(function () {
+﻿import { BASE_URL } from '../js/Utils.js';
+
+
+
+$(document).ready(function () {
     //// ================== INIT ==================
     $.fn.dataTable.moment('DD/MM/YYYY');
    
@@ -161,7 +165,7 @@ async function initUpdateStudentFields(id) {
         const fetchedStudent = response.data;
 
         console.log(fetchedStudent);
-        suaHinhAnhPreview.src = `https://laitsolution.id.vn/student_pictures/${fetchedStudent.hinhAnh}`
+        suaHinhAnhPreview.src = `${BASE_URL}/student_pictures/${fetchedStudent.hinhAnh}`
         studentIdInput.value = fetchedStudent.maHocVien;
         studentLastNameInput.value = fetchedStudent.ho;
         studentFirstNameInput.value = fetchedStudent.ten;
