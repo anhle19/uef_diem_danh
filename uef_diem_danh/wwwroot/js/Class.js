@@ -52,7 +52,7 @@
 
 
 // ================== ADD STUDY CLASS ==================
-function addClass(id) {
+function addClass() {
     const createClassForm = document.getElementById("createClassForm");
     const popup = document.getElementById("popupThemBuoiHoc");
 
@@ -110,25 +110,19 @@ async function initUpdateClassFields(id) {
 
 }
 
-function updateStudent() {
-    const updateStudyClassForm = document.getElementById("updateStudentForm");
+function updateClass() {
+    const updateClassForm = document.getElementById("updateClassForm");
 
-    const studentLastNameInput = document.getElementById("suaHo");
-    const studentFirstNameInput = document.getElementById("suaTen");
-    const studentDobInput = document.getElementById("suaNgaySinh");
-    const studentAddressInput = document.getElementById("suaDiaChi");
-    const studentEmailInput = document.getElementById("suaEmail");
-    const studentPhoneNumberInput = document.getElementById("suaSoDienThoai");
+    const classDayInput = document.getElementById("suaNgayHoc");
+    const classLessonInput = document.getElementById("suaTietHoc");
 
-    const studentLastName = studentLastNameInput.value.trim();
-    const studentFirstName = studentFirstNameInput.value.trim();
-    const studentDob = studentDobInput.value;
-    const studentAddress = studentAddressInput.value.trim();
-    const studentEmail = studentEmailInput.value.trim();
-    const studentPhoneNumber = studentPhoneNumberInput.value.trim();
+
+    const classDay = classDayInput.value;
+    const classLesson = classLessonInput.value.trim();
+
 
     // Validate inputs
-    if (!studentLastName || !studentFirstName || !studentDob || !studentAddress || !studentEmail || !studentPhoneNumber) {
+    if (!classDay || !classLesson) {
         Swal.fire(
             "Lỗi",
             "Vui lòng nhập đầy đủ dữ liệu",
@@ -137,8 +131,9 @@ function updateStudent() {
         return;
     }
 
+
     // Submit form
-    updateStudyClassForm.requestSubmit();
+    updateClassForm.requestSubmit();
 };
 
 

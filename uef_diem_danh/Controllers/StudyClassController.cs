@@ -965,10 +965,10 @@ namespace uef_diem_danh.Controllers
 
         }
 
-        [Route("cap-nhat-buoi-hoc")]
+        [Route("quan-ly-lop-hoc/{study_class_id}/cap-nhat-buoi-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int class_id, [FromForm] ClassUpdateRequest request)
+        public async Task<IActionResult> Update(int study_class_id, [FromForm] ClassUpdateRequest request)
         {
 
             try
@@ -982,13 +982,13 @@ namespace uef_diem_danh.Controllers
                 await context.SaveChangesAsync();
 
                 TempData["ClassSuccessMessage"] = "Cập nhật buổi học thành công!";
-                return Redirect("buoi-hoc");
+                return Redirect($"/quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-buoi-hoc");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi cập nhật buổi học: " + ex.Message;
-                return Redirect("buoi-hoc");
+                return Redirect($"/quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-buoi-hoc");
             }
 
         }
