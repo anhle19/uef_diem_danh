@@ -18,7 +18,7 @@
 						aria-label="Đóng"></button>
 			</div>
 			<div class="modal-body">
-				<form method="POST" action="/cap-nhat-buoi-hoc" id="updateClassForm">
+				<form method="POST" action="/quan-ly-lop-hoc/@ViewBag.StudyClassId/cap-nhat-buoi-hoc" id="updateClassForm">
 					@Html.AntiForgeryToken()
 					<input type="hidden" id="suaMaBuoiHoc" name="MaBuoiHoc" class="form-control" />
 
