@@ -164,14 +164,24 @@ async function initUpdateStudentFields(id) {
         const fetchedStudent = response.data;
 
         console.log(fetchedStudent);
-        suaHinhAnhPreview.src = `${BASE_URL}/student_pictures/${fetchedStudent.hinhAnh}`
-        studentIdInput.value = fetchedStudent.maHocVien;
-        studentLastNameInput.value = fetchedStudent.ho;
-        studentFirstNameInput.value = fetchedStudent.ten;
-        studentDobInput.value = fetchedStudent.ngaySinh;
-        studentAddressInput.value = fetchedStudent.diaChi;
-        studentEmailInput.value = fetchedStudent.email;
-        studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
+        if (fetchedStudent.hinhAnh == null) {
+            studentIdInput.value = fetchedStudent.maHocVien;
+            studentLastNameInput.value = fetchedStudent.ho;
+            studentFirstNameInput.value = fetchedStudent.ten;
+            studentDobInput.value = fetchedStudent.ngaySinh;
+            studentAddressInput.value = fetchedStudent.diaChi;
+            studentEmailInput.value = fetchedStudent.email;
+            studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
+        } else {
+            suaHinhAnhPreview.src = `${BASE_URL}/student_pictures/${fetchedStudent.hinhAnh}`
+            studentIdInput.value = fetchedStudent.maHocVien;
+            studentLastNameInput.value = fetchedStudent.ho;
+            studentFirstNameInput.value = fetchedStudent.ten;
+            studentDobInput.value = fetchedStudent.ngaySinh;
+            studentAddressInput.value = fetchedStudent.diaChi;
+            studentEmailInput.value = fetchedStudent.email;
+            studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
+        }
 
 
         console.log(response)
