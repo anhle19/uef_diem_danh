@@ -1,5 +1,4 @@
-﻿import { BASE_URL } from '../js/Utils.js';
-
+﻿
 
 
 $(document).ready(function () {
