@@ -28,7 +28,7 @@ namespace uef_diem_danh.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 
-        // relationships
+        // Relationships
         public ICollection<DiemDanh> DiemDanhs { get; set; }
         public ICollection<ThamGia> ThamGias { get; set; }
     }
