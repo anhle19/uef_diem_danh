@@ -1,4 +1,5 @@
-﻿
+﻿import { BASE_URL } from '../js/Utils.js';
+
 
 
 // ================== STUDENT CARD PDF PRINT ==================
@@ -19,7 +20,7 @@ async function downloadStudentCards(studyClassId) {
         printBtnContainer.style.display = "none";
 
         const response = await axios.post(
-            `https://laitsolution.id.vn/api/tai-ve-danh-sach-the-hoc-vien/${studyClassId}`,
+            `${BASE_URL}/api/tai-ve-danh-sach-the-hoc-vien/${studyClassId}`,
             null,
             { responseType: 'blob' }
         );
@@ -241,7 +242,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
         //const studentPhoneNumberInfo = document.getElementById("studentPhoneNumberInfo");
 
         // Call API fetch students info
-        const response = await axios.get(`https://laitsolution.id.vn/api/lay-danh-sach-hoc-vien-theo-lop/${studyClassId}`)
+        const response = await axios.get(`${BASE_URL}/api/lay-danh-sach-hoc-vien-theo-lop/${studyClassId}`)
         let studentsData = response.data
 
         const totalSheets = Math.ceil(studentsData.length / 16);
@@ -268,7 +269,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
                 `
                  <div class="card student-card text-center">
                     <div class="card-top">
-                        <img src="https://laitsolution.id.vn/${processingStudentsData[j].studentAvatar}" class="card-img-top" alt="Ảnh đại diện">
+                        <img src="${BASE_URL}/student_pictures/${processingStudentsData[j].studentAvatar}" class="card-img-top" alt="Ảnh đại diện">
                         <div class="card-body">
                             <h5>${processingStudentsData[j].studentLastName} ${processingStudentsData[j].studentFirstName}</h5>
                             <p><strong>Ngày sinh:</strong> ${moment(processingStudentsData[j].studentDayOfBirth).format("DD/MM/YYYY")}</p>

@@ -33,12 +33,12 @@
 				</form>
 			</div>
 		</div>
-		@* <div>
+		<div>
 			<button type="button" class="btn-next-secondary btn -sm btn-add" data-bs-toggle="modal"
 				data-bs-target="#popupThemHocVien">
 				Thêm Học Viên
 			</button>
-		</div> *@
+		</div>
 	</div>
 
 
@@ -114,4 +114,4 @@
 
 @await Html.PartialAsync("/Views/Component/DeleteStudentModal.cshtml", new uef_diem_danh.DTOs.StudentDeleteRequest())
 
-<script src="~/js/Student.js"></script>
+<script type="module" src="~/js/Student.js"></script>

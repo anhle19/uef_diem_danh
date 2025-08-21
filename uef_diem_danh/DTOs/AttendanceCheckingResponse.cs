@@ -5,6 +5,8 @@
         public string Message { get; set; }
         public string StudyClassName { get; set; }
 
+        public string StudentAvatar { get; set; }
+
         public string StudentFirstName { get; set; }
 
         public string StudentLastName { get; set; }

@@ -1,4 +1,5 @@
-﻿
+﻿import { BASE_URL } from '../js/Utils.js';
+
 
 
 // ================== STUDENT CARD PDF PRINT ==================
@@ -19,7 +20,7 @@ async function downloadStudentCard(studentId) {
         printBtnContainer.style.display = "none";
 
         const response = await axios.post(
-            `https://laitsolution.id.vn/api/tai-ve-mot-the-hoc-vien/${studentId}`,
+            `${BASE_URL}/api/tai-ve-mot-the-hoc-vien/${studentId}`,
             null,
             { responseType: 'blob', withCredentials: true }
         );
@@ -157,12 +158,12 @@ document.addEventListener('DOMContentLoaded', async (event) => {
         const studentPhoneNumberInfo = document.getElementById("studentPhoneNumberInfo");
 
         // Call API fetch student info
-        const response = await axios.get(`https://laitsolution.id.vn/api/lay-chi-tiet-hoc-vien/${studentId}`)
+        const response = await axios.get(`${BASE_URL}/api/lay-chi-tiet-hoc-vien/${studentId}`)
         const studentData = response.data
 
 
         // Set student info to UI
-        studentAvatarInfo.src = `https://laitsolution.id.vn/${studentData.hinhAnh}`;
+        studentAvatarInfo.src = `${BASE_URL}/student_pictures/${studentData.hinhAnh}`;
         studentFullNameInfo.innerText = `${studentData.ho} ${studentData.ten}`;
         studentDobInfo.innerHTML =
         `

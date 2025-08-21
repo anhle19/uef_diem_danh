@@ -1,4 +1,5 @@
 using ClosedXML.Excel;
+using ClosedXML.Excel.Drawings;
 using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.Security.Claims;
@@ -335,7 +337,8 @@ namespace uef_diem_danh.Controllers
                                 string email = excelReader.GetValue(EMAIL_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty;
                                 string phoneNumber = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty;
                                 string address = excelReader.GetValue(ADDRESS_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty;
-                                string dateOfBirth = excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? string.Empty;
+                                string extractedDateOfBirth = excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? string.Empty;
+                                DateTime dateOfBirth;
 
                                 // Check if whole row is empty
                                 if (
@@ -344,7 +347,7 @@ namespace uef_diem_danh.Controllers
                                     string.IsNullOrEmpty(email) &&
                                     string.IsNullOrEmpty(phoneNumber) &&
                                     string.IsNullOrEmpty(address) &&
-                                    string.IsNullOrEmpty(dateOfBirth)
+                                    string.IsNullOrEmpty(extractedDateOfBirth)
                                 )
                                 {
                                     break;
@@ -371,9 +374,14 @@ namespace uef_diem_danh.Controllers
                                     TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Địa chỉ học viên ở dòng: {currentRow}";
                                     return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
                                 }
-                                if (string.IsNullOrEmpty(dateOfBirth))
+                                if (string.IsNullOrEmpty(extractedDateOfBirth))
                                 {
                                     TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Ngày sinh học viên ở dòng: {currentRow}";
+                                    return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                                }
+
+                                if (!DateTime.TryParse(extractedDateOfBirth, out dateOfBirth)) {
+                                    TempData["StudentInStudyClassErrorMessage"] = $"Ngày sinh học viên không hợp lệ ở dòng: {currentRow}. Vui lòng nhập đúng định dạng dd/MM/yyyy";
                                     return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
                                 }
 
@@ -381,7 +389,7 @@ namespace uef_diem_danh.Controllers
                                 {
                                     DateOnly
                                         .ParseExact(
-                                            excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? "01/01/1900",
+                                            $"{dateOfBirth.ToString("dd")}/{dateOfBirth.ToString("MM")}/{dateOfBirth.ToString("yyyy")}",
                                             "dd/MM/yyyy",
                                             CultureInfo.InvariantCulture);
                                 } 
@@ -400,7 +408,7 @@ namespace uef_diem_danh.Controllers
                                     SoDienThoai = excelReader.GetValue(PHONE_NUMBER_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty,
                                     NgaySinh = DateOnly
                                         .ParseExact(
-                                            excelReader.GetValue(DOB_COLUMN_INDEX)?.ToString() ?? "01/01/1900",
+                                            $"{dateOfBirth.ToString("dd")}/{dateOfBirth.ToString("MM")}/{dateOfBirth.ToString("yyyy")}",
                                             "dd/MM/yyyy",
                                             CultureInfo.InvariantCulture
                                     ),
@@ -441,12 +449,6 @@ namespace uef_diem_danh.Controllers
                                         if (existedStudent != null)
                                         {
 
-                                            // Validate if student avatar file existed
-                                            if (context.HocViens.Any(hv => hv.HinhAnh.Contains($"hv_{phoneNumber}")))
-                                            {
-                                                TempData["StudentInStudyClassErrorMessage"] = $"Hình ảnh của học viên bị trùng ở dòng: {currentRow}";
-                                                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
-                                            }
 
                                             // If student not participated in study class yet
                                             if (!context.ThamGias.Any(tg => tg.MaHocVien == existedStudent.MaHocVien && tg.MaLopHoc == studyClass.MaLopHoc)) {
@@ -481,19 +483,12 @@ namespace uef_diem_danh.Controllers
                     //    foreach (HocVien student in existedStudents)
                     //    {
 
-                    //        var studentAvatar = worksheet.Picture($"hv_{student.SoDienThoai}");
-
-                    //        var imageBytes = studentAvatar.ImageStream.ToArray();
-
-                    //        var fileName = $"hv_{student.SoDienThoai}.png";
-
-                    //        //Console.WriteLine($"Picture Name: {picture.Name}");
-
-                    //        student.HinhAnh = $"wwwroot/student_avatars/{fileName}";
-
-                    //        var imageFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures", fileName);
-
-                    //        await System.IO.File.WriteAllBytesAsync(imageFilePath, imageBytes);
+                    //        // Validate if student avatar file existed
+                    //        if (context.HocViens.Any(hv => hv.HinhAnh.Contains($"hv_{student.SoDienThoai}")))
+                    //        {
+                    //            TempData["StudentInStudyClassErrorMessage"] = $"Hình ảnh của học viên {student.Ho} {student.Ten} - {student.SoDienThoai} bị trùng";
+                    //            return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                    //        }
                     //    }
                     //}
                     if (creatingStudents.Count > 0)
@@ -502,7 +497,20 @@ namespace uef_diem_danh.Controllers
                         {
                             const int IMAGE_MAX_SIZE = 10 * 1024 * 1024;
 
-                            var studentAvatar = worksheet.Picture($"hv_{student.SoDienThoai}");
+                            // Validate if student avatar file existed
+                            if (context.HocViens.Any(hv => hv.HinhAnh.Contains($"hv_{student.SoDienThoai}")))
+                            {
+                                TempData["StudentInStudyClassErrorMessage"] = $"Hình ảnh của học viên {student.Ho} {student.Ten} - {student.SoDienThoai} bị trùng";
+                                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                            }
+
+                            if (!worksheet.Pictures.Contains($"hv_{student.SoDienThoai}"))
+                            {
+                                TempData["StudentInStudyClassErrorMessage"] = $"Không có hình ảnh của học viên: {student.Ho} {student.Ten} - SĐT: {student.SoDienThoai}";
+                                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+                            }
+
+                            IXLPicture studentAvatar = worksheet.Picture($"hv_{student.SoDienThoai}");
 
                             if (studentAvatar.ImageStream.Length > IMAGE_MAX_SIZE)
                             {
@@ -510,12 +518,30 @@ namespace uef_diem_danh.Controllers
                                 return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
                             }
 
+
+                            string extension = "";
                             var imageBytes = studentAvatar.ImageStream.ToArray();
 
-                            var fileName = $"hv_{student.SoDienThoai}.png";
+                            using (var ms = new MemoryStream(imageBytes))
+                            {
+                                Image img = Image.FromStream(ms);
+
+                                // Get image format
+                                if (img.RawFormat.Equals(ImageFormat.Jpeg))
+                                {
+                                    extension = ".jpg";
+                                }
+                                if (img.RawFormat.Equals(ImageFormat.Png))
+                                {
+                                    extension = ".png";
+                                }
+ 
+                            }
+
+                            var fileName = $"hv_{student.SoDienThoai}{extension}";
 
 
-                            student.HinhAnh = $"student_pictures/{fileName}";
+                            student.HinhAnh = $"{fileName}";
 
                             var imageFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures", fileName);
 
@@ -526,10 +552,7 @@ namespace uef_diem_danh.Controllers
    
                 }
 
-                // Delete excel file after processing
-                System.IO.File.Delete(filePath);
-
-                // Save students to database
+                // Save creating students to database
                 context.HocViens.AddRange(creatingStudents);
                 await context.SaveChangesAsync();
 
@@ -541,6 +564,13 @@ namespace uef_diem_danh.Controllers
                 Console.WriteLine(ex.ToString());
                 TempData["StudentInStudyClassErrorMessage"] = "Nhập học viên vào lớp học từ file excel không thành công " + ex.Message;
                 return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
+            } 
+            finally
+            {
+                var filePath = Path.Combine("UploadExcels", excelFileName);
+
+                // Delete excel file after processing
+                System.IO.File.Delete(filePath);
             }
 
         }
@@ -582,8 +612,15 @@ namespace uef_diem_danh.Controllers
             try
             {
 
+                if (context.HocViens.Any(hv => hv.SoDienThoai == request.SoDienThoai))
+                {
+                    TempData["StudentInStudyClassErrorMessage"] = "Số điện thoại của học viên đã tồn tại trong hệ thống!";
+                    return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-hoc-vien");
+                }
+
                 HocVien student = new HocVien
                 {
+                    HinhAnh = $"hv_{request.SoDienThoai}{Path.GetExtension(request.AddStudentToStudyClassAvatar.FileName)}",
                     Ho = request.Ho,
                     Ten = request.Ten,
                     NgaySinh = DateOnly.Parse(request.NgaySinh, CultureInfo.InvariantCulture),
@@ -592,6 +629,18 @@ namespace uef_diem_danh.Controllers
                     Email = request.Email,
                     SoDienThoai = request.SoDienThoai,
                 };
+
+
+                // Init student avatar file path
+                string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
+                string studentAvatarPath = Path.Combine(uploadFilePath, $"hv_{student.SoDienThoai}{Path.GetExtension(request.AddStudentToStudyClassAvatar.FileName)}");
+
+                // Save new uploaded student avatar
+                using (var stream = new FileStream(studentAvatarPath, FileMode.Create))
+                {
+                    await request.AddStudentToStudyClassAvatar.CopyToAsync(stream);
+                }
+
 
                 context.HocViens.Add(student);
                 await context.SaveChangesAsync();
