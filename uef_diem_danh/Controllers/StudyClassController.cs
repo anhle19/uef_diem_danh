@@ -281,18 +281,22 @@ namespace uef_diem_danh.Controllers
             LopHoc studyClass = new LopHoc();
             string fileExtension = Path.GetExtension(request.ExcelFile.FileName);
             string excelFileName = $"student_excel_{Guid.NewGuid()}.{fileExtension}";
+            var filePath = Path.Combine("UploadExcels", excelFileName);
 
             // Validate file extension
             if (fileExtension != ".xlsx" && fileExtension != ".xls")
             {
-                return BadRequest("File không hợp lệ. Vui lòng tải lên file Excel (.xlsx hoặc .xls).");
+                // Delete excel file if Failed processed
+                System.IO.File.Delete(filePath);
+
+                TempData["StudentInStudyClassErrorMessage"] = "File không hợp lệ. Vui lòng tải lên file Excel (.xlsx hoặc .xls).";
+                return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
             }
 
             studyClass = context.LopHocs.FirstOrDefault(lh => lh.MaLopHoc == study_class_id);
 
             try
             {
-                var filePath = Path.Combine("UploadExcels", excelFileName);
 
                 // Save the uploaded excel file
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -358,36 +362,71 @@ namespace uef_diem_danh.Controllers
                                 // Validate if row is empty
                                 if (string.IsNullOrEmpty(lastName))
                                 {
+                                    readExcelStream.Dispose();
+
+                                    // Delete excel file if Failed processed
+                                    System.IO.File.Delete(filePath);
+
                                     TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Họ học viên ở dòng: {currentRow}";
                                     return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
                                 }
                                 if (string.IsNullOrEmpty(firstName))
                                 {
+                                    readExcelStream.Dispose();
+
+                                    // Delete excel file if Failed processed
+                                    System.IO.File.Delete(filePath);
+
                                     TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Tên học viên ở dòng: {currentRow}";
                                     return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
                                 }
                                 if (string.IsNullOrEmpty(phoneNumber))
                                 {
+                                    readExcelStream.Dispose();
+
+                                    // Delete excel file if Failed processed
+                                    System.IO.File.Delete(filePath);
+
                                     TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Số điện thoại học viên ở dòng: {currentRow}";
                                     return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
                                 }
                                 if (string.IsNullOrEmpty(address))
                                 {
+                                    readExcelStream.Dispose();
+
+                                    // Delete excel file if Failed processed
+                                    System.IO.File.Delete(filePath);
+
                                     TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Địa chỉ học viên ở dòng: {currentRow}";
                                     return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
                                 }
                                 if (string.IsNullOrEmpty(extractedDateOfBirth))
                                 {
+                                    readExcelStream.Dispose();
+
+                                    // Delete excel file if Failed processed
+                                    System.IO.File.Delete(filePath);
+
                                     TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Ngày sinh học viên ở dòng: {currentRow}";
                                     return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
                                 }
                                 if (string.IsNullOrEmpty(studyCenter))
                                 {
+                                    readExcelStream.Dispose();
+
+                                    // Delete excel file if Failed processed
+                                    System.IO.File.Delete(filePath);
+
                                     TempData["StudentInStudyClassErrorMessage"] = $"Không được để trống Đơn vị của học viên ở dòng: {currentRow}";
                                     return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
                                 }
 
                                 if (!DateTime.TryParse(extractedDateOfBirth, out dateOfBirth)) {
+                                    readExcelStream.Dispose();
+
+                                    // Delete excel file if Failed processed
+                                    System.IO.File.Delete(filePath);
+
                                     TempData["StudentInStudyClassErrorMessage"] = $"Ngày sinh học viên không hợp lệ ở dòng: {currentRow}. Vui lòng nhập đúng định dạng dd/MM/yyyy hoặc đúng ngày tháng năm";
                                     return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
                                 }
@@ -402,6 +441,11 @@ namespace uef_diem_danh.Controllers
                                 } 
                                 catch (FormatException)
                                 {
+                                    readExcelStream.Dispose();
+
+                                    // Delete excel file if Failed processed
+                                    System.IO.File.Delete(filePath);
+
                                     TempData["StudentInStudyClassErrorMessage"] = $"Ngày sinh học viên không hợp lệ ở dòng: {currentRow}. Vui lòng nhập đúng định dạng dd/MM/yyyy";
                                     return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
                                 }
@@ -565,21 +609,21 @@ namespace uef_diem_danh.Controllers
                 context.HocViens.AddRange(creatingStudents);
                 await context.SaveChangesAsync();
 
+
+                // Delete excel file after processing
+                System.IO.File.Delete(filePath);
+
                 TempData["StudentInStudyClassSuccessMessage"] = "Nhập học viên vào lớp học từ file excel thành công!";
                 return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+
+                // Delete excel file if Failed processed
+                System.IO.File.Delete(filePath);
+
                 TempData["StudentInStudyClassErrorMessage"] = "Nhập học viên vào lớp học từ file excel không thành công " + ex.Message;
                 return RedirectToAction("GetListOfStudentsManagementPage", new { study_class_id = study_class_id });
-            } 
-            finally
-            {
-                var filePath = Path.Combine("UploadExcels", excelFileName);
-
-                // Delete excel file after processing
-                System.IO.File.Delete(filePath);
             }
 
         }
