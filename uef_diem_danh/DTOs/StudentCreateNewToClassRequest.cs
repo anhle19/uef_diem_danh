@@ -4,6 +4,8 @@
     {
         public int MaLopHoc { get; set; }
 
+        public IFormFile AddStudentToStudyClassAvatar { get; set; }
+
         public string Ho { get; set; }
 
         public string Ten { get; set; }

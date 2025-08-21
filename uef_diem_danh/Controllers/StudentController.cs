@@ -33,7 +33,6 @@ namespace uef_diem_danh.Controllers
             return View(students);
         }
 
-        [Authorize(Roles = "Admin")]
         [Route("api/lay-danh-sach-hoc-vien-theo-lop/{study_class_id}")]
         [HttpGet]
         public async Task<IActionResult> GetStudentsByStudyClass(int study_class_id)
@@ -64,7 +63,6 @@ namespace uef_diem_danh.Controllers
         }
 
         // Later refactor to get necessary fields
-        [Authorize(Roles = "Admin")]
         [Route("api/lay-chi-tiet-hoc-vien/{student_id}")]
         [HttpGet]
         public async Task<IActionResult> GetDetailForUpdate(int student_id)
@@ -118,7 +116,7 @@ namespace uef_diem_danh.Controllers
 
                 HocVien student = new HocVien
                 {
-                    HinhAnh = $"student_pictures/hv_{request.CreateStudentPhoneNumber}{Path.GetExtension(request.CreateStudentAvatar.FileName)}",
+                    HinhAnh = $"hv_{request.CreateStudentPhoneNumber}{Path.GetExtension(request.CreateStudentAvatar.FileName)}",
                     Ho = request.CreateStudentLastName,
                     Ten = request.CreateStudentFirstName,
                     NgaySinh = DateOnly.Parse(request.CreateStudentDob, CultureInfo.InvariantCulture),
@@ -177,14 +175,17 @@ namespace uef_diem_danh.Controllers
                 {
 
                     // Find existing student avatar
-                    string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/");
+                    string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
                     string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh);
 
-                    // Delete existed student avatar
-                    System.IO.File.Delete(existedStudentAvatarPath);
+                    if (System.IO.File.Exists(existedStudentAvatarPath))
+                    {
+                        // Delete existed student avatar
+                        System.IO.File.Delete(existedStudentAvatarPath);
+                    }
 
 
-                    student.HinhAnh = $"student_pictures/hv_{request.UpdateStudentPhoneNumber}{Path.GetExtension(request.UpdateStudentAvatar.FileName)}";
+                    student.HinhAnh = $"hv_{request.UpdateStudentPhoneNumber}{Path.GetExtension(request.UpdateStudentAvatar.FileName)}";
                     student.Ho = request.UpdateStudentLastName;
                     student.Ten = request.UpdateStudentFirstName;
                     student.NgaySinh = DateOnly.Parse(request.UpdateStudentDob, CultureInfo.InvariantCulture);
@@ -245,11 +246,14 @@ namespace uef_diem_danh.Controllers
 
 
                 // Find existing student avatar
-                string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/");
+                string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
                 string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh);
 
-                // Delete student avatar
-                System.IO.File.Delete(existedStudentAvatarPath);
+                if (System.IO.File.Exists(existedStudentAvatarPath))
+                {
+                    // Delete existed student avatar
+                    System.IO.File.Delete(existedStudentAvatarPath);
+                }
 
 
                 context.HocViens.Remove(student);
@@ -283,6 +287,8 @@ namespace uef_diem_danh.Controllers
                 options.AddArgument("--no-sandbox");
 
                 using var driver = new ChromeDriver(options);
+
+
                 //driver.Navigate().GoToUrl("http://127.0.0.1:5500/html/page/barcode-card-single.html");
                 driver.Navigate().GoToUrl($"https://laitsolution.id.vn/in-mot-the-hoc-vien/{student_id}");
 
@@ -316,7 +322,7 @@ namespace uef_diem_danh.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
 
 

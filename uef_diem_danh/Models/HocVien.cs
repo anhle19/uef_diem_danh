@@ -15,7 +15,9 @@ namespace uef_diem_danh.Models
 
         public string MaBarCode { get; set; }
 
-        public string HinhAnh { get; set; }
+        public string? HinhAnh { get; set; }
+
+        public string DonVi { get; set; }
 
         public string DiaChi { get; set; }
 

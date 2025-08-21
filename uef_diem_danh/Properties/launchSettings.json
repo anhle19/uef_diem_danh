@@ -22,7 +22,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://laitsolution.id.vn;http://localhost:5046",
+      "applicationUrl": "https://localhost:5046",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

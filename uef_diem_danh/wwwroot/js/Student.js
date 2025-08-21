@@ -1,4 +1,8 @@
-﻿$(document).ready(function () {
+﻿import { BASE_URL } from '../js/Utils.js';
+
+
+
+$(document).ready(function () {
     //// ================== INIT ==================
     $.fn.dataTable.moment('DD/MM/YYYY');
    
@@ -16,8 +20,8 @@ let studentTable = new DataTable('#studentTable', {
 });
 // ================== SEARCH ==================
 
-function preventSearchStudyClassSubmit() {
-    searchStudyClass();
+function preventSearchStudentSubmit() {
+    searchStudent();
 
     return false;
 }
@@ -157,11 +161,11 @@ async function initUpdateStudentFields(id) {
         const studentPhoneNumberInput = document.getElementById("suaSoDienThoai");
 
 
-        const response = await axios.get(`https://laitsolution.id.vn/api/lay-chi-tiet-hoc-vien/${id}`)
+        const response = await axios.get(`/api/lay-chi-tiet-hoc-vien/${id}`)
         const fetchedStudent = response.data;
 
         console.log(fetchedStudent);
-        suaHinhAnhPreview.src = `https://laitsolution.id.vn/${fetchedStudent.hinhAnh}`
+        suaHinhAnhPreview.src = `${BASE_URL}/student_pictures/${fetchedStudent.hinhAnh}`
         studentIdInput.value = fetchedStudent.maHocVien;
         studentLastNameInput.value = fetchedStudent.ho;
         studentFirstNameInput.value = fetchedStudent.ten;
