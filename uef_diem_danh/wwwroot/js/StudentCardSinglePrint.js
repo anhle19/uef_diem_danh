@@ -1,5 +1,4 @@
-﻿import { BASE_URL } from '../js/Utils.js';
-
+﻿
 
 
 // ================== STUDENT CARD PDF PRINT ==================
@@ -51,98 +50,6 @@ async function downloadStudentCard(studentId) {
 
 }
 
-//async function printStudentCards(students) {
-
-//    const hiddenStudentCardsPrintContainer = document.getElementById("hiddenStudentCardsPrintContainer");
-
-//    const totalPages = Math.ceil(students.length / 10);
-
-//    // Overflow y hidden
-//    document.body.style.overflowY = 'hidden';
-
-//    // Generate Student Card HTML
-//    for (let i = 0; i < totalPages; i++) {
-//        let processingStudentList = students.splice(0, 10);
-
-//        hiddenStudentCardsPrintContainer.innerHTML +=
-//            `
-//            <div class="multiple-student-cards-sheet" id="sheet_${i}">
-
-//            </div>
-//        `;
-
-//        processingStudentList.forEach((student) => {
-//            const currentSheet = document.getElementById(`sheet_${i}`)
-
-//            currentSheet.innerHTML +=
-//                `
-//                <div class="card multiple-student-card text-center">
-//                    <div class="multiple-card-top">
-//                        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="multiple-card-img-top" alt="Ảnh đại diện">
-//                        <div class="multiple-card-body">
-//                            <h5>${student.LastName} ${student.FirstName}</h5>
-//                            <p><strong>Ngày sinh:</strong> ${moment(student.DateOfBirth).format("DD/MM/YYYY")}</p>
-//                            <p><strong>SĐT:</strong> ${student.PhoneNumber}</p>
-//                        </div>
-//                    </div>
-//                    <div class="multiple-barcode-section">
-//                        <svg class="barcode" id="multiple-student-barcode-${student.Id}"></svg>
-//                    </div>
-//                </div>
-//            `;
-
-//            // Generate Barcode
-//            const currentBarcodeElement = document.getElementById(`multiple-student-barcode-${student.Id}`);
-
-//            JsBarcode(currentBarcodeElement, student.PhoneNumber, {
-//                format: "CODE128",
-//                displayValue: false,
-//                width: 1.5,
-//                height: 50,
-//                margin: 5
-//            });
-
-//        })
-
-//    }
-
-
-//    // Create PDF
-//    const { jsPDF } = window.jspdf;
-//    const pdf = new jsPDF('p', 'mm', 'a4');
-//    const pageWidth = pdf.internal.pageSize.getWidth();
-
-//    // Print PDF
-//    for (let i = 0; i < totalPages; i++) {
-//        const sheet = document.getElementById(`sheet_${i}`);
-
-
-//        const canvas = await html2canvas(sheet, { scale: 1.1, useCORS: true });
-//        const imgData = canvas.toDataURL("image/png");
-
-//        const imgWidth = pageWidth;
-//        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-//        if (i > 0) {
-//            pdf.addPage();
-//        }
-
-//        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-
-//    }
-
-//    pdf.save("Danh_sach_hoc_vien.pdf");
-
-//    // Reset body overflow
-//    document.body.style.overflowY = 'auto';
-
-//    // Clear hidden container childs
-//    hiddenStudentCardsPrintContainer.innerHTML = '';
-
-//    alert("In thẻ học viên thành công");
-//}
-
-
 
 
 // ================== TRIGGER ACTION AFTER DOM LOADED ==================
@@ -163,7 +70,11 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
 
         // Set student info to UI
-        studentAvatarInfo.src = `${BASE_URL}/student_pictures/${studentData.hinhAnh}`;
+        if (studentData.hinhAnh != null) {
+            studentAvatarInfo.src = `${BASE_URL}/student_pictures/${studentData.hinhAnh}`;
+        } else {
+            studentAvatarInfo.src = `https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR`;
+        }
         studentFullNameInfo.innerText = `${studentData.ho} ${studentData.ten}`;
         studentDobInfo.innerHTML =
         `
