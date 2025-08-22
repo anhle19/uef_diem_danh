@@ -70,11 +70,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
 
         // Set student info to UI
-        if (studentData.hinhAnh != null) {
-            studentAvatarInfo.src = `${BASE_URL}/student_pictures/${studentData.hinhAnh}`;
-        } else {
-            studentAvatarInfo.src = `https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR`;
-        }
+        studentAvatarInfo.src = `${BASE_URL}/student_pictures/${studentData.tenHinhAnh}`;
         studentFullNameInfo.innerText = `${studentData.ho} ${studentData.ten}`;
         studentDobInfo.innerHTML =
         `
