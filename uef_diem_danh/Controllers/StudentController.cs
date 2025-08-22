@@ -127,6 +127,7 @@ namespace uef_diem_danh.Controllers
                     DonVi = request.CreateStudentUnit,
                 };
 
+
                 if(request.CreateStudentAvatar == null || request.CreateStudentAvatar.Length == 0)
                 {
                     student.HinhAnh = new HinhAnh
