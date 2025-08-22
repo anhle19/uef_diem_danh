@@ -97,6 +97,7 @@ function searchAvailableStudent() {
             document.getElementById("themDiaChi").value = data.diaChi;
             document.getElementById("themEmail").value = data.email;
             document.getElementById("themSoDienThoai").value = data.soDienThoai;
+            document.getElementById("themDonVi").value = data.donVi;
         })
         .catch(err => {
             if (err.response && err.response.status === 404) {
@@ -185,7 +186,6 @@ function enableSubmitButton() {
 }
 
 async function initAddStudentFields(id) {
-    // Call API to get study class detail
     const classIdInput = document.getElementById("themMaLopHoc");
     console.log(id);
     classIdInput.value = id;
@@ -201,6 +201,7 @@ function addStudent() {
     const studentAddressInput = popup.querySelector("#themDiaChi");
     const studentEmailInput = popup.querySelector("#themEmail");
     const studentPhoneNumberInput = popup.querySelector("#themSoDienThoai");
+    const studentUnitInput = popup.querySelector("#themDonVi");
 
 
     const studentLastName = studentLastNameInput.value.trim();
@@ -209,10 +210,10 @@ function addStudent() {
     const studentAddress = studentAddressInput.value.trim();
     const studentEmail = studentEmailInput.value.trim();
     const studentPhoneNumber = studentPhoneNumberInput.value.trim();
-
+    const studentUnit = studentUnitInput.value.trim();
 
     // Validate inputs
-    if (!studentLastName || !studentFirstName || !studentDob || !studentAddress || !studentEmail || !studentPhoneNumber) {
+    if (!studentLastName || !studentFirstName || !studentDob || !studentAddress || !studentEmail || !studentPhoneNumber || !studentUnit) {
         Swal.fire(
             "Lỗi",
             "Vui lòng nhập đầy đủ dữ liệu",

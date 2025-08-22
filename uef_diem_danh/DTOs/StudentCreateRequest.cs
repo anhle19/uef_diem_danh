@@ -16,5 +16,7 @@
         public string CreateStudentEmail { get; set; }
 
         public string CreateStudentPhoneNumber { get; set; }
+
+        public string CreateStudentUnit { get; set; }
     }
 }

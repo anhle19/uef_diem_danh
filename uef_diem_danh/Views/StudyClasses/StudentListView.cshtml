@@ -200,7 +200,8 @@
 					class="btn-next-secondary btn -sm btn-add"
 					data-bs-toggle="modal"
 					data-bs-target="#popupThemHocVien"
-					data-id="@ViewBag.StudyClassId">
+					data-id="@ViewBag.StudyClassId"
+					onclick="initAddStudentFields(@ViewBag.StudyClassId)">
 				Thêm học viên
 			</button>
 		</div>
@@ -215,6 +216,7 @@
 			<thead>
 				<tr>
 					<th class="text-center">STT</th>
+					<th class="text-center">Ảnh</th>
 					<th class="text-center">Họ và tên</th>
 					<th class="text-center">Số điện thoại</th>
 					<th class="text-center">Địa chỉ</th>
@@ -230,6 +232,9 @@
 				{
 					<tr>
 						<td>@stt</td>
+						<td class="align-content-center">
+							<img src="@Url.Content("~/student_pictures/" + student.HinhAnh)" width="100" height="100" />
+						</td>
 						<td>@student.LastName @student.FirstName</td>
 						<td>@student.PhoneNumber</td>
 						<td>@student.Address</td>
