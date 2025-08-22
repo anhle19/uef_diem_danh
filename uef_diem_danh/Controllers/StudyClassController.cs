@@ -872,6 +872,14 @@ namespace uef_diem_danh.Controllers
                     TempData["ClassErrorMessage"] = $"Buổi học {request.TietHoc.ToString()} đã tồn tại";
                     return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-buoi-hoc");
                 }
+                // Check if class session day is before today
+                DateOnly currentDay = DateOnly.FromDateTime(DateTime.Now);
+                if (DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture) < currentDay)
+                {
+                    TempData["ClassErrorMessage"] = $"Ngày học của buổi học phải lớn hơn hoặc bằng ngày hôm nay";
+                    return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-buoi-hoc");
+                }
+
 
                 BuoiHoc _class = new BuoiHoc
                 {
