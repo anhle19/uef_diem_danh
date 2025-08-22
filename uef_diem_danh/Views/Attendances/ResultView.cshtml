@@ -53,6 +53,7 @@
                     <tr>
                         <th style="width:80px">STT</th>
                         <th>Tên</th>
+                        <th>Trạng thái</th>
                         <th style="width:220px">Thời gian</th>
                     </tr>
                 </thead>
@@ -65,6 +66,17 @@
                         <tr>
                             <td>@stt</td>
                             <td>@student.StudentLastName @student.StudentFirstName</td>
+                            <td>
+                                @if (student.AttendanceStatus == false)
+                                {
+                                    <span class="text-warning">Vắng</span>
+                                } 
+                                else
+                                {
+                                    <span></span>
+                                    
+                                }
+                            </td>
                             <td>@student.AttendanceDateTime.ToString("dd/MM/yyyy HH:mm")</td>
                             @{
                                 stt++;

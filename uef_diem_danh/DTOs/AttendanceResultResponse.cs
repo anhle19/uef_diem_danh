@@ -18,11 +18,12 @@
 
     public class StudentAttendanceResult
     {
-        public int Stt { get; set; }
 
         public string StudentFirstName { get; set; }
 
         public string StudentLastName { get; set; }
+
+        public bool AttendanceStatus { get; set; }
 
         public DateTime AttendanceDateTime { get; set; }
     }
