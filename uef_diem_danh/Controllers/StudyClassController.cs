@@ -107,6 +107,7 @@ namespace uef_diem_danh.Controllers
         {
 
             List<StudyClassStudentListManagementResponse> students = await context.ThamGias
+                .Include(tg => tg.HocVien.HinhAnh)
                 .Where(tg => tg.MaLopHoc == study_class_id)
                 .Select(tg => new StudyClassStudentListManagementResponse
                 {
@@ -116,6 +117,9 @@ namespace uef_diem_danh.Controllers
                     PhoneNumber = tg.HocVien.SoDienThoai,
                     Address = tg.HocVien.DiaChi,
                     DateOfBirth = tg.HocVien.NgaySinh,
+                    Unit = tg.HocVien.DonVi,
+                    HinhAnh = tg.HocVien.HinhAnh.Name,
+
                 })
                 .OrderBy(hv => hv.FirstName)
                 .ToListAsync();
@@ -453,6 +457,10 @@ namespace uef_diem_danh.Controllers
                                 // Create new HocVien
                                 HocVien student = new HocVien
                                 {
+                                    HinhAnh = new HinhAnh
+                                    {
+                                        Name = "logo.png"
+                                    },
                                     Ho = lastName,
                                     Ten = firstName,
                                     Email = email,
@@ -500,7 +508,6 @@ namespace uef_diem_danh.Controllers
                                         HocVien? existedStudent = context.HocViens.FirstOrDefault(hv => hv.SoDienThoai == student.SoDienThoai);
                                         if (existedStudent != null)
                                         {
-
 
                                             // If student not participated in study class yet
                                             if (!context.ThamGias.Any(tg => tg.MaHocVien == existedStudent.MaHocVien && tg.MaLopHoc == studyClass.MaLopHoc)) {
@@ -638,11 +645,14 @@ namespace uef_diem_danh.Controllers
            
             if (hocVien != null)
             {
+                Console.WriteLine("HOC VIEN TON TAI");
                 bool daCoTrongLop = await context.ThamGias
                         .AnyAsync(t => t.MaHocVien == hocVien.MaHocVien && t.MaLopHoc == request.MaLopHoc);
 
                 if (!daCoTrongLop)
                 {
+                    Console.WriteLine("CHUA CO TRONG LOP");
+
                     ThamGia thamGia = new ThamGia
                     {
                         MaHocVien = hocVien.MaHocVien,
@@ -656,10 +666,14 @@ namespace uef_diem_danh.Controllers
                 }
                 else
                 {
+                    Console.WriteLine("DA CO TRONG LOP");
+
                     TempData["StudentInStudyClassErrorMessage"] = "Đã có học viên trong lớp dùng SĐT này!";
                     return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-hoc-vien");
                 }
             }
+
+            Console.WriteLine("HOC VIEN CHUA TON TAI");
 
             try
             {
@@ -672,7 +686,7 @@ namespace uef_diem_danh.Controllers
 
                 HocVien student = new HocVien
                 {
-                    HinhAnh = $"hv_{request.SoDienThoai}{Path.GetExtension(request.AddStudentToStudyClassAvatar.FileName)}",
+                    //HinhAnh = $"hv_{request.SoDienThoai}{Path.GetExtension(request.AddStudentToStudyClassAvatar.FileName)}",
                     Ho = request.Ho,
                     Ten = request.Ten,
                     NgaySinh = DateOnly.Parse(request.NgaySinh, CultureInfo.InvariantCulture),
@@ -680,22 +694,45 @@ namespace uef_diem_danh.Controllers
                     MaBarCode = request.SoDienThoai,
                     Email = request.Email,
                     SoDienThoai = request.SoDienThoai,
+                    DonVi = request.DonVi,
                 };
-
-
-                // Init student avatar file path
-                string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
-                string studentAvatarPath = Path.Combine(uploadFilePath, $"hv_{student.SoDienThoai}{Path.GetExtension(request.AddStudentToStudyClassAvatar.FileName)}");
-
-                // Save new uploaded student avatar
-                using (var stream = new FileStream(studentAvatarPath, FileMode.Create))
+                Console.WriteLine("DON VI " + request.DonVi);
+                if (request.AddStudentToStudyClassAvatar == null || request.AddStudentToStudyClassAvatar.Length == 0)
                 {
-                    await request.AddStudentToStudyClassAvatar.CopyToAsync(stream);
+                    Console.WriteLine("KHONG CO HINH");
+
+                    student.HinhAnh = new HinhAnh
+                    {
+                        Name = $"logo.png"
+                    };
+
+                    context.HocViens.Add(student);
+                    await context.SaveChangesAsync();
+
+                    Console.WriteLine("DA LUU HOC VIEN");
                 }
+                else
+                {
+                    Console.WriteLine("CO HINH");
 
+                    student.HinhAnh = new HinhAnh
+                    {
+                        Name = $"hv_{request.SoDienThoai}{Path.GetExtension(request.AddStudentToStudyClassAvatar.FileName)}"
+                    };
 
-                context.HocViens.Add(student);
-                await context.SaveChangesAsync();
+                    context.HocViens.Add(student);
+                    await context.SaveChangesAsync();
+
+                    // Init student avatar file path
+                    string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
+                    string studentAvatarPath = Path.Combine(uploadFilePath, $"hv_{student.SoDienThoai}{Path.GetExtension(request.AddStudentToStudyClassAvatar.FileName)}");
+
+                    // Save new uploaded student avatar
+                    using (var stream = new FileStream(studentAvatarPath, FileMode.Create))
+                    {
+                        await request.AddStudentToStudyClassAvatar.CopyToAsync(stream);
+                    }
+                }
 
                 ThamGia thamGia = new ThamGia
                 {

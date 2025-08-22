@@ -17,5 +17,7 @@
         public string Email { get; set; }
 
         public string SoDienThoai { get; set; }
+
+        public string DonVi {  get; set; }
     }
 }

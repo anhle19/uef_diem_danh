@@ -14,5 +14,9 @@
 
         public string PhoneNumber { get; set; }
 
+        public string Unit {  get; set; }
+
+        public string HinhAnh { get; set; }
+
     }
 }
