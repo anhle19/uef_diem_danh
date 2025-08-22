@@ -169,7 +169,7 @@ namespace uef_diem_danh.Controllers
             StudyClassGetDetailResponse studyClass = await context.LopHocs
                 .Select(lh => new StudyClassGetDetailResponse
                 {
-                    TeacherPhoneNumber = lh.GiaoVien.FullName,
+                    TeacherPhoneNumber = lh.GiaoVien.PhoneNumber,
                     MaLopHoc = lh.MaLopHoc,
                     TenLopHoc = lh.TenLopHoc,
                     ThoiGianBatDau = lh.ThoiGianBatDau,
