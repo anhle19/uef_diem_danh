@@ -107,6 +107,7 @@ namespace uef_diem_danh.Controllers
                     {
                         StudentFirstName = dd.HocVien.Ten,
                         StudentLastName = dd.HocVien.Ho,
+                        AttendanceStatus = dd.TrangThai,
                         AttendanceDateTime = dd.ThoiGianDiemDanh
                     })
                     .OrderBy(dd => dd.StudentFirstName)
@@ -114,6 +115,7 @@ namespace uef_diem_danh.Controllers
                 })
                 .FirstOrDefaultAsync();
 
+            
 
             return View("~/Views/Attendances/ResultView.cshtml", attendanceResult);
         }
@@ -139,6 +141,7 @@ namespace uef_diem_danh.Controllers
                     {
                         StudentFirstName = dd.HocVien.Ten,
                         StudentLastName = dd.HocVien.Ho,
+                        AttendanceStatus = dd.TrangThai,
                         AttendanceDateTime = dd.ThoiGianDiemDanh
                     })
                     .OrderBy(dd => dd.StudentFirstName)
@@ -150,7 +153,7 @@ namespace uef_diem_danh.Controllers
             // Make copy from Attendance Result sample.xlsx
             string sampleFilePath = Path.Combine(Directory.GetCurrentDirectory(), "ExportExcels", "Attendance Result sample.xlsx");
 
-            string processingFileName = $"Attendance Result {attendanceResult.StudyClassName} - {attendanceResult.ClassSessionNumber}.xlsx";
+            string processingFileName = $"Attendance Result {attendanceResult.StudyClassName} - Buổi {attendanceResult.ClassSessionNumber}.xlsx";
 
             using (var templateStream = new MemoryStream(System.IO.File.ReadAllBytes(sampleFilePath)))
 
@@ -159,23 +162,25 @@ namespace uef_diem_danh.Controllers
             {
                 const int STT_COLUMN = 1;
                 const int FULL_NAME_COLUMN = 2;
-                const int ATTENDANCE_DAY_TIME_COLUMN = 3;
+                const int ATTENDANCE_STATUS_COLUMN = 3;
+                const int ATTENDANCE_DAY_TIME_COLUMN = 4;
 
                 int startStudentRow = 6;
                 int endStudentRow = startStudentRow + attendanceResult.TotalStudents;
                 int startStudentCol = 1;
-                int endStudentCol = 3;
+                int endStudentCol = 4;
 
                 // Get first worksheet
                 var worksheet = workbook.Worksheet(1);
 
-                // Set data
+                // Set basic data
                 worksheet.Cell("A2").Value = $"Buổi: {attendanceResult.ClassSessionNumber}";
                 worksheet.Cell("A3").Value = $"Môn: {attendanceResult.StudyClassName}";
                 worksheet.Cell("D2").Value = $"Tổng số: {attendanceResult.TotalStudents}";
                 worksheet.Cell("D3").Value = $"Hiển diện: {attendanceResult.TotalStudentsPresent}";
 
                 int currentStudentIndex = 0;
+                // Set student data
                 for (int row = startStudentRow; row < endStudentRow; row++)
                 {
                     StudentAttendanceResult student = attendanceResult.StudentAttendanceResults[currentStudentIndex];
@@ -185,7 +190,7 @@ namespace uef_diem_danh.Controllers
                         worksheet.Cell(row, col).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                         worksheet.Cell(row, col).Style.Font.FontName = "Arial";
                         worksheet.Cell(row, col).Style.Font.FontSize = 13;
-                        worksheet.Cell(row, col).Style.Fill.BackgroundColor = XLColor.FromHtml("#DDEBF7");
+                        worksheet.Cell(row, col).Style.Fill.BackgroundColor = XLColor.FromHtml("#F2F2F2");
 
                         if (col == STT_COLUMN)
                         {
@@ -194,6 +199,18 @@ namespace uef_diem_danh.Controllers
                         if (col == FULL_NAME_COLUMN)
                         {
                             worksheet.Cell(row, col).Value = $"{student.StudentLastName} {student.StudentFirstName}";
+                        }
+                        if (col == ATTENDANCE_STATUS_COLUMN)
+                        {
+                            if (student.AttendanceStatus == false)
+                            {
+                                worksheet.Cell(row, col).Style.Font.FontColor = XLColor.FromHtml("#ffc107");
+                                worksheet.Cell(row, col).Value = "Vắng";
+                            }
+                            else
+                            {
+                                worksheet.Cell(row, col).Value = "";
+                            }
                         }
                         if (col == ATTENDANCE_DAY_TIME_COLUMN)
                         {
@@ -275,6 +292,7 @@ namespace uef_diem_danh.Controllers
                 AttendanceCheckingResponse attendanceCheckingResponse = new AttendanceCheckingResponse
                 {
                     Message = "Điểm danh học viên thành công!",
+                    StudentAvatar = student.HinhAnh,
                     StudyClassName = request.StudyClassName,
                     StudentFirstName = student.Ten,
                     StudentLastName = student.Ho,

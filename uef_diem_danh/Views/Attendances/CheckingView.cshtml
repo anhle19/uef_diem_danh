@@ -27,6 +27,9 @@
     <!-- Barcode Generator JS -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.12.1/dist/barcodes/JsBarcode.code128.min.js"></script>
 
+    <!-- Global Config Variable -->
+    <script type="text/javascript" src="/js/Configs.js"></script>
+
     <link rel="stylesheet" href="../../css/style.css" />
 
     <style>
@@ -171,7 +174,7 @@
                 <div id="sheet" class="d-flex justify-content-center align-items-center">
                     <div id="student-card" class="card student-card text-center">
                         <div>
-                            <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top mx-auto d-block" alt="Ảnh đại diện">
+                            <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" id="avatar" class="card-img-top mx-auto d-block" alt="Ảnh đại diện">
                             <div class="card-body">
                                 <h5 id="fullNameInfo" class="card-title text-primary">Nguyễn Văn A</h5>
                                 <p id="dobInfo" class="card-text text-muted">01/01/2000</p>

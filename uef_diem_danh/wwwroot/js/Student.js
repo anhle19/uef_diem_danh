@@ -1,4 +1,7 @@
-﻿$(document).ready(function () {
+﻿
+
+
+$(document).ready(function () {
     //// ================== INIT ==================
     $.fn.dataTable.moment('DD/MM/YYYY');
    
@@ -16,8 +19,8 @@ let studentTable = new DataTable('#studentTable', {
 });
 // ================== SEARCH ==================
 
-function preventSearchStudyClassSubmit() {
-    searchStudyClass();
+function preventSearchStudentSubmit() {
+    searchStudent();
 
     return false;
 }
@@ -157,18 +160,28 @@ async function initUpdateStudentFields(id) {
         const studentPhoneNumberInput = document.getElementById("suaSoDienThoai");
 
 
-        const response = await axios.get(`https://localhost:7045/api/lay-chi-tiet-hoc-vien/${id}`)
+        const response = await axios.get(`/api/lay-chi-tiet-hoc-vien/${id}`)
         const fetchedStudent = response.data;
 
         console.log(fetchedStudent);
-        suaHinhAnhPreview.src = `https://localhost:7045/${fetchedStudent.hinhAnh}`
-        studentIdInput.value = fetchedStudent.maHocVien;
-        studentLastNameInput.value = fetchedStudent.ho;
-        studentFirstNameInput.value = fetchedStudent.ten;
-        studentDobInput.value = fetchedStudent.ngaySinh;
-        studentAddressInput.value = fetchedStudent.diaChi;
-        studentEmailInput.value = fetchedStudent.email;
-        studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
+        if (fetchedStudent.hinhAnh == null) {
+            studentIdInput.value = fetchedStudent.maHocVien;
+            studentLastNameInput.value = fetchedStudent.ho;
+            studentFirstNameInput.value = fetchedStudent.ten;
+            studentDobInput.value = fetchedStudent.ngaySinh;
+            studentAddressInput.value = fetchedStudent.diaChi;
+            studentEmailInput.value = fetchedStudent.email;
+            studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
+        } else {
+            suaHinhAnhPreview.src = `${BASE_URL}/student_pictures/${fetchedStudent.hinhAnh}`
+            studentIdInput.value = fetchedStudent.maHocVien;
+            studentLastNameInput.value = fetchedStudent.ho;
+            studentFirstNameInput.value = fetchedStudent.ten;
+            studentDobInput.value = fetchedStudent.ngaySinh;
+            studentAddressInput.value = fetchedStudent.diaChi;
+            studentEmailInput.value = fetchedStudent.email;
+            studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
+        }
 
 
         console.log(response)

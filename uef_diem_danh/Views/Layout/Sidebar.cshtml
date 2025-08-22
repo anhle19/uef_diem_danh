@@ -16,7 +16,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/" class="nav-link-custom">
+                    <a href="/quan-ly-danh-sach-lop-hoc" class="nav-link-custom">
                         <i class="bi bi-easel2 me-2"></i> Lớp học
                     </a>
                 </li>
@@ -30,6 +30,11 @@
                         <i class="bi bi-graph-up-arrow me-2"></i> Điểm danh
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="/quan-ly-danh-sach-su-kien" class="nav-link-custom">
+                        <i class="bi bi-calendar-event me-2"></i> Sự kiện
+                    </a>
+                </li>
             }else if(User.IsInRole("Staff")){
                 <li class="nav-item">
                     <a href="/" class="nav-link-custom">
@@ -38,6 +43,12 @@
                 </li>
             }
         }
+
+        <li>
+            <a href="/ho-tro-ky-thuat" class="nav-link-custom">
+                <i class="bi bi-graph-up-arrow me-2"></i> Hỗ trợ kỹ thuật
+            </a>
+        </li>
   </ul>
 
     <div class="dropdown mt-auto pt-3 text-end">

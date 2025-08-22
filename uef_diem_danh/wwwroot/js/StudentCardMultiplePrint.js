@@ -19,7 +19,7 @@ async function downloadStudentCards(studyClassId) {
         printBtnContainer.style.display = "none";
 
         const response = await axios.post(
-            `https://localhost:7045/api/tai-ve-danh-sach-the-hoc-vien/${studyClassId}`,
+            `${BASE_URL}/api/tai-ve-danh-sach-the-hoc-vien/${studyClassId}`,
             null,
             { responseType: 'blob' }
         );
@@ -47,183 +47,7 @@ async function downloadStudentCards(studyClassId) {
         printBtnContainer.style.display = "block";
     }
 
-    //let studentCardHtmlContent =
-    //`
-    //<div class="sheet d-flex justify-content-center align-items-center">
-    //    <div class="card student-card text-center">
-    //        <div>
-    //            <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top mx-auto d-block" alt="Ảnh đại diện">
-    //                <div class="card-body">
-    //                    <h5 class="card-title text-primary">${fullName}</h5>
-    //                    <p class="card-text text-muted"><strong>Ngày sinh:</strong> ${dob}</p>
-    //                    <p class="card-text text-muted"><strong>SĐT:</strong> ${phoneNumber}</p>
-    //                </div>
-    //        </div>
-    //        <div class="barcode-section">
-    //            <svg id="studentBarcode-${id}"></svg>
-    //        </div>
-    //    </div>
-    //</div>
-    //`;
-
-
-    //const hiddenStudentCardPrintContainer = document.getElementById('hiddenStudentCardPrintContainer');
-
-    //// Overflow y hidden
-    //document.body.style.overflowY = 'hidden';
-
-    //// Init PDF
-    //const { jsPDF } = window.jspdf;
-    //const pdf = new jsPDF('p', 'mm', 'a5');
-    //const pageWidth = pdf.internal.pageSize.getWidth();
-    //const pageHeight = pdf.internal.pageSize.getHeight();
-
-
-    //// Parse into DOM nodes
-    //const template = document.createElement('template');
-    //template.innerHTML = studentCardHtmlContent.trim();
-    //const studentCardElement = template.content.firstChild;
-
-    //// Append to the DOM (hidden)
-    //hiddenStudentCardPrintContainer.appendChild(studentCardElement);
-
-    //// Generate barcode
-    //const studentPhoneNumber = phoneNumber; // Lấy số điện thoại từ thẻ
-    //JsBarcode(`#studentBarcode-${id}`, studentPhoneNumber, {
-    //    format: "CODE128",
-    //    displayValue: false, // Không hiển thị số điện thoại bên dưới barcode
-    //    width: 1.5,
-    //    height: 50,
-    //    margin: 5
-    //});
-
-
-    //// Create image from card element
-    //const canvas = await html2canvas(studentCardElement, { scale: 1.1, useCORS: true });
-    //const imgData = canvas.toDataURL("image/png");
-
-    //// Scale image to fit page width
-    //let imgWidth = pageWidth;
-    //let imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    //// If the height is too big, scale by height instead
-    //if (imgHeight > pageHeight) {
-    //    imgHeight = pageHeight;
-    //    imgWidth = (canvas.width * imgHeight) / canvas.height;
-    //}
-
-    //// Center the image
-    //const x = (pageWidth - imgWidth) / 2;
-    //const y = (pageHeight - imgHeight) / 2;
-
-    //// Add image
-    //pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
-
-
-    //// Save PDF
-    //pdf.save(`the_hoc_vien_${phoneNumber}.pdf`);
-
-    //alert("In thẻ học viên thành công");
-
-    //// Reset body overflow
-    //document.body.style.overflowY = 'auto';
-
-    //// Clear hidden container childs
-    //hiddenStudentCardPrintContainer.innerHTML = '';
-
 }
-
-async function printStudentCards(students) {
-
-    const hiddenStudentCardsPrintContainer = document.getElementById("hiddenStudentCardsPrintContainer");
-
-    const totalPages = Math.ceil(students.length / 10);
-
-    // Overflow y hidden
-    document.body.style.overflowY = 'hidden';
-
-    // Generate Student Card HTML
-    for (let i = 0; i < totalPages; i++) {
-        let processingStudentList = students.splice(0, 10);
-
-        hiddenStudentCardsPrintContainer.innerHTML +=
-            `
-            <div class="multiple-student-cards-sheet" id="sheet_${i}">
-
-            </div>
-        `;
-
-        processingStudentList.forEach((student) => {
-            const currentSheet = document.getElementById(`sheet_${i}`)
-
-            currentSheet.innerHTML +=
-                `
-                <div class="card multiple-student-card text-center">
-                    <div class="multiple-card-top">
-                        <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="multiple-card-img-top" alt="Ảnh đại diện">
-                        <div class="multiple-card-body">
-                            <h5>${student.LastName} ${student.FirstName}</h5>
-                            <p><strong>Ngày sinh:</strong> ${moment(student.DateOfBirth).format("DD/MM/YYYY")}</p>
-                            <p><strong>SĐT:</strong> ${student.PhoneNumber}</p>
-                        </div>
-                    </div>
-                    <div class="multiple-barcode-section">
-                        <svg class="barcode" id="multiple-student-barcode-${student.Id}"></svg>
-                    </div>
-                </div>
-            `;
-
-            // Generate Barcode
-            const currentBarcodeElement = document.getElementById(`multiple-student-barcode-${student.Id}`);
-
-            JsBarcode(currentBarcodeElement, student.PhoneNumber, {
-                format: "CODE128",
-                displayValue: false,
-                width: 1.5,
-                height: 50,
-                margin: 5
-            });
-
-        })
-
-    }
-
-
-    // Create PDF
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = pdf.internal.pageSize.getWidth();
-
-    // Print PDF
-    for (let i = 0; i < totalPages; i++) {
-        const sheet = document.getElementById(`sheet_${i}`);
-
-
-        const canvas = await html2canvas(sheet, { scale: 1.1, useCORS: true });
-        const imgData = canvas.toDataURL("image/png");
-
-        const imgWidth = pageWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        if (i > 0) {
-            pdf.addPage();
-        }
-
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-
-    }
-
-    pdf.save("Danh_sach_hoc_vien.pdf");
-
-    // Reset body overflow
-    document.body.style.overflowY = 'auto';
-
-    // Clear hidden container childs
-    hiddenStudentCardsPrintContainer.innerHTML = '';
-
-    alert("In thẻ học viên thành công");
-}
-
 
 
 
@@ -241,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
         //const studentPhoneNumberInfo = document.getElementById("studentPhoneNumberInfo");
 
         // Call API fetch students info
-        const response = await axios.get(`https://localhost:7045/api/lay-danh-sach-hoc-vien-theo-lop/${studyClassId}`)
+        const response = await axios.get(`${BASE_URL}/api/lay-danh-sach-hoc-vien-theo-lop/${studyClassId}`)
         let studentsData = response.data
 
         const totalSheets = Math.ceil(studentsData.length / 16);
@@ -264,22 +88,43 @@ document.addEventListener('DOMContentLoaded', async (event) => {
             for (let j = 0; j < processingStudentsData.length; j++) {
                 const sheet = document.getElementById(`sheet_${i}`)
 
-                sheet.innerHTML +=
-                `
-                 <div class="card student-card text-center">
-                    <div class="card-top">
-                        <img src="https://localhost:7045/${processingStudentsData[j].studentAvatar}" class="card-img-top" alt="Ảnh đại diện">
-                        <div class="card-body">
-                            <h5>${processingStudentsData[j].studentLastName} ${processingStudentsData[j].studentFirstName}</h5>
-                            <p><strong>Ngày sinh:</strong> ${moment(processingStudentsData[j].studentDayOfBirth).format("DD/MM/YYYY")}</p>
-                            <p><strong>SĐT:</strong> ${processingStudentsData[j].studentPhoneNumber}</p>
+
+                if (processingStudentsData[j].studentAvatar != null) {
+                    sheet.innerHTML +=
+                        `
+                     <div class="card student-card text-center">
+                        <div class="card-top">
+                            <img src="${BASE_URL}/student_pictures/${processingStudentsData[j].studentAvatar}" class="card-img-top" alt="Ảnh đại diện">
+                            <div class="card-body">
+                                <h5>${processingStudentsData[j].studentLastName} ${processingStudentsData[j].studentFirstName}</h5>
+                                <p><strong>Ngày sinh:</strong> ${moment(processingStudentsData[j].studentDayOfBirth).format("DD/MM/YYYY")}</p>
+                                <p><strong>SĐT:</strong> ${processingStudentsData[j].studentPhoneNumber}</p>
+                            </div>
+                        </div>
+                        <div class="barcode-section">
+                            <svg class="barcode" id="barcode_${j}"></svg>
                         </div>
                     </div>
-                    <div class="barcode-section">
-                        <svg class="barcode" id="barcode_${j}"></svg>
+                    `;
+                } else {
+                    sheet.innerHTML +=
+                        `
+                     <div class="card student-card text-center">
+                        <div class="card-top">
+                            <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
+                            <div class="card-body">
+                                <h5>${processingStudentsData[j].studentLastName} ${processingStudentsData[j].studentFirstName}</h5>
+                                <p><strong>Ngày sinh:</strong> ${moment(processingStudentsData[j].studentDayOfBirth).format("DD/MM/YYYY")}</p>
+                                <p><strong>SĐT:</strong> ${processingStudentsData[j].studentPhoneNumber}</p>
+                            </div>
+                        </div>
+                        <div class="barcode-section">
+                            <svg class="barcode" id="barcode_${j}"></svg>
+                        </div>
                     </div>
-                </div>
-                `;
+                    `;
+                }
+
 
                 // Generate Barcode
                 JsBarcode(`#barcode_${j}`, processingStudentsData[j].studentPhoneNumber, {

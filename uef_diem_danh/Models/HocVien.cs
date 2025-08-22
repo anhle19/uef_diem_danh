@@ -15,7 +15,9 @@ namespace uef_diem_danh.Models
 
         public string MaBarCode { get; set; }
 
-        public string HinhAnh { get; set; }
+        public string? HinhAnh { get; set; }
+
+        public string DonVi { get; set; }
 
         public string DiaChi { get; set; }
 
@@ -28,7 +30,7 @@ namespace uef_diem_danh.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 
-        // relationships
+        // Relationships
         public ICollection<DiemDanh> DiemDanhs { get; set; }
         public ICollection<ThamGia> ThamGias { get; set; }
     }
