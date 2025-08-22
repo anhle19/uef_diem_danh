@@ -20,6 +20,8 @@ namespace uef_diem_danh.Database
         public DbSet<BuoiHoc> BuoiHocs { get; set; }
         public DbSet<DiemDanh> DiemDanhs { get; set; }
 
+        public DbSet<SuKien> SuKiens { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
