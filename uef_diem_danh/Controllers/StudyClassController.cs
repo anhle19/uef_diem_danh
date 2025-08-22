@@ -866,6 +866,13 @@ namespace uef_diem_danh.Controllers
             try
             {
 
+                // Check if class session existed
+                if (context.BuoiHocs.Any(bh => bh.MaLopHoc == request.MaLopHoc && bh.TietHoc == request.TietHoc))
+                {
+                    TempData["ClassErrorMessage"] = $"Buổi học {request.TietHoc.ToString()} đã tồn tại";
+                    return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-buoi-hoc");
+                }
+
                 BuoiHoc _class = new BuoiHoc
                 {
                     NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture),
@@ -883,7 +890,7 @@ namespace uef_diem_danh.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+
                 TempData["ClassErrorMessage"] = "Có lỗi xảy ra khi thêm buổi học: " + ex.Message;
                 return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-buoi-hoc");
             }
