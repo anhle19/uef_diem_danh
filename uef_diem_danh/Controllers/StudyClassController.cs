@@ -457,6 +457,10 @@ namespace uef_diem_danh.Controllers
                                 // Create new HocVien
                                 HocVien student = new HocVien
                                 {
+                                    HinhAnh = new HinhAnh
+                                    {
+                                        Name = "logo.png"
+                                    },
                                     Ho = lastName,
                                     Ten = firstName,
                                     Email = email,
@@ -504,7 +508,6 @@ namespace uef_diem_danh.Controllers
                                         HocVien? existedStudent = context.HocViens.FirstOrDefault(hv => hv.SoDienThoai == student.SoDienThoai);
                                         if (existedStudent != null)
                                         {
-
 
                                             // If student not participated in study class yet
                                             if (!context.ThamGias.Any(tg => tg.MaHocVien == existedStudent.MaHocVien && tg.MaLopHoc == studyClass.MaLopHoc)) {
