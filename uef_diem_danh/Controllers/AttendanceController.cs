@@ -292,7 +292,7 @@ namespace uef_diem_danh.Controllers
                 AttendanceCheckingResponse attendanceCheckingResponse = new AttendanceCheckingResponse
                 {
                     Message = "Điểm danh học viên thành công!",
-                    StudentAvatar = student.HinhAnh,
+                    StudentAvatar = student.HinhAnh.Name,
                     StudyClassName = request.StudyClassName,
                     StudentFirstName = student.Ten,
                     StudentLastName = student.Ho,
