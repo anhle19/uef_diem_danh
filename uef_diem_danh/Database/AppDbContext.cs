@@ -19,6 +19,7 @@ namespace uef_diem_danh.Database
         public DbSet<ThamGia> ThamGias { get; set; }
         public DbSet<BuoiHoc> BuoiHocs { get; set; }
         public DbSet<DiemDanh> DiemDanhs { get; set; }
+        public DbSet<HinhAnh> HinhAnhs { get; set; }
 
         public DbSet<SuKien> SuKiens { get; set; }
 
@@ -56,6 +57,10 @@ namespace uef_diem_danh.Database
                 .WithMany(bh => bh.DiemDanhs)
                 .HasForeignKey(dd => dd.MaBuoiHoc);
 
+            modelBuilder.Entity<HocVien>()
+               .HasOne(hs => hs.HinhAnh)
+               .WithOne(ha => ha.HocVien)
+               .HasForeignKey<HinhAnh>(ha => ha.MaHocVien);
 
             base.OnModelCreating(modelBuilder);
         }

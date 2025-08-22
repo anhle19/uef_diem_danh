@@ -29,7 +29,7 @@ namespace uef_diem_danh.Controllers
         // Later refactor to get necessary fields
         public IActionResult StudentList()
         {
-            var students = context.HocViens.ToList();
+            var students = context.HocViens.Include(hv => hv.HinhAnh).ToList();
             return View(students);
         }
 
@@ -116,7 +116,7 @@ namespace uef_diem_danh.Controllers
 
                 HocVien student = new HocVien
                 {
-                    HinhAnh = $"hv_{request.CreateStudentPhoneNumber}{Path.GetExtension(request.CreateStudentAvatar.FileName)}",
+                    //HinhAnh = $"hv_{request.CreateStudentPhoneNumber}{Path.GetExtension(request.CreateStudentAvatar.FileName)}",
                     Ho = request.CreateStudentLastName,
                     Ten = request.CreateStudentFirstName,
                     NgaySinh = DateOnly.Parse(request.CreateStudentDob, CultureInfo.InvariantCulture),
@@ -124,20 +124,39 @@ namespace uef_diem_danh.Controllers
                     MaBarCode = request.CreateStudentPhoneNumber, 
                     Email = request.CreateStudentEmail,
                     SoDienThoai = request.CreateStudentPhoneNumber,
+                    DonVi = request.CreateStudentUnit,
                 };
 
-                // Init student avatar file path
-                string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
-                string studentAvatarPath = Path.Combine(uploadFilePath, $"hv_{student.SoDienThoai}{Path.GetExtension(request.CreateStudentAvatar.FileName)}");
-
-                // Save new uploaded student avatar
-                using (var stream = new FileStream(studentAvatarPath, FileMode.Create))
+                if(request.CreateStudentAvatar == null || request.CreateStudentAvatar.Length == 0)
                 {
-                    await request.CreateStudentAvatar.CopyToAsync(stream);
-                }
+                    student.HinhAnh = new HinhAnh
+                    {
+                        Name = $"logo.png"
+                    };
 
-                context.HocViens.Add(student);
-                await context.SaveChangesAsync();
+                    context.HocViens.Add(student);
+                    await context.SaveChangesAsync();
+                }
+                else
+                {
+                    student.HinhAnh = new HinhAnh
+                    {
+                        Name = $"hv_{request.CreateStudentPhoneNumber}{Path.GetExtension(request.CreateStudentAvatar.FileName)}"
+                    };
+
+                    context.HocViens.Add(student);
+                    await context.SaveChangesAsync();
+
+                    // Init student avatar file path
+                    string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
+                    string studentAvatarPath = Path.Combine(uploadFilePath, $"hv_{student.SoDienThoai}{Path.GetExtension(request.CreateStudentAvatar.FileName)}");
+
+                    // Save new uploaded student avatar
+                    using (var stream = new FileStream(studentAvatarPath, FileMode.Create))
+                    {
+                        await request.CreateStudentAvatar.CopyToAsync(stream);
+                    }
+                }
 
                 TempData["StudentSuccessMessage"] = "Thêm học viên thành công!";
                 return Redirect("hoc-vien");
@@ -176,7 +195,7 @@ namespace uef_diem_danh.Controllers
 
                     // Find existing student avatar
                     string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
-                    string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh);
+                    string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh.Name);
 
                     if (System.IO.File.Exists(existedStudentAvatarPath))
                     {
@@ -185,7 +204,7 @@ namespace uef_diem_danh.Controllers
                     }
 
 
-                    student.HinhAnh = $"hv_{request.UpdateStudentPhoneNumber}{Path.GetExtension(request.UpdateStudentAvatar.FileName)}";
+                    student.HinhAnh.Name = $"hv_{request.UpdateStudentPhoneNumber}{Path.GetExtension(request.UpdateStudentAvatar.FileName)}";
                     student.Ho = request.UpdateStudentLastName;
                     student.Ten = request.UpdateStudentFirstName;
                     student.NgaySinh = DateOnly.Parse(request.UpdateStudentDob, CultureInfo.InvariantCulture);
@@ -195,7 +214,7 @@ namespace uef_diem_danh.Controllers
                     student.MaBarCode = request.UpdateStudentPhoneNumber;
 
                     // New student avatar file
-                    string newStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh);
+                    string newStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh.Name);
 
                     // Save new uploaded student avatar
                     using (var stream = new FileStream(newStudentAvatarPath, FileMode.Create))
@@ -247,7 +266,7 @@ namespace uef_diem_danh.Controllers
 
                 // Find existing student avatar
                 string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
-                string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh);
+                string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh.Name);
 
                 if (System.IO.File.Exists(existedStudentAvatarPath))
                 {
