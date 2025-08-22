@@ -62,12 +62,28 @@ namespace uef_diem_danh.Controllers
             }
         }
 
-        // Later refactor to get necessary fields
         [Route("api/lay-chi-tiet-hoc-vien/{student_id}")]
         [HttpGet]
         public async Task<IActionResult> GetDetailForUpdate(int student_id)
         {
-            HocVien studyClass = await context.HocViens.FindAsync(student_id);
+            //HocVien studyClass = await context.HocViens.FindAsync(student_id);
+
+            StudentDetailResponse studyClass = await context.HocViens
+                .Select(hv => new StudentDetailResponse
+                {
+                    MaHocVien = hv.MaHocVien,
+                    TenHinhAnh = hv.HinhAnh.Name,
+                    Ho = hv.Ho,
+                    Ten = hv.Ten,
+                    Email = hv.Email,
+                    DiaChi = hv.DiaChi,
+                    DonVi = hv.DonVi,
+                    MaBarCode = hv.MaBarCode,
+                    SoDienThoai = hv.SoDienThoai,
+                    NgaySinh = hv.NgaySinh
+                })
+                .FirstOrDefaultAsync(hv => hv.MaHocVien == student_id);
+
 
             return Ok(studyClass);
         }
