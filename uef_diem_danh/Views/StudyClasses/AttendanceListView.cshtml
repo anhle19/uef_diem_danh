@@ -65,11 +65,22 @@
                         <td>@classSession.ClassTotalStudent</td>
                         <td>@classSession.ClassSessionAttendanceCount</td>
                         <td>
-                            <a class="btn btn-outline-primary btn-sm btn-view-students"
-                               href="/ket-qua-diem-danh?studyClassId=@Model.StudyClassId&classSessionId=@classSession.ClassSessionId"
-                               target="_blank">
-                                Xem
-                            </a>
+                            @if (classSession.ClassSessionStatus == true)
+                            {
+                                <button class="btn btn-outline-danger bg-danger text-white btn-sm"
+                                        href="#"
+                                        disabled>
+                                    Chưa Khóa điểm danh
+                                </button>
+                            }
+                            else
+                            {
+                                <a class="btn btn-outline-primary btn-sm btn-view-students"
+                                   href="/ket-qua-diem-danh?studyClassId=@Model.StudyClassId&classSessionId=@classSession.ClassSessionId"
+                                   target="_blank">
+                                    Xem
+                                </a>
+                            }
                         </td>
                         <td>
                             <a 
