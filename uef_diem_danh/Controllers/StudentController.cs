@@ -198,6 +198,7 @@ namespace uef_diem_danh.Controllers
             try
             {
                 HocVien student = await context.HocViens
+                    .Include(hv => hv.HinhAnh)
                     .FirstOrDefaultAsync(lh => lh.MaHocVien == request.StudentId);
 
 
@@ -212,12 +213,15 @@ namespace uef_diem_danh.Controllers
 
                     // Find existing student avatar
                     string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
-                    string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh.Name);
 
-                    if (System.IO.File.Exists(existedStudentAvatarPath))
+                    if (context.HocViens.Any(hv => hv.HinhAnh.Name.Contains($"hv_{student.SoDienThoai}")))
                     {
-                        // Delete existed student avatar
-                        System.IO.File.Delete(existedStudentAvatarPath);
+                        string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh.Name);
+                        if (System.IO.File.Exists(existedStudentAvatarPath))
+                        {
+                            // Delete existed student avatar
+                            System.IO.File.Delete(existedStudentAvatarPath);
+                        }
                     }
 
 
@@ -278,17 +282,20 @@ namespace uef_diem_danh.Controllers
             try
             {
                 HocVien student = await context.HocViens
+                    .Include(hv => hv.HinhAnh)
                     .FirstOrDefaultAsync(lh => lh.MaHocVien == request.MaHocVien);
 
 
                 // Find existing student avatar
                 string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
-                string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh.Name);
-
-                if (System.IO.File.Exists(existedStudentAvatarPath))
+                if (context.HocViens.Any(hv => hv.HinhAnh.Name.Contains($"hv_{student.SoDienThoai}")))
                 {
-                    // Delete existed student avatar
-                    System.IO.File.Delete(existedStudentAvatarPath);
+                    string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh.Name);
+                    if (System.IO.File.Exists(existedStudentAvatarPath))
+                    {
+                        // Delete existed student avatar
+                        System.IO.File.Delete(existedStudentAvatarPath);
+                    }
                 }
 
 
