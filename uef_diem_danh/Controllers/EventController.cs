@@ -14,5 +14,17 @@ namespace uef_diem_danh.Controllers
         {
             return View("~/Views/Events/ListView.cshtml");
         }
+
+
+        [Route("diem-danh-su-kien/{event_id}")]
+        [HttpGet]
+        public IActionResult GetAttendanceEventPage(int event_id)
+        {
+
+
+            return View("~/Views/Events/AttendanceEvent.cshtml");
+        }
+
+
     }
 }
