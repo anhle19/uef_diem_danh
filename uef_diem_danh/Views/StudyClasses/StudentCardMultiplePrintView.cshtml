@@ -74,14 +74,39 @@
             border: 2px solid #e9ecef;
         }
 
+        /* Khu trên chiếm vùng trung gian (để barcode bám đáy) */
         .card-top {
-            padding-top: 14px;
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header logo + tên trung tâm */
+        .card-header-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 8px 0 8px;
             text-align: center;
         }
 
+        .center-title {
+            margin: 0;
+            font-size: 8px;
+            line-height: 1.2; /* tránh cắt dấu tiếng Việt */
+            word-break: break-word;
+        }
+
+        .logo {
+            width: 25px;
+            height: 25px;
+            flex: 0 0 auto;
+        }
+
         .card-img-top {
-            width: 90px;
-            height: 90px;
+            width: 80px;
+            height: 80px;
             object-fit: cover;
             border-radius: 10px;
             border: 4px solid #ffffff;
@@ -90,7 +115,7 @@
         }
 
         .card-body {
-            padding: 6px 10px 8px;
+            padding: 1px 6px 8px 10px;
         }
 
         .card-body h5 {
