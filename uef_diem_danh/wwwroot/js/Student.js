@@ -108,21 +108,18 @@ function addStudent() {
     const studentFirstNameInput = popup.querySelector("#themTen");
     const studentDobInput = popup.querySelector("#themNgaySinh");
     const studentAddressInput = popup.querySelector("#themDiaChi");
-    const studentEmailInput = popup.querySelector("#themEmail");
     const studentPhoneNumberInput = popup.querySelector("#themSoDienThoai");
     const studentUnitInput = popup.querySelector("#themDonVi");
 
-    const studentAvatarFile = document.getElementById("themHinhAnh").files;
     const studentLastName = studentLastNameInput.value.trim();
     const studentFirstName = studentFirstNameInput.value.trim();
     const studentDob = studentDobInput.value;
     const studentAddress = studentAddressInput.value.trim();
-    const studentEmail = studentEmailInput.value.trim();
     const studentPhoneNumber = studentPhoneNumberInput.value.trim();
     const studentUnit = studentUnitInput.value.trim();
 
     // Validate inputs
-    if (!studentLastName || !studentFirstName || !studentDob || !studentAddress || !studentEmail || !studentPhoneNumber || !studentUnit) {
+    if (!studentLastName || !studentFirstName || !studentDob || !studentAddress || !studentPhoneNumber || !studentUnit) {
         Swal.fire(
             "Lỗi",
             "Vui lòng nhập đầy đủ dữ liệu",
@@ -130,14 +127,7 @@ function addStudent() {
         );
         return;
     }
-    //if (studentAvatarFile.length == 0) {
-    //    Swal.fire(
-    //        "Lỗi",
-    //        "Vui lòng tải lên hình ảnh học viên",
-    //        "warning"
-    //    );
-    //    return;
-    //}
+
 
     // Submit form
     createStudentForm.requestSubmit();
@@ -163,25 +153,14 @@ async function initUpdateStudentFields(id) {
         const response = await axios.get(`/api/lay-chi-tiet-hoc-vien/${id}`)
         const fetchedStudent = response.data;
 
-        console.log(fetchedStudent);
-        if (fetchedStudent.hinhAnh == null) {
-            studentIdInput.value = fetchedStudent.maHocVien;
-            studentLastNameInput.value = fetchedStudent.ho;
-            studentFirstNameInput.value = fetchedStudent.ten;
-            studentDobInput.value = fetchedStudent.ngaySinh;
-            studentAddressInput.value = fetchedStudent.diaChi;
-            studentEmailInput.value = fetchedStudent.email;
-            studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
-        } else {
-            suaHinhAnhPreview.src = `${BASE_URL}/student_pictures/${fetchedStudent.hinhAnh}`
-            studentIdInput.value = fetchedStudent.maHocVien;
-            studentLastNameInput.value = fetchedStudent.ho;
-            studentFirstNameInput.value = fetchedStudent.ten;
-            studentDobInput.value = fetchedStudent.ngaySinh;
-            studentAddressInput.value = fetchedStudent.diaChi;
-            studentEmailInput.value = fetchedStudent.email;
-            studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
-        }
+        suaHinhAnhPreview.src = `${BASE_URL}/student_pictures/${fetchedStudent.tenHinhAnh}`
+        studentIdInput.value = fetchedStudent.maHocVien;
+        studentLastNameInput.value = fetchedStudent.ho;
+        studentFirstNameInput.value = fetchedStudent.ten;
+        studentDobInput.value = fetchedStudent.ngaySinh;
+        studentAddressInput.value = fetchedStudent.diaChi;
+        studentEmailInput.value = fetchedStudent.email;
+        studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
 
 
         console.log(response)
@@ -239,7 +218,6 @@ function updateStudent() {
     const studentFirstNameInput = document.getElementById("suaTen");
     const studentDobInput = document.getElementById("suaNgaySinh");
     const studentAddressInput = document.getElementById("suaDiaChi");
-    const studentEmailInput = document.getElementById("suaEmail");
     const studentPhoneNumberInput = document.getElementById("suaSoDienThoai");
 
     const studentAvatar = studentAvatarInput.files[0];
@@ -247,11 +225,10 @@ function updateStudent() {
     const studentFirstName = studentFirstNameInput.value.trim();
     const studentDob = studentDobInput.value;
     const studentAddress = studentAddressInput.value.trim();
-    const studentEmail = studentEmailInput.value.trim();
     const studentPhoneNumber = studentPhoneNumberInput.value.trim();
 
     // Validate inputs
-    if (!studentLastName || !studentFirstName || !studentDob || !studentAddress || !studentEmail || !studentPhoneNumber) {
+    if (!studentLastName || !studentFirstName || !studentDob || !studentAddress || !studentPhoneNumber) {
         Swal.fire(
             "Lỗi",
             "Vui lòng nhập đầy đủ dữ liệu",

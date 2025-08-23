@@ -21,7 +21,7 @@ namespace uef_diem_danh.Models
 
         public string DiaChi { get; set; }
 
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         public string SoDienThoai { get; set; }
 
