@@ -1,0 +1,337 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <title>Tải ảnh thẻ học viên</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Toastify -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <style>
+        body {
+            background: #f5f7fb;
+        }
+
+        .upload-wrapper {
+            max-width: 540px;
+            margin: 40px auto;
+            padding: 24px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 28px rgba(0,0,0,.08);
+        }
+
+        .title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .dropzone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            background: #f8fafc;
+            padding: 16px;
+            text-align: center;
+            transition: .2s;
+        }
+
+            .dropzone.dragover {
+                background: #eef2ff;
+                border-color: #93c5fd;
+            }
+
+        .preview {
+            display: flex;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+            .preview img {
+                max-width: 220px;
+                max-height: 220px;
+                border-radius: 12px;
+                object-fit: cover;
+                border: 4px solid #fff;
+                box-shadow: 0 4px 16px rgba(0,0,0,.08);
+            }
+
+        .hint {
+            font-size: .9rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="upload-wrapper">
+        <div class="text-center mb-3">
+            <h1 class="title">Tải ảnh thẻ học viên</h1>
+        </div>
+
+        <div id="alertBox" class="alert d-none" role="alert"></div>
+
+        <form id="uploadForm" class="needs-validation" novalidate
+              action="/student-card/upload" method="post" enctype="multipart/form-data">
+            <!-- CSRF (nếu dùng Spring Security)
+            <input type="hidden" id="csrfToken" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            -->
+
+            <div class="mb-3">
+                <label for="fullName" class="form-label">Họ và tên</label>
+                <input type="text" class="form-control" id="fullName" name="fullName"
+                       placeholder="Ví dụ: Nguyễn Văn A" maxlength="80">
+                <div id="full-name-invalid-feedback" class="invalid-feedback">Tên chỉ gồm chữ và khoảng trắng.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="phone" class="form-label">Số điện thoại</label>
+                <input type="tel" class="form-control" id="phone" name="phone"
+                       placeholder="Ví dụ: 0912345678" inputmode="numeric" maxlength="10">
+                <div id="phone-number-invalid-feedback" class="invalid-feedback">SĐT phải gồm đúng 10 chữ số.</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Ảnh chân dung <span class="text-danger">*</span></label>
+                <div id="dropzone" class="dropzone">
+                    <p class="mb-2">Kéo thả ảnh vào đây hoặc</p>
+                    <label class="btn btn-outline-primary btn-sm mb-2">
+                        Chọn ảnh
+                        <input id="fileInput" type="file" name="imageFile" accept=".png,.jpg,.jpeg" hidden required>
+                    </label>
+                    <div class="hint">Hỗ trợ: .png, .jpg, .jpeg • Tối đa ~5MB • Nền sáng, rõ khuôn mặt</div>
+                </div>
+
+                <div class="preview" id="preview" style="display:none;">
+                    <img id="previewImg" src="" alt="Xem trước ảnh">
+                </div>
+
+                <div class="invalid-feedback d-block" id="fileError" style="display:none;"></div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <button id="submitBtn" class="btn btn-primary" type="button" onclick="submitUploadStudentAvatar()">Gửi ảnh</button>
+                <button class="btn btn-secondary" type="button" id="resetBtn">Xóa chọn</button>
+            </div>
+
+            <p class="hint mt-3">
+                * Bằng việc gửi ảnh, bạn xác nhận ảnh này sẽ được dùng để in thẻ học viên. Vui lòng không tải ảnh mờ/thiếu sáng.
+            </p>
+        </form>
+    </div>
+
+    <!-- Toastify -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <script>
+            const form = document.getElementById('uploadForm');
+          const submitBtn = document.getElementById('submitBtn');
+          const fullName = document.getElementById('fullName');
+          const phone = document.getElementById('phone');
+
+          const fileInput = document.getElementById('fileInput');
+          const dropzone = document.getElementById('dropzone');
+          const preview = document.getElementById('preview');
+          const previewImg = document.getElementById('previewImg');
+          const fileError = document.getElementById('fileError');
+          const alertBox = document.getElementById('alertBox');
+          const resetBtn = document.getElementById('resetBtn');
+
+          const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+          const ALLOWED = ['image/png','image/jpeg'];
+
+          // ✅ Regex đúng (KHÔNG escape \\ trong literal)
+          const nameRegex = /^[\p{L}\p{M}\s'.-]+$/u; // chữ + khoảng trắng (hỗ trợ dấu)
+          const phoneRegex = /^\d{10}$/;             // đúng 10 số
+
+          // Lọc ký tự không phải số khi gõ SĐT
+          phone.addEventListener('input', () => {
+            phone.value = phone.value.replace(/\D/g, '').slice(0, 10);
+          });
+
+          function validateOptionalName() {
+            const v = fullName.value.trim();
+            if (v === '') { fullName.setCustomValidity(''); fullName.classList.remove('is-invalid'); return true; }
+            const ok = nameRegex.test(v);
+            fullName.setCustomValidity(ok ? '' : 'Tên không hợp lệ');
+            fullName.classList.toggle('is-invalid', !ok);
+            return ok;
+          }
+
+          function validateOptionalPhone() {
+            const v = phone.value.trim();
+            if (v === '') { phone.setCustomValidity(''); phone.classList.remove('is-invalid'); return true; }
+            const ok = phoneRegex.test(v);
+            phone.setCustomValidity(ok ? '' : 'SĐT không hợp lệ');
+            phone.classList.toggle('is-invalid', !ok);
+            return ok;
+          }
+
+        function submitUploadStudentAvatar() {
+            const fullNameInvalidFeedback = document.getElementById("full-name-invalid-feedback");
+            const phoneNumberInvalidFeedback = document.getElementById("phone-number-invalid-feedback");
+            const v = fullName.value.trim();
+            const p = phone.value.trim();
+
+
+            if (v === '' && p == '') {
+
+                fullName.classList.toggle('is-invalid');
+                fullNameInvalidFeedback.innerText = "Không được để trống họ và tên";
+
+                phone.classList.toggle('is-invalid');
+                phoneNumberInvalidFeedback.innerText = "Không được để trống số điện thoại";
+
+                return;
+            }
+
+            if (v === '') {
+
+                fullName.classList.toggle('is-invalid');
+                fullNameInvalidFeedback.innerText = "Không được để trống họ và tên";
+
+                return;
+            }
+
+            if (p === '') {
+
+                phone.classList.toggle('is-invalid');
+                phoneNumberInvalidFeedback.innerText = "Không được để trống số điện thoại";
+
+                return;
+            }
+
+        }
+
+          fullName.addEventListener('input', validateOptionalName);
+          phone.addEventListener('input', validateOptionalPhone);
+
+          function showToast(text, type='info'){
+            const bg = type === 'success'
+              ? 'linear-gradient(to right, #00b09b, #96c93d)'
+              : type === 'error'
+              ? 'linear-gradient(to right, #ef4444, #dc2626)'
+              : 'linear-gradient(to right, #3b82f6, #06b6d4)';
+            Toastify({ text, duration: 3500, close: true, gravity: 'top', position: 'right', stopOnFocus: true, style: { background: bg } }).showToast();
+          }
+
+          function showError(msg){
+            fileError.style.display = 'block';
+            fileError.className = 'text-danger';
+            fileError.textContent = msg;
+          }
+          function clearError(){ fileError.style.display = 'none'; fileError.textContent = ''; }
+
+          function setPreview(file){
+            if(!file){ preview.style.display = 'none'; previewImg.src = ''; return; }
+            const url = URL.createObjectURL(file);
+            previewImg.src = url;
+            preview.style.display = 'flex';
+          }
+
+          function validateFile(file){
+            if(!file){ showError('Vui lòng chọn ảnh.'); return false; }
+            if(!ALLOWED.includes(file.type)){ showError('Chỉ chấp nhận PNG hoặc JPG/JPEG.'); return false; }
+            if(file.size > MAX_SIZE){ showError('Kích thước ảnh vượt 5MB.'); return false; }
+            clearError(); return true;
+          }
+
+          fileInput.addEventListener('change', e=>{
+            const file = e.target.files?.[0];
+            if(validateFile(file)){ setPreview(file); }
+            else { setPreview(null); e.target.value = ''; }
+          });
+
+          ['dragenter','dragover'].forEach(ev=>{
+            dropzone.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropzone.classList.add('dragover'); });
+          });
+          ['dragleave','drop'].forEach(ev=>{
+            dropzone.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropzone.classList.remove('dragover'); });
+          });
+          dropzone.addEventListener('drop', e=>{
+            const file = e.dataTransfer.files?.[0];
+            if(file){
+              if(validateFile(file)){
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                fileInput.files = dt.files;
+                setPreview(file);
+              } else {
+                setPreview(null);
+              }
+            }
+          });
+
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const a = validateOptionalName();
+            const b = validateOptionalPhone();
+            const file = fileInput.files?.[0];
+            const fileOK = validateFile(file);
+
+            if (!form.checkValidity() || !a || !b || !fileOK) {
+              form.classList.add('was-validated');
+              showToast('Vui lòng kiểm tra lại thông tin.', 'error');
+              return;
+            }
+
+            form.classList.add('was-validated');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Đang gửi...';
+
+            try{
+              const fd = new FormData(form);
+              const res = await fetch(form.action, { method: 'POST', body: fd });
+
+              const ct = res.headers.get('content-type') || '';
+              let success = res.ok;
+              let serverMsg = '';
+
+              if (ct.includes('application/json')) {
+                const data = await res.json().catch(()=>null);
+                if (data) {
+                  if (typeof data.success !== 'undefined') success = !!data.success;
+                  if (data.message) serverMsg = data.message;
+                }
+              }
+
+              if (success) {
+                showToast(serverMsg || 'Thêm ảnh thành công!', 'success');
+                form.reset();
+                setPreview(null);
+                fullName.classList.remove('is-invalid');
+                phone.classList.remove('is-invalid');
+              } else {
+                showToast(serverMsg || 'Thêm ảnh thất bại!', 'error');
+              }
+            } catch(err){
+              showToast('Không thể kết nối máy chủ. Vui lòng thử lại.', 'error');
+            } finally{
+              submitBtn.disabled = false;
+              submitBtn.textContent = originalText;
+            }
+          });
+
+          resetBtn.addEventListener('click', ()=>{
+            form.reset();
+            setPreview(null);
+            clearError();
+            form.classList.remove('was-validated');
+            alertBox.classList.add('d-none');
+            fullName.classList.remove('is-invalid');
+            phone.classList.remove('is-invalid');
+          });
+    </script>
+
+</body>
+</html>
+

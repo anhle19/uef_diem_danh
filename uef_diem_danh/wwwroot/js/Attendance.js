@@ -49,43 +49,118 @@ async function searchAttendances() {
 
 
 // ================== TABLE PAGINATION ==================
+
+
+function getPaginationWindow(currentPage, totalPages, paginationButtonSize) {
+    // curent page = 5, totalPages = 10, pagination button size = 5
+    const half = Math.floor(paginationButtonSize / 2); // => half = 2
+    let start = Math.max(1, currentPage - half); // => start = 3
+    let end = start + paginationButtonSize - 1; // => end = 7
+
+
+    if (end > totalPages) { // end == total pages (5 == 5)
+        end = totalPages; // => end = 5
+        start = Math.max(1, end - paginationButtonSize + 1); // => start = 1
+    }
+
+    const pages = [];
+    for (let i = start; i <= end; i++) {
+        pages.push(i);
+    }
+
+    return pages;
+
+}
+
+
 function initTablePagination() {
+    const PAGINATION_ITEM_LIMIT_RENDERING_NUMBER = 5;
     const paginationContainer = document.getElementById("paginationContainer");
 
     const tablePageInfo = attendanceManagementTable.page.info()
-    const currentPage = attendanceManagementTable.page();
+    const totalPages = Math.floor(tablePageInfo.recordsDisplay / 10);
 
 
-    // Init pagination items
-    for (let i = 0; i < tablePageInfo.pages; i++) {
+    if (totalPages >= 2) {
+        const paginationWindow = getPaginationWindow(1, totalPages, PAGINATION_ITEM_LIMIT_RENDERING_NUMBER);
+
+
         paginationContainer.innerHTML +=
             `
-            <ol class="paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
+            <ol class="paginationFirstPageItem" id="paginationItem_first_page" onclick="goToPage(1)">Trang đầu</ol>
         `;
+
+        for (let i = 0; i < paginationWindow.length; i++) {
+            paginationContainer.innerHTML +=
+                `
+                    <ol class="paginationItems" id="paginationItem_${paginationWindow[i]}" onclick="goToPage(${paginationWindow[i]})">${paginationWindow[i]}</ol>
+                `
+        }
+
+        paginationContainer.innerHTML +=
+            `
+            <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToPage(${tablePageInfo.pages})">Trang cuối</ol>
+        `;
+
+
+        // Set current active page
+        const currentPaginationItem = document.getElementById(`paginationItem_${1}`);
+        currentPaginationItem.classList.add("paginationActive");
     }
 
-    // Set current active page
-    const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
-    currentPaginationItem.classList.add("paginationActive");
 
-
-    console.log(currentPage);
 }
 
+
 function goToPage(targetPage) {
+
     // Go to target page
-    attendanceManagementTable.page(targetPage).draw(false);
+    attendanceManagementTable.page(targetPage - 1).draw(false);
+
+
+    const PAGINATION_ITEM_LIMIT_RENDERING_NUMBER = 5;
+    const paginationContainer = document.getElementById("paginationContainer");
+
+    const tablePageInfo = attendanceManagementTable.page.info()
+    const totalPages = Math.floor(tablePageInfo.recordsDisplay / 10);
+
+    const paginationWindow = getPaginationWindow(targetPage, totalPages, PAGINATION_ITEM_LIMIT_RENDERING_NUMBER);
+
+    paginationContainer.innerHTML = '';
+
+    paginationContainer.innerHTML +=
+        `
+        <ol class="paginationFirstPageItem" id="paginationItem_first_page" onclick="goToPage(1)">Trang đầu</ol>
+    `;
+
+    for (let i = 0; i < paginationWindow.length; i++) {
+        paginationContainer.innerHTML +=
+            `
+                <ol class="paginationItems" id="paginationItem_${paginationWindow[i]}" onclick="goToPage(${paginationWindow[i]})">${paginationWindow[i]}</ol>
+            `
+    }
+
+    paginationContainer.innerHTML +=
+        `
+        <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToPage(${tablePageInfo.pages - 1})">Trang cuối</ol>
+    `;
+
+
 
     // Clear previous pagination item active style
     const previousActivetePaginationItem = document.getElementsByClassName("paginationActive")[0];
-    previousActivetePaginationItem.classList.remove("paginationActive")
+    if (previousActivetePaginationItem != null) {
+        previousActivetePaginationItem.classList.remove("paginationActive")
+    }
 
     // Set current active page
-    const currentPage = attendanceManagementTable.page();
-    const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
+    const currentPaginationItem = document.getElementById(`paginationItem_${targetPage}`);
     currentPaginationItem.classList.add("paginationActive");
 
+
+
 }
+
 
 
 

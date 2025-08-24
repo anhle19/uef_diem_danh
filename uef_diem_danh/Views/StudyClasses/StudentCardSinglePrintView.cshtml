@@ -41,6 +41,13 @@
             justify-content: space-between;
         }
 
+        .card-top {
+            flex: 1; /* phần giữa chiếm chỗ còn lại */
+            min-height: 0; /* QUAN TRỌNG để overflow hoạt động đúng */
+            display: flex;
+            flex-direction: column;
+        }
+
         .card-img-top {
             width: 180px; /* Kích thước ảnh */
             height: 180px;
@@ -73,6 +80,25 @@
             border-top: 1px solid #e9ecef;
         }
 
+        /* CẮT DÒNG + … cho các giá trị dài */
+        .value {
+            display: -webkit-box;
+            line-clamp: 2; /* tối đa 2 dòng*/
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: break-word;
+            line-height: 1.2;
+        }
+
+        /* Nhãn trên – giá trị dưới cho gọn */
+        .label {
+            display: block;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+
         .print-btn-container {
             position: fixed;
             top: 10px;
@@ -98,7 +124,12 @@
 
     <div id="sheet" class="d-flex justify-content-center align-items-center vh-100">
         <div class="card student-card text-center">
-            <div>
+            <div class="card-top">
+                <div class="d-flex justify-content-center align-items-center px-2 pt-2">
+                    <img src="@Url.Content("~/student_pictures/logo.png")" alt="logo" width="60" height="60">
+                    <p class="mb-0" style="font-size: 23px;">TRUNG TÂM CHÍNH TRỊ PHƯỜNG XUÂN HÒA</p>
+                </div>
+
                 <img id="studentAvatarInfo" src="#" class="card-img-top mx-auto d-block" alt="Ảnh đại diện">
                 <div class="card-body">
                     <h5 id="studentFullNameInfo" class="card-title text-primary"></h5>

@@ -31,9 +31,7 @@ function updateSearchOrderType() {
 }
 
 async function searchStudent() {
-    const searchResultLabel = document.getElementById("searchResultLabel");
-    const studyClassesTableBody = document.getElementById("studentsTableBody");
-    const searchOrderStudyClassForm = document.getElementById("searchOrderStudentForm");
+
     const studyClassSearchInputValue = document
         .getElementById("studentSearchInput")
         .value
@@ -108,21 +106,18 @@ function addStudent() {
     const studentFirstNameInput = popup.querySelector("#themTen");
     const studentDobInput = popup.querySelector("#themNgaySinh");
     const studentAddressInput = popup.querySelector("#themDiaChi");
-    const studentEmailInput = popup.querySelector("#themEmail");
     const studentPhoneNumberInput = popup.querySelector("#themSoDienThoai");
     const studentUnitInput = popup.querySelector("#themDonVi");
 
-    const studentAvatarFile = document.getElementById("themHinhAnh").files;
     const studentLastName = studentLastNameInput.value.trim();
     const studentFirstName = studentFirstNameInput.value.trim();
     const studentDob = studentDobInput.value;
     const studentAddress = studentAddressInput.value.trim();
-    const studentEmail = studentEmailInput.value.trim();
     const studentPhoneNumber = studentPhoneNumberInput.value.trim();
     const studentUnit = studentUnitInput.value.trim();
 
     // Validate inputs
-    if (!studentLastName || !studentFirstName || !studentDob || !studentAddress || !studentEmail || !studentPhoneNumber || !studentUnit) {
+    if (!studentLastName || !studentFirstName || !studentDob || !studentAddress || !studentPhoneNumber || !studentUnit) {
         Swal.fire(
             "Lỗi",
             "Vui lòng nhập đầy đủ dữ liệu",
@@ -130,14 +125,7 @@ function addStudent() {
         );
         return;
     }
-    //if (studentAvatarFile.length == 0) {
-    //    Swal.fire(
-    //        "Lỗi",
-    //        "Vui lòng tải lên hình ảnh học viên",
-    //        "warning"
-    //    );
-    //    return;
-    //}
+
 
     // Submit form
     createStudentForm.requestSubmit();
@@ -163,25 +151,14 @@ async function initUpdateStudentFields(id) {
         const response = await axios.get(`/api/lay-chi-tiet-hoc-vien/${id}`)
         const fetchedStudent = response.data;
 
-        console.log(fetchedStudent);
-        if (fetchedStudent.hinhAnh == null) {
-            studentIdInput.value = fetchedStudent.maHocVien;
-            studentLastNameInput.value = fetchedStudent.ho;
-            studentFirstNameInput.value = fetchedStudent.ten;
-            studentDobInput.value = fetchedStudent.ngaySinh;
-            studentAddressInput.value = fetchedStudent.diaChi;
-            studentEmailInput.value = fetchedStudent.email;
-            studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
-        } else {
-            suaHinhAnhPreview.src = `${BASE_URL}/student_pictures/${fetchedStudent.hinhAnh}`
-            studentIdInput.value = fetchedStudent.maHocVien;
-            studentLastNameInput.value = fetchedStudent.ho;
-            studentFirstNameInput.value = fetchedStudent.ten;
-            studentDobInput.value = fetchedStudent.ngaySinh;
-            studentAddressInput.value = fetchedStudent.diaChi;
-            studentEmailInput.value = fetchedStudent.email;
-            studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
-        }
+        suaHinhAnhPreview.src = `${BASE_URL}/student_pictures/${fetchedStudent.tenHinhAnh}`
+        studentIdInput.value = fetchedStudent.maHocVien;
+        studentLastNameInput.value = fetchedStudent.ho;
+        studentFirstNameInput.value = fetchedStudent.ten;
+        studentDobInput.value = fetchedStudent.ngaySinh;
+        studentAddressInput.value = fetchedStudent.diaChi;
+        studentEmailInput.value = fetchedStudent.email;
+        studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
 
 
         console.log(response)
@@ -239,7 +216,6 @@ function updateStudent() {
     const studentFirstNameInput = document.getElementById("suaTen");
     const studentDobInput = document.getElementById("suaNgaySinh");
     const studentAddressInput = document.getElementById("suaDiaChi");
-    const studentEmailInput = document.getElementById("suaEmail");
     const studentPhoneNumberInput = document.getElementById("suaSoDienThoai");
 
     const studentAvatar = studentAvatarInput.files[0];
@@ -247,11 +223,10 @@ function updateStudent() {
     const studentFirstName = studentFirstNameInput.value.trim();
     const studentDob = studentDobInput.value;
     const studentAddress = studentAddressInput.value.trim();
-    const studentEmail = studentEmailInput.value.trim();
     const studentPhoneNumber = studentPhoneNumberInput.value.trim();
 
     // Validate inputs
-    if (!studentLastName || !studentFirstName || !studentDob || !studentAddress || !studentEmail || !studentPhoneNumber) {
+    if (!studentLastName || !studentFirstName || !studentDob || !studentAddress || !studentPhoneNumber) {
         Swal.fire(
             "Lỗi",
             "Vui lòng nhập đầy đủ dữ liệu",
@@ -275,45 +250,113 @@ async function initDeleteStudentField(id) {
 
 
 // ================== TABLE PAGINATION ==================
+
+
+function getPaginationWindow(currentPage, totalPages, paginationButtonSize) {
+    // curent page = 1, totalPages = 5, pagination button size = 5
+    const half = Math.floor(paginationButtonSize / 2); // => half = 2
+    let start = Math.max(1, currentPage - half); // => start = 1
+    let end = start + paginationButtonSize - 1; // => end = 5
+
+
+    if (end > totalPages) { // end == total pages (5 == 5)
+        end = totalPages; // => end = 5
+        start = Math.max(1, end - paginationButtonSize + 1); // => start = 1
+    }
+
+    const pages = [];
+    for (let i = start; i <= end; i++) {
+        pages.push(i);
+    }
+
+    return pages;
+
+}
+
 function initTablePagination() {
+    const PAGINATION_ITEM_LIMIT_RENDERING_NUMBER = 5;
     const paginationContainer = document.getElementById("paginationContainer");
 
     const tablePageInfo = studentTable.page.info()
-    const currentPage = studentTable.page();
+    const totalPages = Math.floor(tablePageInfo.recordsDisplay / 10);
 
 
-    if (tablePageInfo.pages > 0) {
-        // Init pagination items
-        for (let i = 0; i < tablePageInfo.pages; i++) {
+    if (totalPages >= 2) {
+
+        const paginationWindow = getPaginationWindow(1, totalPages, PAGINATION_ITEM_LIMIT_RENDERING_NUMBER);
+
+
+        paginationContainer.innerHTML +=
+        `
+            <ol class="paginationFirstPageItem" id="paginationItem_first_page" onclick="goToPage(1)">Trang đầu</ol>
+        `;
+
+        for (let i = 0; i < paginationWindow.length; i++) {
             paginationContainer.innerHTML +=
                 `
-                <ol class="paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-            `;
+                    <ol class="paginationItems" id="paginationItem_${paginationWindow[i]}" onclick="goToPage(${paginationWindow[i]})">${paginationWindow[i]}</ol>
+                `
         }
 
-        // Set current active page
-        const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
-        currentPaginationItem.classList.add("paginationActive");
-    } else {
-        return;
-    }
+        paginationContainer.innerHTML +=
+        `
+            <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToPage(${tablePageInfo.pages})">Trang cuối</ol>
+        `;
 
+
+        // Set current active page
+        const currentPaginationItem = document.getElementById(`paginationItem_${1}`);
+        currentPaginationItem.classList.add("paginationActive");
+    }
 
 }
 
 function goToPage(targetPage) {
+
     // Go to target page
-    studentTable.page(targetPage).draw(false);
+    studentTable.page(targetPage - 1).draw(false);
+
+
+    const PAGINATION_ITEM_LIMIT_RENDERING_NUMBER = 5;
+    const paginationContainer = document.getElementById("paginationContainer");
+
+    const tablePageInfo = studentTable.page.info()
+    const totalPages = Math.floor(tablePageInfo.recordsDisplay / 10);
+
+    const paginationWindow = getPaginationWindow(targetPage, totalPages, PAGINATION_ITEM_LIMIT_RENDERING_NUMBER);
+
+    paginationContainer.innerHTML = '';
+
+    paginationContainer.innerHTML +=
+        `
+        <ol class="paginationFirstPageItem" id="paginationItem_first_page" onclick="goToPage(1)">Trang đầu</ol>
+    `;
+
+    for (let i = 0; i < paginationWindow.length; i++) {
+        paginationContainer.innerHTML +=
+            `
+                <ol class="paginationItems" id="paginationItem_${paginationWindow[i]}" onclick="goToPage(${paginationWindow[i]})">${paginationWindow[i]}</ol>
+            `
+    }
+
+    paginationContainer.innerHTML +=
+    `
+        <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToPage(${tablePageInfo.pages - 1})">Trang cuối</ol>
+    `;
+
+
 
     // Clear previous pagination item active style
     const previousActivetePaginationItem = document.getElementsByClassName("paginationActive")[0];
-    previousActivetePaginationItem.classList.remove("paginationActive")
+    if (previousActivetePaginationItem != null) {
+        previousActivetePaginationItem.classList.remove("paginationActive")
+    }
 
     // Set current active page
-    const currentPage = studentTable.page();
-    const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
+    const currentPaginationItem = document.getElementById(`paginationItem_${targetPage}`);
     currentPaginationItem.classList.add("paginationActive");
 
+   
 
 }
 
@@ -322,4 +365,3 @@ function goToPage(targetPage) {
 // ================== CALL FUNCTIONS ==================
 
 initTablePagination();
-

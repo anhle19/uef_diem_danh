@@ -89,41 +89,28 @@ document.addEventListener('DOMContentLoaded', async (event) => {
                 const sheet = document.getElementById(`sheet_${i}`)
 
 
-                if (processingStudentsData[j].studentAvatar != null) {
-                    sheet.innerHTML +=
-                        `
-                     <div class="card student-card text-center">
-                        <div class="card-top">
-                            <img src="${BASE_URL}/student_pictures/${processingStudentsData[j].studentAvatar}" class="card-img-top" alt="Ảnh đại diện">
-                            <div class="card-body">
-                                <h5>${processingStudentsData[j].studentLastName} ${processingStudentsData[j].studentFirstName}</h5>
-                                <p><strong>Ngày sinh:</strong> ${moment(processingStudentsData[j].studentDayOfBirth).format("DD/MM/YYYY")}</p>
-                                <p><strong>SĐT:</strong> ${processingStudentsData[j].studentPhoneNumber}</p>
-                            </div>
+                sheet.innerHTML +=
+                `
+                <div class="card student-card text-center">
+                    <div class="card-top">
+                        <div class="card-header-center">
+                            <img class="logo" src="${BASE_URL}/student_pictures/logo.png" alt="logo">
+                            <p class="center-title">TRUNG TÂM CHÍNH TRỊ PHƯỜNG XUÂN HÒA</p>
                         </div>
-                        <div class="barcode-section">
-                            <svg class="barcode" id="barcode_${j}"></svg>
-                        </div>
-                    </div>
-                    `;
-                } else {
-                    sheet.innerHTML +=
-                        `
-                     <div class="card student-card text-center">
-                        <div class="card-top">
-                            <img src="https://placehold.co/150x150/0d6efd/FFFFFF?text=AVATAR" class="card-img-top" alt="Ảnh đại diện">
-                            <div class="card-body">
-                                <h5>${processingStudentsData[j].studentLastName} ${processingStudentsData[j].studentFirstName}</h5>
-                                <p><strong>Ngày sinh:</strong> ${moment(processingStudentsData[j].studentDayOfBirth).format("DD/MM/YYYY")}</p>
-                                <p><strong>SĐT:</strong> ${processingStudentsData[j].studentPhoneNumber}</p>
-                            </div>
-                        </div>
-                        <div class="barcode-section">
-                            <svg class="barcode" id="barcode_${j}"></svg>
+
+                        <img src="${BASE_URL}/student_pictures/${processingStudentsData[j].studentAvatar.name}" class="card-img-top" alt="Ảnh đại diện">
+                        
+                        <div class="card-body">
+                            <h5>${processingStudentsData[j].studentLastName} ${processingStudentsData[j].studentFirstName}</h5>
+                            <p><strong>Ngày sinh:</strong> ${moment(processingStudentsData[j].studentDayOfBirth).format("DD/MM/YYYY")}</p>
+                            <p><strong>SĐT:</strong> ${processingStudentsData[j].studentPhoneNumber}</p>
                         </div>
                     </div>
-                    `;
-                }
+                    <div class="barcode-section">
+                        <svg class="barcode" id="barcode_${j}"></svg>
+                    </div>
+                </div>
+                `;
 
 
                 // Generate Barcode

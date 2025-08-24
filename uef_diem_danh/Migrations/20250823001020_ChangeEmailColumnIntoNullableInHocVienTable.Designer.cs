@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using uef_diem_danh.Database;
 
@@ -11,9 +12,11 @@ using uef_diem_danh.Database;
 namespace uef_diem_danh.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250823001020_ChangeEmailColumnIntoNullableInHocVienTable")]
+    partial class ChangeEmailColumnIntoNullableInHocVienTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -212,46 +215,6 @@ namespace uef_diem_danh.Migrations
                     b.HasIndex("MaHocVien");
 
                     b.ToTable("DiemDanh");
-                });
-
-            modelBuilder.Entity("uef_diem_danh.Models.DiemDanhSuKien", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("AttendanceDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DonVi")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Ho")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateOnly?>("NgaySinh")
-                        .HasColumnType("date");
-
-                    b.Property<string>("SoDienThoai")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Ten")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.ToTable("DiemDanhSuKiens");
                 });
 
             modelBuilder.Entity("uef_diem_danh.Models.HinhAnh", b =>
@@ -564,17 +527,6 @@ namespace uef_diem_danh.Migrations
                     b.Navigation("BuoiHoc");
 
                     b.Navigation("HocVien");
-                });
-
-            modelBuilder.Entity("uef_diem_danh.Models.DiemDanhSuKien", b =>
-                {
-                    b.HasOne("uef_diem_danh.Models.SuKien", "SuKien")
-                        .WithMany()
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SuKien");
                 });
 
             modelBuilder.Entity("uef_diem_danh.Models.HinhAnh", b =>
