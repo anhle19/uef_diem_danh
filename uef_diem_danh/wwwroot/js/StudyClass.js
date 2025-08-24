@@ -268,499 +268,111 @@ async function searchStudyClass() {
 
 // ================== TABLE PAGINATION ==================
 
+function getPaginationWindow(currentPage, totalPages, paginationButtonSize) {
+    // curent page = 4, totalPages = 5, pagination button size = 5
+    const half = Math.floor(paginationButtonSize / 2); // => half = 2
+    let start = Math.max(1, currentPage - half); // => start = 2
+    let end = start + paginationButtonSize - 1; // => end = 6
+
+
+    if (end > totalPages) { // end == total pages (5 == 5)
+        end = totalPages; // => end = 5
+        start = Math.max(1, end - paginationButtonSize + 1); // => start = 1
+    }
+
+    const pages = [];
+    for (let i = start; i <= end; i++) {
+        pages.push(i);
+    }
+
+    return pages;
+
+}
+
 
 function initTablePagination() {
     const PAGINATION_ITEM_LIMIT_RENDERING_NUMBER = 5;
     const paginationContainer = document.getElementById("paginationContainer");
 
     const tablePageInfo = studyClassTable.page.info()
-    const currentPage = studyClassTable.page();
+    const totalPages = Math.floor(tablePageInfo.recordsDisplay / 10);
 
 
-    if (tablePageInfo.pages > 0) {
+    if (totalPages >= 2) {
 
-        paginationContainer.innerHTML +=
-            `
-            <ol class="paginationFirstPageItem" id="paginationItem_first_page" onclick="goToFirstPage()">Trang đầu</ol>
-        `;
-
-
-        // If total pages less than or equal to limit number of pagination items
-        if (tablePageInfo.pages <= PAGINATION_ITEM_LIMIT_RENDERING_NUMBER) {
-            // Init pagination items
-            for (let i = 0; i < tablePageInfo.pages; i++) {
-                paginationContainer.innerHTML +=
-                    `
-                    <ol class="paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                `;
-            }
-        }
-        // If total pages greater than limit number of pagination items
-        if (tablePageInfo.pages > PAGINATION_ITEM_LIMIT_RENDERING_NUMBER) {
-            for (let i = 0; i < PAGINATION_ITEM_LIMIT_RENDERING_NUMBER; i++) {
-                // First pagination item
-                if (i == 0) {
-                    paginationContainer.innerHTML +=
-                        `
-                        <ol class="firstPaginationItem paginationItems" id="paginationItem_${i}" onclick="goToPage(0)">1</ol>
-                    `;
-                }
-                // Last pagination item
-                if (i == PAGINATION_ITEM_LIMIT_RENDERING_NUMBER - 1) {
-                    paginationContainer.innerHTML +=
-                        `
-                        <ol class="lastPaginationItem paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                    `;
-                }
-                // Middle pagination items
-                if (i > 0 && i < PAGINATION_ITEM_LIMIT_RENDERING_NUMBER - 1) {
-                    paginationContainer.innerHTML +=
-                        `
-                        <ol class="paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                    `;
-                }
-            }
-
-
-        }
-
+        const paginationWindow = getPaginationWindow(1, totalPages, PAGINATION_ITEM_LIMIT_RENDERING_NUMBER);
 
 
         paginationContainer.innerHTML +=
             `
-            <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToLastPage()">Trang cuối</ol>
+            <ol class="paginationFirstPageItem" id="paginationItem_first_page" onclick="goToPage(1)">Trang đầu</ol>
         `;
+
+        for (let i = 0; i < paginationWindow.length; i++) {
+            paginationContainer.innerHTML +=
+                `
+                    <ol class="paginationItems" id="paginationItem_${paginationWindow[i]}" onclick="goToPage(${paginationWindow[i]})">${paginationWindow[i]}</ol>
+                `
+        }
+
+        paginationContainer.innerHTML +=
+            `
+            <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToPage(${tablePageInfo.pages})">Trang cuối</ol>
+        `;
+
 
         // Set current active page
-        const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
+        const currentPaginationItem = document.getElementById(`paginationItem_${1}`);
         currentPaginationItem.classList.add("paginationActive");
     }
-    else {
-        return;
-    }
-
 
 }
 
-
-function goToFirstPage() {
-
-    // Go to target page
-    studyClassTable.page(0).draw(false);
-
-    const PAGINATION_ITEM_LIMIT_RENDERING_NUMBER = 5;
-
-    const tablePageInfo = studyClassTable.page.info()
-    const currentPage = studyClassTable.page();
-
-
-    if (tablePageInfo.pages > 1) {
-        // Clear pagination
-        paginationContainer.innerHTML = '';
-
-        // Re-create pagination go to first
-        paginationContainer.innerHTML +=
-            `
-            <ol class="paginationFirstPageItem" id="paginationItem_first_page" onclick="goToFirstPage()">Trang đầu</ol>
-        `;
-
-        // If total pages less than or equal to limit number of pagination items
-        if (tablePageInfo.pages <= PAGINATION_ITEM_LIMIT_RENDERING_NUMBER) {
-            // Re-create pagination items
-            // i < tablePageInfo.pages ensures that it not render a same number of PAGINATION_ITEM_LIMIT_RENDERING_NUMBER
-            for (let i = 0; i < tablePageInfo.pages; i++) {
-                // First pagination item
-                if (i == 0) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="firstPaginationItem paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                        `;
-                }
-                // Last pagination item
-                if (i == tablePageInfo.pages - 1) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="lastPaginationItem paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                        `;
-                }
-                // Middle pagination items
-                if (i > 0 && i < tablePageInfo.pages - 1) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                        `;
-                }
-            }
-        }
-        // If total pages greater than limit number of pagination items
-        else {
-            // i < PAGINATION_ITEM_LIMIT_RENDERING_NUMBER ensures that it render a same number of PAGINATION_ITEM_LIMIT_RENDERING_NUMBER
-            for (let i = 0; i < PAGINATION_ITEM_LIMIT_RENDERING_NUMBER; i++) {
-                // First pagination item
-                if (i == 0) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="firstPaginationItem paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                        `;
-                }
-                // Last pagination item
-                if (i == PAGINATION_ITEM_LIMIT_RENDERING_NUMBER - 1) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="lastPaginationItem paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                        `;
-                }
-                // Middle pagination items
-                if (i > 0 && i < PAGINATION_ITEM_LIMIT_RENDERING_NUMBER - 1) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                        `;
-                }
-            }
-        }
-
-        // Re-create pagination go to last
-        paginationContainer.innerHTML +=
-            `
-            <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToLastPage()">Trang cuối</ol>
-        `;
-    }
-
-    // Set current active page
-    const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
-    currentPaginationItem.classList.add("paginationActive");
-
-    console.log(currentPaginationItem)
-}
-
-function goToLastPage() {
-    const tablePageInfo = studyClassTable.page.info()
-
-    // Go to target page
-    studyClassTable.page(tablePageInfo.pages - 1).draw(false);
-
-    const PAGINATION_ITEM_LIMIT_RENDERING_NUMBER = 5;
-
-    const currentFirstPage = (tablePageInfo.pages + 1) - PAGINATION_ITEM_LIMIT_RENDERING_NUMBER;
-    const currentLastPage = tablePageInfo.pages;
-    const currentPage = studyClassTable.page();
-
-
-    if (tablePageInfo.pages > 1) {
-        // Clear pagination
-        paginationContainer.innerHTML = '';
-
-        // Re-create pagination go to first
-        paginationContainer.innerHTML +=
-            `
-            <ol class="paginationFirstPageItem" id="paginationItem_first_page" onclick="goToFirstPage()">Trang đầu</ol>
-        `;
-
-        // If total pages less than or equal to limit number of pagination items
-        if (tablePageInfo.pages <= PAGINATION_ITEM_LIMIT_RENDERING_NUMBER) {
-            // i < tablePageInfo.pages ensures that it not render a same number of PAGINATION_ITEM_LIMIT_RENDERING_NUMBER
-            for (let i = 0; i < tablePageInfo.pages; i++) {
-                // First pagination item
-                if (i == 0) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="firstPaginationItem paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                        `;
-                }
-                // Last pagination item
-                if (i == tablePageInfo.pages - 1) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="lastPaginationItem paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                        `;
-                }
-                // Middle pagination items
-                if (i > 0 && i < tablePageInfo.pages - 1) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                        `;
-                }
-            }
-        }
-        // If total pages greater than limit number of pagination items
-        else {
-            // Re-create pagination items
-            // i = currentFirstPage ensure that it render a new first item = previous first last + 1
-            // i <= currentLastPage ensure that it render a new last item = previewous last item + 1
-            for (let i = currentFirstPage; i <= currentLastPage; i++) {
-                // First pagination item
-                if (i == currentFirstPage) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="firstPaginationItem paginationItems" id="paginationItem_${i - 1}" onclick="goToPage(${i - 1})">${i}</ol>
-                        `;
-                }
-                // Last pagination item
-                if (i == currentLastPage) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="lastPaginationItem paginationItems" id="paginationItem_${i - 1}" onclick="goToPage(${i - 1})">${i}</ol>
-                        `;
-                }
-                // Middle pagination items
-                if (i > currentFirstPage && i < currentLastPage) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="paginationItems" id="paginationItem_${i - 1}" onclick="goToPage(${i - 1})">${i}</ol>
-                        `;
-                }
-            }
-        }
-
-        // Re-create pagination go to last
-        paginationContainer.innerHTML +=
-            `
-            <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToLastPage()">Trang cuối</ol>
-        `;
-    }
-
-    // Set current active page
-    const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
-    currentPaginationItem.classList.add("paginationActive");
-
-}
 
 function goToPage(targetPage) {
 
     // Go to target page
-    studyClassTable.page(targetPage).draw(false);
-
-    const firstPaginationItem = document.getElementsByClassName("firstPaginationItem")[0];
-    const lastPaginationItem = document.getElementsByClassName("lastPaginationItem")[0];
-    const currentPaginationItem = document.getElementById(`paginationItem_${targetPage}`);
-
-    if (currentPaginationItem.classList.contains('lastPaginationItem')) {
-        console.log("HERE last pagination item")
+    studyClassTable.page(targetPage - 1).draw(false);
 
 
-        const PAGINATION_ITEM_LIMIT_RENDERING_NUMBER = 5;
+    const PAGINATION_ITEM_LIMIT_RENDERING_NUMBER = 5;
+    const paginationContainer = document.getElementById("paginationContainer");
 
-        const currentPageOfFirstPaginationItem = parseInt(firstPaginationItem.innerText);
-        const currentPageOfLastPaginationItem = parseInt(lastPaginationItem.innerText);
-        const paginationContainer = document.getElementById("paginationContainer");
+    const tablePageInfo = studyClassTable.page.info()
+    const totalPages = Math.floor(tablePageInfo.recordsDisplay / 10);
 
-        const tablePageInfo = studyClassTable.page.info()
-        const currentPage = studyClassTable.page();
+    const paginationWindow = getPaginationWindow(targetPage, totalPages, PAGINATION_ITEM_LIMIT_RENDERING_NUMBER);
 
-        // Clear pagination
-        paginationContainer.innerHTML = '';
+    paginationContainer.innerHTML = '';
 
-        // Re-create pagination go to first
+    paginationContainer.innerHTML +=
+        `
+        <ol class="paginationFirstPageItem" id="paginationItem_first_page" onclick="goToPage(1)">Trang đầu</ol>
+    `;
+
+    for (let i = 0; i < paginationWindow.length; i++) {
         paginationContainer.innerHTML +=
             `
-            <ol class="paginationFirstPageItem" id="paginationItem_first_page" onclick="goToFirstPage()">Trang đầu</ol>
-        `;
-
-
-        // Re-create pagination items
-
-        if (tablePageInfo.pages < PAGINATION_ITEM_LIMIT_RENDERING_NUMBER) {
-            for (let i = 0; i < tablePageInfo.pages; i++) {
-                // First pagination item
-                if (i == 0) {
-                    paginationContainer.innerHTML +=
-                        `
-                        <ol class="firstPaginationItem paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                    `;
-                }
-                // Last pagination item
-                if (i == tablePageInfo.pages - 1) {
-                    paginationContainer.innerHTML +=
-                        `
-                        <ol class="lastPaginationItem paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                    `;
-                }
-                // Middle pagination items
-                if (i > 0 && i < tablePageInfo.pages - 1) {
-                    paginationContainer.innerHTML +=
-                        `
-                        <ol class="paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                    `;
-                }
-            }
-        }
-        else {
-
-            if (currentPageOfLastPaginationItem < tablePageInfo.pages) {
-                console.log("less than final page");
-                for (let i = currentPageOfFirstPaginationItem; i <= currentPageOfLastPaginationItem; i++) {
-
-                    // First pagination item
-                    if (i == currentPageOfFirstPaginationItem) {
-                        paginationContainer.innerHTML +=
-                            `
-                                    <ol class="firstPaginationItem paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                                `;
-                    }
-                    // Last pagination item
-                    if (i == currentPageOfLastPaginationItem) {
-                        paginationContainer.innerHTML +=
-                            `
-                                    <ol class="lastPaginationItem paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                                `;
-                    }
-                    // Middle pagination items
-                    if (i > currentPageOfFirstPaginationItem && i < currentPageOfLastPaginationItem) {
-                        paginationContainer.innerHTML +=
-                            `
-                                    <ol class="paginationItems" id="paginationItem_${i}" onclick="goToPage(${i})">${i + 1}</ol>
-                                `;
-                    }
-
-                }
-            }
-            else {
-                // Re-create pagination items
-                for (let i = tablePageInfo.pages - 4; i <= tablePageInfo.pages; i++) {
-                    // First pagination item
-                    if (i == tablePageInfo.pages - 4) {
-                        paginationContainer.innerHTML +=
-                            `
-                        <ol class="firstPaginationItem paginationItems" id="paginationItem_${i - 1}" onclick="goToPage(${i - 1})">${i}</ol>
-                    `;
-                    }
-                    // Last pagination item
-                    if (i == tablePageInfo.pages) {
-                        paginationContainer.innerHTML +=
-                            `
-                        <ol class="lastPaginationItem paginationItems" id="paginationItem_${i - 1}" onclick="goToPage(${i - 1})">${i}</ol>
-                    `;
-                    }
-                    // Middle pagination items
-                    if (i > tablePageInfo.pages - 4 && i < tablePageInfo.pages) {
-                        paginationContainer.innerHTML +=
-                            `
-                        <ol class="paginationItems" id="paginationItem_${i - 1}" onclick="goToPage(${i - 1})">${i}</ol>
-                    `;
-                    }
-                }
-            }
-        }
-
-
-        // Re-create pagination go to last
-        paginationContainer.innerHTML +=
+                <ol class="paginationItems" id="paginationItem_${paginationWindow[i]}" onclick="goToPage(${paginationWindow[i]})">${paginationWindow[i]}</ol>
             `
-            <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToLastPage()">Trang cuối</ol>
-        `;
-
-        // Set current active page
-        const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
-        currentPaginationItem.classList.add("paginationActive");
-        console.log(currentPaginationItem)
-
-        return;
     }
-    if (currentPaginationItem.classList.contains('firstPaginationItem')) {
-        console.log("HERE first pagination item")
 
-        const currentPageOfFirstPaginationItem = parseInt(firstPaginationItem.innerText);
-        const currentPageOfLastPaginationItem = parseInt(lastPaginationItem.innerText);
-
-        const tablePageInfo = studyClassTable.page.info()
-        const currentPage = studyClassTable.page();
+    paginationContainer.innerHTML +=
+        `
+        <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToPage(${tablePageInfo.pages - 1})">Trang cuối</ol>
+    `;
 
 
 
-        // Clear pagination
-        paginationContainer.innerHTML = '';
-
-        // Re-create pagination go to first
-        paginationContainer.innerHTML +=
-            `
-            <ol class="paginationFirstPageItem" id="paginationItem_first_page" onclick="goToFirstPage()">Trang đầu</ol>
-        `;
-
-        if (currentPageOfFirstPaginationItem == 1) {
-
-            for (let i = currentPageOfFirstPaginationItem; i <= currentPageOfLastPaginationItem; i++) {
-
-                console.log(`page index: ${i - 1} - showing page: ${i}`)
-
-                // First pagination item
-                if (i == currentPageOfFirstPaginationItem) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="firstPaginationItem paginationItems" id="paginationItem_${i - 1}" onclick="goToPage(${i - 1})">${i}</ol>
-                        `;
-                }
-                // Last pagination item
-                if (i == currentPageOfLastPaginationItem) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="lastPaginationItem paginationItems" id="paginationItem_${i - 1}" onclick="goToPage(${i - 1})">${i}</ol>
-                        `;
-                }
-                // Middle pagination items
-                if (i > currentPageOfFirstPaginationItem && i < currentPageOfLastPaginationItem) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="paginationItems" id="paginationItem_${i - 1}" onclick="goToPage(${i - 1})">${i}</ol>
-                        `;
-                }
-
-            }
-
-        }
-        if (currentPageOfFirstPaginationItem > 1) {
-
-            for (let i = currentPageOfFirstPaginationItem - 1; i < currentPageOfLastPaginationItem; i++) {
-
-                console.log(`page index: ${i - 1} - showing page: ${i}`)
-
-                // First pagination item
-                if (i == currentPageOfFirstPaginationItem - 1) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="firstPaginationItem paginationItems" id="paginationItem_${i - 1}" onclick="goToPage(${i - 1})">${i}</ol>
-                        `;
-                }
-                // Last pagination item
-                if (i == currentPageOfLastPaginationItem - 1) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="lastPaginationItem paginationItems" id="paginationItem_${i - 1}" onclick="goToPage(${i - 1})">${i}</ol>
-                        `;
-                }
-                // Middle pagination items
-                if (i > currentPageOfFirstPaginationItem - 1 && i < currentPageOfLastPaginationItem - 1) {
-                    paginationContainer.innerHTML +=
-                        `
-                            <ol class="paginationItems" id="paginationItem_${i - 1}" onclick="goToPage(${i - 1})">${i}</ol>
-                        `;
-                }
-
-            }
-
-        }
-        // Re-create pagination go to last
-        paginationContainer.innerHTML +=
-            `
-            <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToLastPage()">Trang cuối</ol>
-        `;
-
-        // Set current active page
-        const currentPaginationItem = document.getElementById(`paginationItem_${currentPage}`)
-        currentPaginationItem.classList.add("paginationActive");
-
-        return;
-    }
-    else {
-        // Clear previous pagination item active style
-        const previousActivetePaginationItem = document.getElementsByClassName("paginationActive")[0];
+    // Clear previous pagination item active style
+    const previousActivetePaginationItem = document.getElementsByClassName("paginationActive")[0];
+    if (previousActivetePaginationItem != null) {
         previousActivetePaginationItem.classList.remove("paginationActive")
-
-        // Set current active page
-        const currentPage = studyClassTable.page();
-        currentPaginationItem.classList.add("paginationActive");
     }
+
+    // Set current active page
+    const currentPaginationItem = document.getElementById(`paginationItem_${targetPage}`);
+    currentPaginationItem.classList.add("paginationActive");
 
 
 
