@@ -150,6 +150,14 @@ async function initDeleteEventField(id) {
     eventIdInput.value = id;
 }
 
+
+
+// ================== LOCK EVENT ==================
+async function initLockEvent(id) {
+    const eventIdInput = document.getElementById("khoaMaSuKien");
+    eventIdInput.value = id;
+}
+
 function genQrCode(id) {
     console.log("Gen QR");
 
