@@ -1,0 +1,41 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model uef_diem_danh.DTOs.EventDeleteRequest
+
+<div class="modal fade"
+	 id="popupXoaSuKien"
+	 tabindex="-1"
+	 aria-labelledby="popupXoaSuKienLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<form class="modal-content" method="POST" action="/xoa-su-kien" id="deleteEventForm">
+			@Html.AntiForgeryToken()
+			<input type="hidden" id="xoaMaSuKien" name="Id" class="form-control" />
+
+			<div class="modal-header">
+				<h5 class="modal-title" id="popupSuKienLabel">Xác nhận xoá</h5>
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Đóng"></button>
+			</div>
+			<div class="modal-body">Bạn có chắc chắn muốn xoá học viên này không?</div>
+			<div class="modal-footer">
+				<button type="button"
+						class="btn-next-secondary"
+						data-bs-dismiss="modal">
+					Huỷ
+				</button>
+				<button type="submit"
+						class="btn-next-primary"
+						id="btnXacNhanXoaSuKien"
+						form="deleteEventForm">
+					Xoá
+				</button>
+			</div>
+		</form>
+	</div>
+</div>

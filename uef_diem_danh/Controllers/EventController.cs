@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using uef_diem_danh.Database;
+using uef_diem_danh.DTOs;
 using uef_diem_danh.Models;
 
 namespace uef_diem_danh.Controllers
@@ -22,7 +24,15 @@ namespace uef_diem_danh.Controllers
         [HttpGet]
         public IActionResult GetListManagementPage()
         {
-            return View("~/Views/Events/ListView.cshtml");
+            List<SuKien> suKiens = context.SuKiens.ToList();
+            return View("~/Views/Events/ListView.cshtml", suKiens);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("api/lay-chi-tiet-su-kien/{event_id}")]
+        public async Task<IActionResult> GetDetailForUpdate(int event_id)
+        {
+            return Ok(await context.SuKiens.FindAsync(event_id));
         }
 
 
@@ -43,6 +53,97 @@ namespace uef_diem_danh.Controllers
             return View("~/Views/Events/AttendanceEvent.cshtml", classEvent);
         }
 
+        [Authorize(Roles = "Admin")]
+        [Route("tao-su-kien")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([FromForm] EventCreateRequest request)
+        {
+
+            try
+            {
+
+                SuKien evt = new SuKien
+                {
+                    TieuDe = request.TieuDe,
+                    NguoiPhuTrach = request.NguoiPhuTrach,
+                    SoLuongDuKien = request.SoLuongDuKien,
+                    ThoiGian = DateTime.Parse(request.ThoiGian, CultureInfo.InvariantCulture),
+                    
+                };
+
+                context.SuKiens.Add(evt);
+                await context.SaveChangesAsync();
+
+                TempData["EventSuccessMessage"] = "Thêm lớp học thành công!";
+                return Redirect("quan-ly-danh-sach-su-kien");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["EventErrorMessage"] = "Có lỗi xảy ra khi thêm sự kiện: " + ex.Message;
+                return Redirect("quan-ly-danh-sach-su-kien");
+            }
+
+        }
+
+
+        [Authorize(Roles = "Admin")]
+        [Route("cap-nhat-su-kien")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(int event_id, [FromForm] EventUpdateRequest request)
+        {
+
+            try
+            {
+                Console.WriteLine("MÃ SỰ KIỆN: " + request.Id);
+                SuKien evt = await context.SuKiens
+                    .FirstOrDefaultAsync(lh => lh.Id == request.Id);
+
+                evt.TieuDe = request.TieuDe;
+                evt.NguoiPhuTrach = request.NguoiPhuTrach;
+                evt.SoLuongDuKien = request.SoLuongDuKien;
+                evt.ThoiGian = DateTime.Parse(request.ThoiGian, CultureInfo.InvariantCulture);
+
+                await context.SaveChangesAsync();
+
+                TempData["EventSuccessMessage"] = "Cập nhật sự kiện thành công!";
+                return Redirect("quan-ly-danh-sach-su-kien");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["EventErrorMessage"] = "Có lỗi xảy ra khi cập nhật sự kiện: " + ex.Message;
+                return Redirect("quan-ly-danh-sach-su-kien");
+            }
+
+        }
+
+        [Authorize(Roles = "Admin")]
+        [Route("xoa-su-kien")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete([FromForm] EventDeleteRequest request)
+        {
+            try
+            {
+                SuKien evt = await context.SuKiens
+                    .FirstOrDefaultAsync(lh => lh.Id == request.Id);
+
+                context.SuKiens.Remove(evt);
+                await context.SaveChangesAsync();
+
+                TempData["EventSuccessMessage"] = "Xóa sự kiện thành công!";
+                return Redirect("quan-ly-danh-sach-su-kien");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["EventErrorMessage"] = "Có lỗi xảy ra khi xóa sự kiện: " + ex.Message;
+                return Redirect("quan-ly-danh-sach-su-kien");
+            }
+        }
 
     }
 }
