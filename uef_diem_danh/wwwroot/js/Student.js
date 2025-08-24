@@ -146,7 +146,7 @@ async function initUpdateStudentFields(id) {
         const studentAddressInput = document.getElementById("suaDiaChi");
         const studentEmailInput = document.getElementById("suaEmail");
         const studentPhoneNumberInput = document.getElementById("suaSoDienThoai");
-
+        const studentUnitInput = document.getElementById("suaDonVi");
 
         const response = await axios.get(`/api/lay-chi-tiet-hoc-vien/${id}`)
         const fetchedStudent = response.data;
@@ -158,7 +158,8 @@ async function initUpdateStudentFields(id) {
         studentDobInput.value = fetchedStudent.ngaySinh;
         studentAddressInput.value = fetchedStudent.diaChi;
         studentEmailInput.value = fetchedStudent.email;
-        studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
+        studentPhoneNumberInput.value = fetchedStudent.soDienThoai; 
+        studentUnitInput.value = fetchedStudent.donVi;
 
 
         console.log(response)

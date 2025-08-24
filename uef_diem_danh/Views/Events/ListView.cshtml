@@ -90,26 +90,40 @@
                                                 Xóa
                                             </button>
                                         </li>
-                                        <li>
-                                            <button class="dropdown-item btn btn-outline-danger btn-sm btn-delete"
-                                                    data-id="@evt.Id"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#popupKhoaSuKien"
-                                                    onclick="initLockEvent(@evt.Id)">
-                                                Khóa
-                                            </button>
-                                        </li>
+                                        @if(evt.TrangThai == true)
+                                        {
+                                            <li>
+                                                <button class="dropdown-item btn btn-outline-danger btn-sm btn-delete"
+                                                        data-id="@evt.Id"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#popupKhoaSuKien"
+                                                        onclick="initLockEvent(@evt.Id)">
+                                                    Khóa
+                                                </button>
+                                            </li>
+                                        }
                                     </ul>
                                 </div>
                             </td>
                             <td class="text-center">
-                                <button class="btn btn-outline-danger btn-sm btn-qr"
-                                        data-id="@evt.Id"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#qrModal"
-                                        onclick="genQrCode(@evt.Id)">
-                                    Điểm danh
-                                </button>
+                                @if(evt.TrangThai == true)
+                                {
+                                    <button class="btn btn-outline-danger btn-sm btn-qr"
+                                            data-id="@evt.Id"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#qrModal"
+                                            onclick="genQrCode(@evt.Id)">
+                                        Điểm danh
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-outline-danger bg-danger text-white btn-sm"
+                                            href="#"
+                                            disabled>
+                                        Đã Khóa
+                                    </button>
+                                }
                             </td>
                             <td class="text-center"><a href="/html/page/attendence-event-result.html">Kết quả</a></td>
 							@{
@@ -143,6 +157,9 @@
 
 <!-- Modal: Xoá sự kiện -->
 @await Html.PartialAsync("/Views/Component/DeleteEventModal.cshtml", new uef_diem_danh.DTOs.EventDeleteRequest())
+
+<!-- Modal: Khóa sự kiện -->
+@await Html.PartialAsync("/Views/Component/LockEventModal.cshtml", new uef_diem_danh.DTOs.EventDeleteRequest())
 
 <!-- Modal: QR code điểm danh-->
 @await Html.PartialAsync("/Views/Component/QRCodeForTakingAttendance.cshtml")
