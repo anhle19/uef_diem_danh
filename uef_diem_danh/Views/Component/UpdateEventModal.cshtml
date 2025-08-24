@@ -1,0 +1,68 @@
+﻿<div class="modal fade"
+	 id="popupSuaSuKien"
+	 tabindex="-1"
+	 aria-labelledby="popupSuaSuKienLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="popupSuaSuKienLabel">Sửa sự kiện</h5>
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Đóng"></button>
+			</div>
+			<div class="modal-body">
+				<form method="POST" action="/cap-nhat-su-kien" id="updateEventForm" enctype="multipart/form-data">
+					@Html.AntiForgeryToken()
+					<input type="hidden" id="suaMaSuKien" name="Id" class="form-control" />
+
+					<div class="mb-2">
+						<label class="form-label">Tiêu đề<span class="text-danger">*</span></label>
+						<input type="text"
+							   id="suaTieuDe"
+							   name="TieuDe"
+							   class="form-control"
+							   placeholder="Tiêu đề..." />
+					</div>
+					<div class="mb-2">
+						<label class="form-label">Người phụ trách<span class="text-danger">*</span></label>
+						<input type="text"
+							   id="suaNguoiPhuTrach"
+							   name="NguoiPhuTrach"
+							   class="form-control"
+							   placeholder="VD: Khiêm" />
+					</div>
+					<div class="mb-2">
+						<label class="form-label">Số lượng dự kiến<span class="text-danger">*</span></label>
+						<input type="number"
+							   id="suaSoLuongDuKien"
+							   name="SoluongDuKien"
+							   class="form-control"
+							   placeholder="0"
+							   min="0"
+							   oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+					</div>
+					<div class="mb-2">
+						<label class="form-label">Thời gian<span class="text-danger">*</span></label>
+						<input type="datetime-local" id="suaThoiGian" name="ThoiGian" class="form-control" />
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button"
+						class="btn-next-secondary"
+						data-bs-dismiss="modal">
+					Đóng
+				</button>
+				<button type="button"
+						class="btn-next-primary"
+						id="btnLuuSuaSuKien"
+						onclick="updateEvent()"
+						form="updateEventForm">
+					Lưu thay đổi
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

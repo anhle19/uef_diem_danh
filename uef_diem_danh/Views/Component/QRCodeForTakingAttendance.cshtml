@@ -1,0 +1,28 @@
+﻿<!-- Modal hiển thị QR + link -->
+<div class="modal fade"
+     id="qrModal"
+     tabindex="-1"
+     aria-labelledby="qrModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3 text-center">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qrModalLabel">QR Code Điểm Danh</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <!-- QR Code -->
+                <div id="qrcode" class="d-flex justify-content-center mb-3"></div>
+
+                <!-- Link + nút copy -->
+                <div class="input-group">
+                    <input id="attendanceLink" type="text" class="form-control" readonly />
+                    <button class="btn btn-outline-secondary" type="button" id="copyBtn">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
