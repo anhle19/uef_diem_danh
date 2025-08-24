@@ -1,8 +1,9 @@
-﻿@*
+﻿@using uef_diem_danh.Models
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 
-@model List<uef_diem_danh.DTOs.StudyClassListManagementResponse>
+@model List<SuKien>
 @{
 	Layout = "~/Views/Layout/Main.cshtml";
 	ViewData["Title"] = "Quản lý sự kiện";
@@ -31,206 +32,120 @@
                 <button type="button"
                         class="btn-next-secondary btn-sm btn-add"
                         data-bs-toggle="modal"
-                        data-bs-target="#popupThem">
+                        data-bs-target="#popupThemSuKien">
                     Thêm sự kiện
                 </button>
             </div>
         </div>
         <div class="table-wrapper">
-            <table class="fl-table">
+            <table class="fl-table" id="eventTable">
                 <thead>
                     <tr>
-                        <th>STT</th>
-                        <th>Tiêu đề</th>
-                        <th>Người phụ trách</th>
-                        <th>Số lượng dự kiến</th>
-                        <th>Thời gian</th>
-                        <th>Thao tác</th>
-                        <th>Màn hình điểm danh</th>
-                        <th>Kết quả</th>
+                        <th class="text-center">STT</th>
+                        <th class="text-center">Tiêu đề</th>
+                        <th class="text-center">Người phụ trách</th>
+                        <th class="text-center">Số lượng dự kiến</th>
+                        <th class="text-center">Thời gian</th>
+                        <th class="text-center">Thao tác</th>
+                        <th class="text-center">Màn hình điểm danh</th>
+                        <th class="text-center">Kết quả</th>
                     </tr>
                 </thead>
-                <tbody class="eventTableBody"></tbody>
+				<tbody id="eventsTableBody">
+					@{
+						int stt = 1;
+					}
+					@foreach (var evt in Model)
+					{
+						<tr>
+							<td class="text-center">@stt</td>
+                            <td class="text-center">@evt.TieuDe</td>
+                            <td class="text-center">@evt.NguoiPhuTrach</td>
+                            <td class="text-center">@evt.SoLuongDuKien</td>
+                            <td class="text-center">@evt.ThoiGian</td>
+                            <td class="text-center">
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                            type="button"
+                                            data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <button class="dropdown-item btn-edit"
+                                                    data-id="@evt.Id"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#popupSuaSuKien"
+                                                    onclick="initUpdateEventFields(@evt.Id)">
+                                                Sửa
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item btn btn-outline-danger btn-sm btn-delete"
+                                                    data-id="@evt.Id"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#popupXoaSuKien"
+                                                    onclick="initDeleteEventField(@evt.Id)">
+                                                Xóa
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item btn btn-outline-danger btn-sm btn-delete"
+                                                    data-id="@evt.Id"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#popupKhoaSuKien"
+                                                    onclick="initLockEvent(@evt.Id)">
+                                                Khóa
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-outline-danger btn-sm btn-qr"
+                                        data-id="@evt.Id"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#qrModal"
+                                        onclick="genQrCode(@evt.Id)">
+                                    Điểm danh
+                                </button>
+                            </td>
+                            <td class="text-center"><a href="/html/page/attendence-event-result.html">Kết quả</a></td>
+							@{
+
+								stt++;
+							}
+						</tr>
+					}
+
+                </tbody>
             </table>
-        </div>
-    </div>
-
-    <!-- Modal: Thêm sự kiện -->
-    <div class="modal fade"
-         id="popupThem"
-         tabindex="-1"
-         aria-labelledby="popupThemLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="popupThemLabel">Thêm sự kiện</h5>
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Đóng"></button>
-                </div>
-
-                <div class="modal-body">
-                    <form method="POST"
-                          action="/tao-su-kien"
-                          id="createEventForm"
-                          enctype="multipart/form-data">
-                        <div class="mb-2">
-                            <label class="form-label">Tiêu đề<span class="text-danger">*</span></label>
-                            <input type="text"
-                                   id="themTieuDe"
-                                   name="CreateEventTitle"
-                                   class="form-control"
-                                   placeholder="Tiêu đề..." />
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Người phụ trách<span class="text-danger">*</span></label>
-                            <input type="text"
-                                   id="themNguoiPhuTrach"
-                                   name="CreateEventManager"
-                                   class="form-control"
-                                   placeholder="VD: Khiêm" />
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Số lượng dự kiến<span class="text-danger">*</span></label>
-                            <input type="number"
-                                   id="themSoLuongDuKien"
-                                   name="CreateEventQuantity"
-                                   class="form-control"
-                                   placeholder="0"
-                                   min="0"
-                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Thời gian<span class="text-danger">*</span></label>
-                            <input type="date" id="themThoiGian" name="CreateEventTime" class="form-control" />
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-next-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn-next-primary">Lưu</button>
-                </div>
+            <!-- Pagination -->
+            <div style="padding-top: 20px; padding-bottom: 5px">
+                <ul id="paginationContainer" class="d-flex justify-content-lg-center">
+                </ul>
             </div>
         </div>
     </div>
 
-    <!-- Modal: Sửa sự kiện -->
-    <div class="modal fade"
-         id="popupSua"
-         tabindex="-1"
-         aria-labelledby="popupSuaLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="popupSuaLabel">Chỉnh sửa sự kiện</h5>
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST"
-                          action="/cap-nhat-su-kien"
-                          id="updateEventForm"
-                          enctype="multipart/form-data">
-                        <div class="mb-2">
-                            <label class="form-label">Tiêu đề<span class="text-danger">*</span></label>
-                            <input type="text"
-                                   id="suaTieuDe"
-                                   name="CreateEventTitle"
-                                   class="form-control"
-                                   placeholder="Tiêu đề..." />
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Người phụ trách<span class="text-danger">*</span></label>
-                            <input type="text"
-                                   id="suaNguoiPhuTrach"
-                                   name="CreateEventManager"
-                                   class="form-control"
-                                   placeholder="VD: Khiêm" />
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Số lượng dự kiến<span class="text-danger">*</span></label>
-                            <input type="number"
-                                   id="suaSoLuongDuKien"
-                                   name="CreateEventQuantity"
-                                   class="form-control"
-                                   placeholder="0"
-                                   min="0"
-                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Thời gian<span class="text-danger">*</span></label>
-                            <input type="date" id="suaThoiGian" name="CreateEventTime" class="form-control" />
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-next-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn-next-primary" id="btnLuuSua">Lưu thay đổi</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Xác nhận xoá -->
-    <div class="modal fade"
-         id="popupXoa"
-         tabindex="-1"
-         aria-labelledby="popupXoaLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="popupXoaLabel">Xác nhận xoá</h5>
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">Bạn có chắc chắn muốn xoá sự kiện này không?</div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-next-secondary" data-bs-dismiss="modal">Huỷ</button>
-                    <button type="button" class="btn-next-primary" id="btnXacNhanXoa">Xoá</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal hiển thị QR + link -->
-    <div class="modal fade"
-         id="qrModal"
-         tabindex="-1"
-         aria-labelledby="qrModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-3 text-center">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="qrModalLabel">QR Code Điểm Danh</h5>
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- QR Code -->
-                    <div id="qrcode" class="d-flex justify-content-center mb-3"></div>
-
-                    <!-- Link + nút copy -->
-                    <div class="input-group">
-                        <input id="attendanceLink" type="text" class="form-control" readonly />
-                        <button class="btn btn-outline-secondary" type="button" id="copyBtn">Copy</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 
 </div>
 
 <script src="/js/Event.js"></script>
+
+<!-- Modal: Thêm sự kiện -->
+@await Html.PartialAsync("/Views/Component/CreateEventModal.cshtml", new uef_diem_danh.DTOs.EventCreateRequest())
+
+<!-- Modal: Sửa sự kiện -->
+@await Html.PartialAsync("/Views/Component/UpdateEventModal.cshtml", new uef_diem_danh.DTOs.EventUpdateRequest())
+
+<!-- Modal: Xoá sự kiện -->
+@await Html.PartialAsync("/Views/Component/DeleteEventModal.cshtml", new uef_diem_danh.DTOs.EventDeleteRequest())
+
+<!-- Modal: QR code điểm danh-->
+@await Html.PartialAsync("/Views/Component/QRCodeForTakingAttendance.cshtml")
+
 
 
