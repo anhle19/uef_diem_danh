@@ -92,7 +92,7 @@ namespace uef_diem_danh.Controllers
         [Route("cap-nhat-su-kien")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int event_id, [FromForm] EventUpdateRequest request)
+        public async Task<IActionResult> Update([FromForm] EventUpdateRequest request)
         {
 
             try

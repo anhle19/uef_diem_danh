@@ -102,6 +102,7 @@ async function initUpdateEventFields(id) {
         const response = await axios.get(`/api/lay-chi-tiet-su-kien/${id}`)
         const fetchedStudent = response.data;
 
+        eventIdInput.value = id;
         eventTitleInput.value = fetchedStudent.tieuDe;
         eventCoordinatorInput.value = fetchedStudent.nguoiPhuTrach;
         eventExpectedQuantityInput.value = fetchedStudent.soLuongDuKien;
