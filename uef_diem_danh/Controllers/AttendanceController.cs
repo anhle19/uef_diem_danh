@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -151,9 +152,13 @@ namespace uef_diem_danh.Controllers
 
 
             // Make copy from Attendance Result sample.xlsx
-            string sampleFilePath = Path.Combine(Directory.GetCurrentDirectory(), "ExportExcels", "Attendance Result sample.xlsx");
+            //string sampleFilePath = Path.Combine(Directory.GetCurrentDirectory(), "ExportExcels", "Attendance Result sample.xlsx");
+            string sampleFilePath = Path.Combine(Directory.GetCurrentDirectory(), "ExportExcels", "New Attendance result sample.xlsx");
+
 
             string processingFileName = $"Attendance Result {attendanceResult.StudyClassName} - Buổi {attendanceResult.ClassSessionNumber}.xlsx";
+            //string processingFileName = $"Attendance Result test- Buổi 1.xlsx";
+
 
             using (var templateStream = new MemoryStream(System.IO.File.ReadAllBytes(sampleFilePath)))
 
@@ -161,23 +166,51 @@ namespace uef_diem_danh.Controllers
             using (var workbook = new XLWorkbook(templateStream))
             {
                 const int STT_COLUMN = 1;
-                const int FULL_NAME_COLUMN = 2;
-                const int ATTENDANCE_STATUS_COLUMN = 3;
-                const int ATTENDANCE_DAY_TIME_COLUMN = 4;
+                const int LAST_NAME_COLUMN = 2;
+                const int FIRST_NAME_COLUMN = 3;
+                const int ATTENDANCE_STATUS_COLUMN = 4;
+                const int ATTENDANCE_DAY_TIME_COLUMN = 5;
 
-                int startStudentRow = 6;
+                int startStudentRow = 7;
                 int endStudentRow = startStudentRow + attendanceResult.TotalStudents;
                 int startStudentCol = 1;
-                int endStudentCol = 4;
+                int endStudentCol = 5;
 
                 // Get first worksheet
                 var worksheet = workbook.Worksheet(1);
 
+
+                // Find basic data cell
+                var studyClassNameAndClassSessionCell = worksheet.CellsUsed()
+                    .FirstOrDefault(c => 
+                        c.Value.ToString().Contains("LỚP") &&
+                        c.Value.ToString().Contains("BUỔI")
+                    );
+                var totalStudentsCell = worksheet.CellsUsed()
+                    .FirstOrDefault(c => c.Value.ToString().Contains("TỔNG SỐ"));
+                var totalPresentStudentsCell = worksheet.CellsUsed()
+                    .FirstOrDefault(c => c.Value.ToString().Contains("HIỆN DIỆN"));
+
+
                 // Set basic data
-                worksheet.Cell("A2").Value = $"Buổi: {attendanceResult.ClassSessionNumber}";
-                worksheet.Cell("A3").Value = $"Môn: {attendanceResult.StudyClassName}";
-                worksheet.Cell("D2").Value = $"Tổng số: {attendanceResult.TotalStudents}";
-                worksheet.Cell("D3").Value = $"Hiển diện: {attendanceResult.TotalStudentsPresent}";
+                if (studyClassNameAndClassSessionCell != null)
+                {
+                    studyClassNameAndClassSessionCell.Value = studyClassNameAndClassSessionCell.Value.
+                        ToString().Replace("<STUDY_CLASS_NAME>", attendanceResult.StudyClassName);
+                    studyClassNameAndClassSessionCell.Value = studyClassNameAndClassSessionCell.Value.
+                        ToString().Replace("<CLASS_SESSION_TITLE>", attendanceResult.ClassSessionNumber.ToString());
+                    Console.WriteLine(studyClassNameAndClassSessionCell.Value.ToString());
+                }
+                if (totalStudentsCell != null)
+                {
+                    totalStudentsCell.Value = totalStudentsCell.Value.
+                        ToString().Replace("<TOTAL_STUDENT>", attendanceResult.TotalStudents.ToString());
+                }
+                if (totalPresentStudentsCell != null)
+                {
+                    totalPresentStudentsCell.Value = totalPresentStudentsCell.Value.
+                        ToString().Replace("<TOTAL_PRESENT>", attendanceResult.TotalStudentsPresent.ToString());
+                }
 
                 int currentStudentIndex = 0;
                 // Set student data
@@ -190,15 +223,20 @@ namespace uef_diem_danh.Controllers
                         worksheet.Cell(row, col).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                         worksheet.Cell(row, col).Style.Font.FontName = "Arial";
                         worksheet.Cell(row, col).Style.Font.FontSize = 13;
-                        worksheet.Cell(row, col).Style.Fill.BackgroundColor = XLColor.FromHtml("#F2F2F2");
+                        worksheet.Cell(row, col).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
 
                         if (col == STT_COLUMN)
                         {
                             worksheet.Cell(row, col).Value = currentStudentIndex + 1;
                         }
-                        if (col == FULL_NAME_COLUMN)
+                        if (col == LAST_NAME_COLUMN)
                         {
-                            worksheet.Cell(row, col).Value = $"{student.StudentLastName} {student.StudentFirstName}";
+                            worksheet.Cell(row, col).Value = $"{student.StudentLastName}";
+                        }
+                        if (col == FIRST_NAME_COLUMN)
+                        {
+                            worksheet.Cell(row, col).Value = $"{student.StudentFirstName}";
                         }
                         if (col == ATTENDANCE_STATUS_COLUMN)
                         {
@@ -233,6 +271,7 @@ namespace uef_diem_danh.Controllers
                         processingFileName
                     );
                 }
+                //return Ok("FILE EXCEL ATTENDANCE");
             }
 
         }

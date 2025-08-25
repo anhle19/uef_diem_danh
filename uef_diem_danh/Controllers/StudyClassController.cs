@@ -326,9 +326,9 @@ namespace uef_diem_danh.Controllers
                         const int FIRST_NAME_COLUMN_INDEX = 2;
                         const int EMAIL_COLUMN_INDEX = 3;
                         const int PHONE_NUMBER_COLUMN_INDEX = 4;
-                        const int DOB_COLUMN_INDEX = 5;
-                        const int ADDRESS_COLUMN_INDEX = 6;
-                        const int STUDY_CENTER_COLUMN_INDEX = 7;
+                        const int STUDY_CENTER_COLUMN_INDEX = 5;
+                        const int DOB_COLUMN_INDEX = 6;
+                        const int ADDRESS_COLUMN_INDEX = 7;
 
 
                         // Read each row
@@ -337,7 +337,7 @@ namespace uef_diem_danh.Controllers
                             // Jump to next row
                             currentRow++;
                             // Extract data
-                            if (currentRow >= 4)
+                            if (currentRow >= 7)
                             {
 
                                 string lastName = excelReader.GetValue(LAST_NAME_COLUMN_INDEX)?.ToString()?.Trim() ?? string.Empty;
