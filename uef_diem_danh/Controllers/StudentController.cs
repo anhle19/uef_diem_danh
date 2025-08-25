@@ -1,4 +1,5 @@
-﻿using ExcelDataReader;
+﻿using DocumentFormat.OpenXml.InkML;
+using ExcelDataReader;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -125,6 +126,20 @@ namespace uef_diem_danh.Controllers
             }
         }
 
+        //[HttpGet("api/hoc-vien/kiem-tra-ton-tai/{phone}")]
+        //public IActionResult CheckExists(string phone)
+        //{
+        //    var exists = context.HocViens.Any(u => u.SoDienThoai == phone);
+        //    return Json(new { exists });
+        //}
+
+        [HttpGet("api/lay-the-hoc-vien")]
+        public IActionResult GetUserInfoPartial(string phone)
+        {
+            Console.WriteLine("SO DIEN THOAI: " + phone);
+            HocVien res = context.HocViens.Include(hv => hv.HinhAnh).FirstOrDefault(hv => hv.SoDienThoai == phone);
+            return PartialView("~/Views/Component/StudentCard.cshtml", res);
+        }
 
         [Authorize(Roles = "Admin")]
         [Route("tao-hoc-vien")]
@@ -198,6 +213,75 @@ namespace uef_diem_danh.Controllers
             }
 
         }
+
+        [HttpPost]
+        [Route("api/hoc-vien/tai-anh-dai-dien")]
+        public async Task<IActionResult> UploadAvatarAsync([FromForm] AvatarUploadRequest request)
+        {
+            if(!context.HocViens.Any(hv => hv.SoDienThoai == request.PhoneNumber))
+            {
+                return NotFound();
+            }
+            var student = context.HocViens.Include(hv => hv.HinhAnh).FirstOrDefault(hv => hv.SoDienThoai == request.PhoneNumber);
+            Console.WriteLine("TEN HOC VIEN: " + student.NgaySinh.ToString("dd/MMM/yyyy"));
+
+            if (student == null) return NotFound();
+
+            if (request.Avatar == null || request.Avatar.Length == 0)
+            {
+                student.HinhAnh = new HinhAnh
+                {
+                    Name = $"logo.png"
+                };
+
+                context.HocViens.Update(student);
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "student_pictures");
+
+                if (student.HinhAnh.Name.Contains($"hv_{student.SoDienThoai}"))
+                {
+                    string existedStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh.Name);
+                    if (System.IO.File.Exists(existedStudentAvatarPath))
+                    {
+                        // Delete existed student avatar
+                        System.IO.File.Delete(existedStudentAvatarPath);
+                    }
+                }
+
+                student.HinhAnh = new HinhAnh
+                {
+                    Name = $"hv_{request.PhoneNumber}{Path.GetExtension(request.Avatar.FileName)}"
+                };
+
+                context.HocViens.Update(student);
+                await context.SaveChangesAsync();
+
+
+                // New student avatar file
+                string newStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh.Name);
+
+                // Save new uploaded student avatar
+                using (var stream = new FileStream(newStudentAvatarPath, FileMode.Create))
+                {
+                    await request.Avatar.CopyToAsync(stream);
+                }
+            }
+
+            return Ok(new AvatarUploadResponse
+            {
+                AvatarName = student.HinhAnh.Name,
+                Name = student.Ho + " " + student.Ten,
+                PhoneNumber = student.SoDienThoai,
+            });
+
+        }
+
+
+
+
 
         [Authorize(Roles = "Admin")]
         [Route("cap-nhat-hoc-vien")]
