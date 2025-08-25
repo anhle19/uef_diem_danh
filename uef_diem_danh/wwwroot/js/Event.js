@@ -161,10 +161,15 @@ async function initLockEvent(id) {
 function genQrCode(id) {
     console.log("Gen QR");
 
-    const link = "/su-kien/diem-danh/" + id;
+    const link = "https://localhost:5046/diem-danh-su-kien/" + id;
     // Gán link vào input
     const attendanceLink = document.getElementById('attendanceLink');
-    attendanceLink.value = link;
+    attendanceLink.value = "https://localhost:5046/diem-danh-su-kien/" + id;
+
+    const olink = document.getElementById("attendanceLinkClick");
+    // Gán link YouTube động
+    olink.href = link;
+    olink.target = "_blank"; // mở tab mới
 
     // Clear QR cũ
     document.getElementById("qrcode").innerHTML = "";

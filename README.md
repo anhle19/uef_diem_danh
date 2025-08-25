@@ -1,2 +1,1 @@
-# uef_diem_danh
-Dự án điểm danh và quản lý lớp học sử dụng Barcode
+Dự án Quản lý lớp học tại Trung Tâm Chính Trị Phường Xuân Hòa Thành Phố Hồ Chí Minh
