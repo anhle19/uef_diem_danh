@@ -250,6 +250,7 @@ namespace uef_diem_danh.Controllers
 
                 // Get student by barcode
                 HocVien? student = await context.HocViens
+                    .Include(hv => hv.HinhAnh)
                     .Where(hv => hv.MaBarCode == request.StudentBarCode)
                     .FirstOrDefaultAsync();
 

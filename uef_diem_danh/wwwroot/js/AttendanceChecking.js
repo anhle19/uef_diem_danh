@@ -146,32 +146,68 @@ async function fakeBarcodeScannedEvent() {
         });
 
 
-        // Remove last latest attendance
-        fiveLatestAttendances.pop();
+        if (fiveLatestAttendances.length == 5) {
 
-        // Reduce all previous latest attendance stt by 1
-        fiveLatestAttendances.forEach((la) => {
-            la.stt += 1;
-        })
+            // Remove last latest attendance
+            fiveLatestAttendances.pop();
 
-        // Add new latest attendance
-        fiveLatestAttendances.unshift({
-            stt: 1,
-            student_full_name: `${response.data.studentLastName} ${response.data.studentFirstName}`,
-            attendance_date_time: moment(response.data.attendanceDateTime).format("DD/MM/YYYY HH:mm")
-        })
+            // Reduce all previous latest attendance stt by 1
+            fiveLatestAttendances.forEach((la) => {
+                la.stt += 1;
+            })
 
-        // rendering data
-        fiveLatestAttendances.forEach((la) => {
-            latestAttendanceTableRows +=
-                `
-                <tr>
-                    <td>${la.stt}</td>
-                    <td>${la.student_full_name}</td>
-                    <td>${la.attendance_date_time}</td>
-                </tr>
-            `;
-        })
+            // Add new latest attendance
+            fiveLatestAttendances.unshift({
+                stt: 1,
+                student_full_name: `${response.data.studentLastName} ${response.data.studentFirstName}`,
+                attendance_date_time: moment(response.data.attendanceDateTime).format("DD/MM/YYYY HH:mm")
+            })
+
+            // rendering data
+            fiveLatestAttendances.forEach((la) => {
+                latestAttendanceTableRows +=
+                    `
+                    <tr>
+                        <td>${la.stt}</td>
+                        <td>${la.student_full_name}</td>
+                        <td>${la.attendance_date_time}</td>
+                    </tr>
+                `;
+            })
+
+        }
+        else {
+
+            let previousStudentNumberOrder = 1;
+
+            if (fiveLatestAttendances.length > 1) {
+                previousStudentNumberOrder = Math.min(...fiveLatestAttendances.map(a => a.stt));
+            }
+
+            // Reduce all previous latest attendance stt by 1
+            fiveLatestAttendances.forEach((la) => {
+                la.stt += 1;
+            })
+
+            // Add new latest attendance
+            fiveLatestAttendances.unshift({
+                stt: previousStudentNumberOrder,
+                student_full_name: `${response.data.studentLastName} ${response.data.studentFirstName}`,
+                attendance_date_time: moment(response.data.attendanceDateTime).format("DD/MM/YYYY HH:mm")
+            })
+
+            // rendering data
+            fiveLatestAttendances.forEach((la) => {
+                latestAttendanceTableRows +=
+                    `
+                    <tr>
+                        <td>${la.stt}</td>
+                        <td>${la.student_full_name}</td>
+                        <td>${la.attendance_date_time}</td>
+                    </tr>
+                `;
+            })
+        }
 
         studentCard.style.display = "flex";
         checkingAttendanceSuccessfulMessage.style.display = "block";

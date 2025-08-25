@@ -53,6 +53,37 @@ namespace uef_diem_danh.Controllers
             return View("~/Views/Events/AttendanceEvent.cshtml", classEvent);
         }
 
+        [Route("ket-qua-diem-danh-su-kien/{event_id}")]
+        public async Task<IActionResult> GetAttendanceEventResultPage(int event_id)
+        {
+
+            List<EventAttendanceResultParticipant> presentParticipants = await context.DiemDanhSuKiens
+                .Where(ddsk => ddsk.EventId == event_id)
+                .Select(ddsk => new EventAttendanceResultParticipant
+                {
+                    ParticipantFirstName = ddsk.Ten,
+                    ParticipantLastName = ddsk.Ho,
+                    StudyCenter = ddsk.DonVi,
+                    AttendanceDayTime = ddsk.AttendanceDate
+                })
+                .ToListAsync();
+
+            EventAttendanceResultResponse attendanceResult = await context.SuKiens
+                .Where(sk => sk.Id == event_id)
+                .Select(sk => new EventAttendanceResultResponse
+                {
+                    EventId = event_id,
+                    EventTitle = sk.TieuDe,
+                    ExpectedNumberOfParticipants = sk.SoLuongDuKien,
+                    PresentParticipants = presentParticipants
+                })
+                .FirstOrDefaultAsync();
+
+            ViewBag.EventId = event_id;
+
+            return View("~/Views/Events/ResultView.cshtml", attendanceResult);
+        }
+
         [Authorize(Roles = "Admin")]
         [Route("tao-su-kien")]
         [HttpPost]
@@ -69,7 +100,7 @@ namespace uef_diem_danh.Controllers
                     NguoiPhuTrach = request.NguoiPhuTrach,
                     SoLuongDuKien = request.SoLuongDuKien,
                     ThoiGian = DateTime.Parse(request.ThoiGian, CultureInfo.InvariantCulture),
-                    
+                    TrangThai = true,
                 };
 
                 context.SuKiens.Add(evt);
@@ -97,7 +128,6 @@ namespace uef_diem_danh.Controllers
 
             try
             {
-                Console.WriteLine("MÃ SỰ KIỆN: " + request.Id);
                 SuKien evt = await context.SuKiens
                     .FirstOrDefaultAsync(lh => lh.Id == request.Id);
 
@@ -115,6 +145,34 @@ namespace uef_diem_danh.Controllers
             {
                 Console.WriteLine(ex.Message);
                 TempData["EventErrorMessage"] = "Có lỗi xảy ra khi cập nhật sự kiện: " + ex.Message;
+                return Redirect("quan-ly-danh-sach-su-kien");
+            }
+
+        }
+
+        [Authorize(Roles = "Admin")]
+        [Route("khoa-su-kien")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LockEvent([FromForm] EventDeleteRequest request)
+        {
+
+            try
+            {
+                SuKien evt = await context.SuKiens
+                    .FirstOrDefaultAsync(lh => lh.Id == request.Id);
+
+                evt.TrangThai = false;
+
+                await context.SaveChangesAsync();
+
+                TempData["EventSuccessMessage"] = "Khóa sự kiện thành công!";
+                return Redirect("quan-ly-danh-sach-su-kien");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["EventErrorMessage"] = "Có lỗi xảy ra khi khóa sự kiện: " + ex.Message;
                 return Redirect("quan-ly-danh-sach-su-kien");
             }
 

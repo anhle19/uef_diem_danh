@@ -17,5 +17,7 @@
         public string UpdateStudentEmail { get; set; }
 
         public string UpdateStudentPhoneNumber { get; set; }
+
+        public string UpdateStudentUnit { get; set; }
     }
 }

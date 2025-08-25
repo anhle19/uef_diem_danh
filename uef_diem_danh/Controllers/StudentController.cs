@@ -244,6 +244,7 @@ namespace uef_diem_danh.Controllers
                     student.Email = request.UpdateStudentEmail;
                     student.SoDienThoai = request.UpdateStudentPhoneNumber;
                     student.MaBarCode = request.UpdateStudentPhoneNumber;
+                    student.DonVi = request.UpdateStudentUnit;
 
                     // New student avatar file
                     string newStudentAvatarPath = Path.Combine(uploadFilePath, student.HinhAnh.Name);
@@ -264,6 +265,7 @@ namespace uef_diem_danh.Controllers
                     student.Email = request.UpdateStudentEmail;
                     student.SoDienThoai = request.UpdateStudentPhoneNumber;
                     student.MaBarCode = request.UpdateStudentPhoneNumber;
+                    student.DonVi = request.UpdateStudentUnit;
                 }
 
 
