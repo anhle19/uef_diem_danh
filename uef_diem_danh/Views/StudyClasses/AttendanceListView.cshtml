@@ -83,12 +83,22 @@
                             }
                         </td>
                         <td>
-                            <a 
-                                class="btn btn-outline-primary btn-sm" 
-                                target="_blank"
-                                href="/diem-danh-hoc-vien?studyClassId=@ViewBag.StudyClassId&classSessionId=@classSession.ClassSessionId">
-                                Điểm danh
-                            </a>
+                            @if (classSession.ClassSessionStatus == true)
+                            {
+                                <a class="btn btn-outline-primary btn-sm"
+                                   target="_blank"
+                                   href="/diem-danh-hoc-vien?studyClassId=@ViewBag.StudyClassId&classSessionId=@classSession.ClassSessionId">
+                                    Điểm danh
+                                </a>
+                            }
+                            else
+                            {
+                                <button class="btn btn-outline-danger bg-danger text-white btn-sm"
+                                        href="#"
+                                        disabled>
+                                    Đã khóa điểm danh
+                                </button>
+                            }
                         </td>
                         <td>
                             @if (classSession.ClassSessionStatus == true)
