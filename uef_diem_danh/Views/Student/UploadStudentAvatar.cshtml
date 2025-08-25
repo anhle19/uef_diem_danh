@@ -14,6 +14,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Toastify -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Thư viện JsBarcode -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 
     <style>
         body {
@@ -79,7 +85,7 @@
         <div id="alertBox" class="alert d-none" role="alert"></div>
 
         <form id="uploadForm" class="needs-validation" novalidate
-              action="/student-card/upload" method="post" enctype="multipart/form-data">
+              action="api/hoc-vien/tai-anh-dai-dien" method="post" enctype="multipart/form-data">
             <!-- CSRF (nếu dùng Spring Security)
             <input type="hidden" id="csrfToken" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             -->
@@ -93,7 +99,7 @@
 
             <div class="mb-3">
                 <label for="phone" class="form-label">Số điện thoại</label>
-                <input type="tel" class="form-control" id="phone" name="phone"
+                <input type="tel" class="form-control" id="phone" name="PhoneNumber"
                        placeholder="Ví dụ: 0912345678" inputmode="numeric" maxlength="10">
                 <div id="phone-number-invalid-feedback" class="invalid-feedback">SĐT phải gồm đúng 10 chữ số.</div>
             </div>
@@ -104,7 +110,7 @@
                     <p class="mb-2">Kéo thả ảnh vào đây hoặc</p>
                     <label class="btn btn-outline-primary btn-sm mb-2">
                         Chọn ảnh
-                        <input id="fileInput" type="file" name="imageFile" accept=".png,.jpg,.jpeg" hidden required>
+                        <input id="fileInput" type="file" name="Avatar" accept=".png,.jpg,.jpeg" hidden required>
                     </label>
                     <div class="hint">Hỗ trợ: .png, .jpg, .jpeg • Tối đa ~5MB • Nền sáng, rõ khuôn mặt</div>
                 </div>
@@ -117,9 +123,14 @@
             </div>
 
             <div class="d-grid gap-2 mt-4">
-                <button id="submitBtn" class="btn btn-primary" type="button" onclick="submitUploadStudentAvatar()">Gửi ảnh</button>
+                <button 
+                    id="submitBtn" 
+                    class="btn btn-primary" 
+                    type="submit" 
+                    >Gửi ảnh</button>
                 <button class="btn btn-secondary" type="button" id="resetBtn">Xóa chọn</button>
             </div>
+            @* onclick="submitUploadStudentAvatar()" *@
 
             <p class="hint mt-3">
                 * Bằng việc gửi ảnh, bạn xác nhận ảnh này sẽ được dùng để in thẻ học viên. Vui lòng không tải ảnh mờ/thiếu sáng.
@@ -131,7 +142,7 @@
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <script>
-            const form = document.getElementById('uploadForm');
+          const form = document.getElementById('uploadForm');
           const submitBtn = document.getElementById('submitBtn');
           const fullName = document.getElementById('fullName');
           const phone = document.getElementById('phone');
@@ -174,41 +185,48 @@
             return ok;
           }
 
-        function submitUploadStudentAvatar() {
-            const fullNameInvalidFeedback = document.getElementById("full-name-invalid-feedback");
-            const phoneNumberInvalidFeedback = document.getElementById("phone-number-invalid-feedback");
-            const v = fullName.value.trim();
-            const p = phone.value.trim();
+        // function submitUploadStudentAvatar() {
+        //     const fullNameInvalidFeedback = document.getElementById("full-name-invalid-feedback");
+        //     const phoneNumberInvalidFeedback = document.getElementById("phone-number-invalid-feedback");
+        //     const v = fullName.value.trim();
+        //     const p = phone.value.trim();
+        //     const file = fileInput.files?.[0];
 
+        //     if (v === '' && p == '') {
 
-            if (v === '' && p == '') {
+        //         fullName.classList.toggle('is-invalid');
+        //         fullNameInvalidFeedback.innerText = "Không được để trống họ và tên";
 
-                fullName.classList.toggle('is-invalid');
-                fullNameInvalidFeedback.innerText = "Không được để trống họ và tên";
+        //         phone.classList.toggle('is-invalid');
+        //         phoneNumberInvalidFeedback.innerText = "Không được để trống số điện thoại";
 
-                phone.classList.toggle('is-invalid');
-                phoneNumberInvalidFeedback.innerText = "Không được để trống số điện thoại";
+        //         return;
+        //     }
 
-                return;
-            }
+        //     if (v === '') {
 
-            if (v === '') {
+        //         fullName.classList.toggle('is-invalid');
+        //         fullNameInvalidFeedback.innerText = "Không được để trống họ và tên";
 
-                fullName.classList.toggle('is-invalid');
-                fullNameInvalidFeedback.innerText = "Không được để trống họ và tên";
+        //         return;
+        //     }
 
-                return;
-            }
+        //     if (p === '') {
 
-            if (p === '') {
+        //         phone.classList.toggle('is-invalid');
+        //         phoneNumberInvalidFeedback.innerText = "Không được để trống số điện thoại";
 
-                phone.classList.toggle('is-invalid');
-                phoneNumberInvalidFeedback.innerText = "Không được để trống số điện thoại";
+        //         return;
+        //     }
 
-                return;
-            }
+        //     if (!file) {
+        //         showToast("Bạn phải chọn ảnh trước khi gửi!", "error");
+        //         return;
+        //     }
 
-        }
+        //     console.log(p);
+        //     form.requestSubmit();
+        // }
 
           fullName.addEventListener('input', validateOptionalName);
           phone.addEventListener('input', validateOptionalPhone);
@@ -242,6 +260,30 @@
             if(file.size > MAX_SIZE){ showError('Kích thước ảnh vượt 5MB.'); return false; }
             clearError(); return true;
           }
+
+          function displayCard(phone){
+              axios.get(`api/lay-the-hoc-vien?phone=${phone}`)
+                .then(res => {
+                  Swal.fire({
+                    title: "Tải ảnh thành công",
+                    html: res.data,
+                    didOpen: () => {
+                      const phone = document.getElementById("sdt")?.dataset.phone;
+                      console.log("sdt:", phone);
+                      if (phone) {
+                        JsBarcode("#studentBarcode", phone, {
+                          format: "CODE128",
+                          displayValue: false,
+                          width: 1.5,
+                          height: 50,
+                          margin: 5
+                        });
+                      }
+                    }
+                  })
+                })
+        }
+
 
           fileInput.addEventListener('change', e=>{
             const file = e.target.files?.[0];
@@ -306,12 +348,13 @@
 
               if (success) {
                 showToast(serverMsg || 'Thêm ảnh thành công!', 'success');
+                displayCard(phone.value.trim());
                 form.reset();
                 setPreview(null);
                 fullName.classList.remove('is-invalid');
                 phone.classList.remove('is-invalid');
               } else {
-                showToast(serverMsg || 'Thêm ảnh thất bại!', 'error');
+                showToast(serverMsg || 'Học viên không tồn tại!', 'error');
               }
             } catch(err){
               showToast('Không thể kết nối máy chủ. Vui lòng thử lại.', 'error');
