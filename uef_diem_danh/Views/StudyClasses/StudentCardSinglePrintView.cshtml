@@ -32,7 +32,7 @@
         /* Tùy chỉnh kích thước thẻ để giống thẻ học viên */
         .student-card {
             width: 367px; /* Chiều rộng cố định */
-            height: 525px; /* Chiều cao cố định */
+            height: 520px; /* Chiều cao cố định */
             border-radius: 15px; /* Bo tròn góc */
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Tạo bóng đổ */
             overflow: hidden; /* Ẩn các phần nội dung tràn ra ngoài */
@@ -63,7 +63,7 @@
         }
 
         .card-body p {
-            font-size: 1.3rem; /* Giảm kích thước font các thông tin khác */
+            font-size: 1.2rem; /* Giảm kích thước font các thông tin khác */
             margin-bottom: 5px;
         }
 
@@ -126,15 +126,14 @@
         <div class="card student-card text-center">
             <div class="card-top">
                 <div class="d-flex justify-content-center align-items-center px-2 pt-2">
-                    <img src="@Url.Content("~/student_pictures/logo.png")" alt="logo" width="60" height="60">
-                    <p class="mb-0" style="font-size: 23px;">TRUNG TÂM CHÍNH TRỊ PHƯỜNG XUÂN HÒA</p>
+                    <img src="@Url.Content("~/student_pictures/logo.png")" alt="logo" width="55" height="55">
+                    <p class="mb-0" style="font-size: 20px;">TRUNG TÂM CHÍNH TRỊ PHƯỜNG XUÂN HÒA</p>
                 </div>
 
                 <img id="studentAvatarInfo" src="#" class="card-img-top mx-auto d-block" alt="Ảnh đại diện">
                 <div class="card-body">
-                    <h5 id="studentFullNameInfo" class="card-title text-primary"></h5>
-                    <p id="studentDobInfo" class="card-text text-muted"><strong>Ngày sinh:</strong> </p>
-                    <p id="studentPhoneNumberInfo" class="card-text text-muted"><strong>SĐT:</strong> </p>
+                    <p id="studentFullNameInfo" class="text-start text-muted"><strong>Họ và tên:</strong> </p>
+                    <p id="studentStudyCenterInfo" class="text-start text-muted"><strong>Đơn vị:</strong> </p>
                 </div>
             </div>
             <div class="barcode-section">
