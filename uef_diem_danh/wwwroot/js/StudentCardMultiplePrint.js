@@ -101,14 +101,14 @@ document.addEventListener('DOMContentLoaded', async (event) => {
                         <img src="${BASE_URL}/student_pictures/${processingStudentsData[j].studentAvatar.name}" class="card-img-top" alt="Ảnh đại diện">
                         
                         <div class="card-body">
-                            <p>
+                            <div class="mb-1">
                                 <strong>Họ và tên:</strong> 
-                                <p>${processingStudentsData[j].studentLastName} ${processingStudentsData[j].studentFirstName}</p>
-                            </p>
-                            <p>
+                                <p class="mb-0">${processingStudentsData[j].studentLastName} ${processingStudentsData[j].studentFirstName}</p>
+                            </div>
+                            <div>
                                 <strong>Đơn vị:</strong> 
-                                <p>${processingStudentsData[j].studyCenter}</p>
-                            </p>
+                                <p class="mb-0">${processingStudentsData[j].studyCenter} ${processingStudentsData[j].studyCenter}</p>
+                            </div>
                         </div>
                     </div>
                     <div class="barcode-section">
