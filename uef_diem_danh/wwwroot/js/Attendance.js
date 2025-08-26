@@ -78,7 +78,7 @@ function initTablePagination() {
     const paginationContainer = document.getElementById("paginationContainer");
 
     const tablePageInfo = attendanceManagementTable.page.info()
-    const totalPages = Math.floor(tablePageInfo.recordsDisplay / 10);
+    const totalPages = Math.ceil(tablePageInfo.recordsDisplay / 10);
 
 
     if (totalPages >= 2) {
@@ -99,7 +99,7 @@ function initTablePagination() {
 
         paginationContainer.innerHTML +=
             `
-            <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToPage(${tablePageInfo.pages})">Trang cuối</ol>
+            <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToPage(${totalPages})">Trang cuối</ol>
         `;
 
 
@@ -122,7 +122,7 @@ function goToPage(targetPage) {
     const paginationContainer = document.getElementById("paginationContainer");
 
     const tablePageInfo = attendanceManagementTable.page.info()
-    const totalPages = Math.floor(tablePageInfo.recordsDisplay / 10);
+    const totalPages = Math.ceil(tablePageInfo.recordsDisplay / 10);
 
     const paginationWindow = getPaginationWindow(targetPage, totalPages, PAGINATION_ITEM_LIMIT_RENDERING_NUMBER);
 
@@ -142,7 +142,7 @@ function goToPage(targetPage) {
 
     paginationContainer.innerHTML +=
         `
-        <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToPage(${tablePageInfo.pages - 1})">Trang cuối</ol>
+        <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToPage(${totalPages})">Trang cuối</ol>
     `;
 
 

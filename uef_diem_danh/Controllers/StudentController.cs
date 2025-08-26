@@ -60,6 +60,7 @@ namespace uef_diem_danh.Controllers
                         StudentLastName = tg.HocVien.Ho,
                         StudentEmail = tg.HocVien.Email,
                         StudentAvatar = tg.HocVien.HinhAnh,
+                        StudyCenter = tg.HocVien.DonVi,
                         StudentPhoneNumber = tg.HocVien.SoDienThoai,
                         StudentDayOfBirth = tg.HocVien.NgaySinh
                     })
