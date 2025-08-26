@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
                             </div>
                             <div>
                                 <strong>Đơn vị:</strong> 
-                                <p class="mb-0">${processingStudentsData[j].studyCenter} ${processingStudentsData[j].studyCenter}</p>
+                                <p class="mb-0">${processingStudentsData[j].studyCenter}</p>
                             </div>
                         </div>
                     </div>
