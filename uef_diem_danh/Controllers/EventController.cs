@@ -253,38 +253,81 @@ namespace uef_diem_danh.Controllers
         public async Task<IActionResult> ExportToExcel(int event_id)
         {
             List<DiemDanhSuKien> diemDanhs = context.DiemDanhSuKiens.Where(dd => dd.EventId == event_id).ToList();
+            SuKien evt = await context.SuKiens.FindAsync(event_id);
 
-            DataTable dt = new DataTable("Attendances");
-            dt.Columns.AddRange(new DataColumn[6] {
-                new DataColumn("STT"),
-                new DataColumn("Họ Tên"),
-                new DataColumn("Số điện thoại"),
-                new DataColumn("Ngày sinh"),
-                new DataColumn("Đơn vị"),
-                new DataColumn("Ngày điểm danh")
-            });
-
-            int i = 1;
-            foreach (DiemDanhSuKien diemDanh in diemDanhs)
+            using (var workbook = new XLWorkbook())
             {
-                dt.Rows.Add(i, diemDanh.Ho + " " + diemDanh.Ten, diemDanh.SoDienThoai, diemDanh.NgaySinh, diemDanh.DonVi, diemDanh.AttendanceDate);
-            }
+                var worksheet = workbook.Worksheets.Add("Học viên");
 
-            SuKien sk = await context.SuKiens.FindAsync(event_id);
-            string evtName = sk.TieuDe;
+                // Set font Times New Roman for the entire worksheet
+                worksheet.Style.Font.SetFontName("Times New Roman");
 
-            using (XLWorkbook wb = new XLWorkbook())
-            {
-                wb.Worksheets.Add(dt);
+                // Row 1
+                worksheet.Cell("B1").Value = "ĐẢNG ỦY PHƯỜNG XUÂN HÒA";
+                worksheet.Cell("G1").Value = "ĐẢNG CỘNG SẢN VIỆT NAM";
+
+                // Row 2
+                worksheet.Cell("B2").Value = "TRUNG TÂM CHÍNH TRỊ *";
+
+                // Row 3
+                worksheet.Cell("A3").Value = "  DANH SÁCH   ";
+
+                // Row 4
+                worksheet.Cell("A4").Value = $"ĐIỂM DANH SỰ KIỆN {evt.TieuDe.ToUpper()}";
+
+
+                // Row 6 - Headers
+                worksheet.Cell("A6").Value = "STT";
+                worksheet.Cell("B6").Value = "HỌ";
+                worksheet.Cell("C6").Value = "TÊN";
+                worksheet.Cell("D6").Value = "SỐ ĐIỆN THOẠI";
+                worksheet.Cell("E6").Value = "ĐƠN VỊ";
+                worksheet.Cell("F6").Value = "NGÀY SINH";
+
+                // Add student data starting from row 7
+                int row = 7, stt = 1;
+                foreach (var diemDanh in diemDanhs)
+                {
+                    worksheet.Cell(row, 1).Value = stt; 
+                    worksheet.Cell(row, 2).Value = diemDanh.Ho; 
+                    worksheet.Cell(row, 3).Value = diemDanh.Ten; 
+                    worksheet.Cell(row, 4).Value = diemDanh.SoDienThoai;  
+                    worksheet.Cell(row, 5).Value = diemDanh.DonVi; 
+                    worksheet.Cell(row, 6).Value = diemDanh.NgaySinh.ToString(); 
+                    row++;
+                    stt++;
+                }
+
+                worksheet.Range("A6:F6").SetAutoFilter();
+
+                var tableRange = worksheet.Range($"A6:F{row - 1}");
+                tableRange.Style
+                    .Border.SetOutsideBorder(XLBorderStyleValues.Thin)
+                    .Border.SetInsideBorder(XLBorderStyleValues.Thin);
+
+                // Formatting
+                worksheet.Range("G1:H1").Merge();
+                worksheet.Cell("G1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                worksheet.Range("A3:H3").Merge();
+                worksheet.Cell("A3").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                worksheet.Range("A4:H4").Merge();
+                worksheet.Cell("A4").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                worksheet.Row(6).Style.Font.Bold = true; // Bold headers
+                worksheet.Cell("B1").Style.Font.Bold = true;
+                worksheet.Cell("B2").Style.Font.Bold = true;
+                worksheet.Cell("C2").Style.Font.Bold = true;
+                worksheet.Cell("G1").Style.Font.Bold = true;
+                worksheet.Cell("A3").Style.Font.Bold = true;
+                worksheet.Cell("A4").Style.Font.Bold = true;
+                // Adjust column widths
+                worksheet.Columns().AdjustToContents();
 
                 using (var stream = new MemoryStream())
                 {
-                    wb.SaveAs(stream);
+                    workbook.SaveAs(stream);
                     var content = stream.ToArray();
-                    return File(
-                        content,
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        "Điểm danh sự kiện " + evtName + ".xlsx");
+                    return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Danh sách điểm danh sự kiện {evt.TieuDe}.xlsx");
                 }
             }
         }
