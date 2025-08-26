@@ -31,7 +31,7 @@
         :root {
             /* Quy đổi 204x321 px ~ 54x85 mm (96dpi) để in ra đúng kích thước */
             --card-w-mm: 40mm;
-            --card-h-mm: 60mm;
+            --card-h-mm: 62mm;
             --gap-mm: 3mm;
             --pad-x-mm: 7.5mm; /* 2 bên: 7.5 + 7.5 = 15mm, vừa khít 5 cột */
             --pad-y-mm: 12.5mm; /* trên + dưới, canh giữa dọc trang */
@@ -54,8 +54,8 @@
         .sheet {
             background: #fff;
             box-sizing: border-box;
-            margin-top: 30px;
-            margin-bottom: 30px;
+            margin-top: 20px;
+            margin-bottom: 20px;
             display: grid;
             grid-template-columns: repeat(4, var(--card-w-mm));
             gap: var(--gap-mm);
@@ -116,17 +116,18 @@
 
         .card-body {
             padding: 1px 6px 8px 10px;
+            text-align: left;
         }
 
         .card-body h5 {
-            font-size: 0.75rem; /* vừa mắt trên card 54x85mm */
+            font-size: 0.25rem; /* vừa mắt trên card 54x85mm */
             font-weight: 700;
             margin-bottom: 4px;
             color: #0d6efd;
         }
 
         .card-body p {
-            font-size: 0.55rem;
+            font-size: 0.45rem;
             margin: 0 0 4px 0;
             color: #6c757d;
         }

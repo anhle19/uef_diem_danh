@@ -61,8 +61,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
         const studentId = document.getElementById("studentIdInput").value;
         const studentAvatarInfo = document.getElementById("studentAvatarInfo");
         const studentFullNameInfo = document.getElementById("studentFullNameInfo");
-        const studentDobInfo = document.getElementById("studentDobInfo");
-        const studentPhoneNumberInfo = document.getElementById("studentPhoneNumberInfo");
+        const studentStudyCenterInfo = document.getElementById("studentStudyCenterInfo");
 
         // Call API fetch student info
         const response = await axios.get(`${BASE_URL}/api/lay-chi-tiet-hoc-vien/${studentId}`)
@@ -71,14 +70,16 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
         // Set student info to UI
         studentAvatarInfo.src = `${BASE_URL}/student_pictures/${studentData.tenHinhAnh}`;
-        studentFullNameInfo.innerText = `${studentData.ho} ${studentData.ten}`;
-        studentDobInfo.innerHTML =
+        studentFullNameInfo.innerHTML = 
         `
-            <strong>Ngày sinh:</strong> ${moment(studentData.ngaySinh).format("DD/MM/YYYY")}
+            <strong>Họ và tên:</strong> 
+            <p>${studentData.ho} ${studentData.ten}</p>
         `;
-        studentPhoneNumberInfo.innerHTML =
+        
+        studentStudyCenterInfo.innerHTML =
             `
-            <strong>SĐT:</strong> ${studentData.soDienThoai}
+            <strong>Đơn vị:</strong> 
+            <p>${studentData.donVi}</p>
         `;
 
         JsBarcode("#studentBarcode", studentData.soDienThoai, {

@@ -101,9 +101,14 @@ document.addEventListener('DOMContentLoaded', async (event) => {
                         <img src="${BASE_URL}/student_pictures/${processingStudentsData[j].studentAvatar.name}" class="card-img-top" alt="Ảnh đại diện">
                         
                         <div class="card-body">
-                            <h5>${processingStudentsData[j].studentLastName} ${processingStudentsData[j].studentFirstName}</h5>
-                            <p><strong>Ngày sinh:</strong> ${moment(processingStudentsData[j].studentDayOfBirth).format("DD/MM/YYYY")}</p>
-                            <p><strong>SĐT:</strong> ${processingStudentsData[j].studentPhoneNumber}</p>
+                            <p>
+                                <strong>Họ và tên:</strong> 
+                                <p>${processingStudentsData[j].studentLastName} ${processingStudentsData[j].studentFirstName}</p>
+                            </p>
+                            <p>
+                                <strong>Đơn vị:</strong> 
+                                <p>${processingStudentsData[j].studyCenter}</p>
+                            </p>
                         </div>
                     </div>
                     <div class="barcode-section">
