@@ -269,14 +269,14 @@ async function searchStudyClass() {
 // ================== TABLE PAGINATION ==================
 
 function getPaginationWindow(currentPage, totalPages, paginationButtonSize) {
-    // curent page = 4, totalPages = 5, pagination button size = 5
+    // curent page = 10, totalPages = 11, pagination button size = 5
     const half = Math.floor(paginationButtonSize / 2); // => half = 2
-    let start = Math.max(1, currentPage - half); // => start = 2
-    let end = start + paginationButtonSize - 1; // => end = 6
+    let start = Math.max(1, currentPage - half); // => start = 8
+    let end = start + paginationButtonSize - 1; // => end = 12
 
 
     if (end > totalPages) { // end == total pages (5 == 5)
-        end = totalPages; // => end = 5
+        end = totalPages; // => end = 11
         start = Math.max(1, end - paginationButtonSize + 1); // => start = 1
     }
 
@@ -295,7 +295,9 @@ function initTablePagination() {
     const paginationContainer = document.getElementById("paginationContainer");
 
     const tablePageInfo = studyClassTable.page.info()
-    const totalPages = Math.floor(tablePageInfo.recordsDisplay / 10);
+    const totalPages = Math.ceil(tablePageInfo.recordsDisplay / 10);
+
+    console.log(totalPages)
 
 
     if (totalPages >= 2) {
@@ -317,7 +319,7 @@ function initTablePagination() {
 
         paginationContainer.innerHTML +=
             `
-            <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToPage(${tablePageInfo.pages})">Trang cuối</ol>
+            <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToPage(${totalPages})">Trang cuối</ol>
         `;
 
 
@@ -339,7 +341,9 @@ function goToPage(targetPage) {
     const paginationContainer = document.getElementById("paginationContainer");
 
     const tablePageInfo = studyClassTable.page.info()
-    const totalPages = Math.floor(tablePageInfo.recordsDisplay / 10);
+    const totalPages = Math.ceil(tablePageInfo.recordsDisplay / 10);
+
+    console.log(targetPage)
 
     const paginationWindow = getPaginationWindow(targetPage, totalPages, PAGINATION_ITEM_LIMIT_RENDERING_NUMBER);
 
@@ -359,7 +363,7 @@ function goToPage(targetPage) {
 
     paginationContainer.innerHTML +=
         `
-        <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToPage(${tablePageInfo.pages - 1})">Trang cuối</ol>
+        <ol class="paginationLastPageItem" id="paginationItem_last_page" onclick="goToPage(${totalPages})">Trang cuối</ol>
     `;
 
 
