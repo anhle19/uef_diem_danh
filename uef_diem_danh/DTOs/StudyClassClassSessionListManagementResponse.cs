@@ -15,6 +15,8 @@ namespace uef_diem_danh.DTOs
     {
         public int ClassSessionId { get; set; }
 
+        public string ClassSessionName { get; set; }
+
         public int ClassSessionNumber { get; set; }
 
         public DateOnly ClassSessionTime { get; set; }

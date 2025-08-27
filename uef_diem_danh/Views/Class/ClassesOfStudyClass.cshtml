@@ -8,13 +8,13 @@
 <div>
 	@if (TempData["ClassSuccessMessage"] != null)
 	{
-		<div class="bg-success p-2 text-white">
+		<div class="bg-success p-2 text-white text-center">
 			@TempData["ClassSuccessMessage"]
 		</div>
 	}
 	@if (TempData["ClassErrorMessage"] != null)
 	{
-		<div class="bg-danger">
+		<div class="bg-danger text-white text-center p-2">
 			@TempData["ClassErrorMessage"]
 		</div>
 	}
