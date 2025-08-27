@@ -268,7 +268,7 @@
                     title: "Tải ảnh thành công",
                     html: res.data,
                     didOpen: () => {
-                      const phone = document.getElementById("sdt")?.dataset.phone;
+                      const phone = document.getElementById("studentBarcode")?.dataset.phone;
                       console.log("sdt:", phone);
                       if (phone) {
                         JsBarcode("#studentBarcode", phone, {
