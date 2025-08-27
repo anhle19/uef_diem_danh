@@ -9,11 +9,13 @@ namespace uef_diem_danh.Models
         [Key]
         public int MaBuoiHoc {  get; set; }
 
-        public DateOnly NgayHoc { get; set; }
+        public string TenBuoiHoc { get; set; }
 
         public int TietHoc { get; set; }
 
         public bool TrangThai { get; set; }
+
+        public DateOnly NgayHoc { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
