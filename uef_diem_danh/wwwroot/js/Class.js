@@ -90,18 +90,20 @@ async function initAddClassFields(id) {
 async function initUpdateClassFields(id) {
     // Call API to get study class detail
     try {
-        const studentIdInput = document.getElementById("suaMaBuoiHoc");
-        const studentLastNameInput = document.getElementById("suaNgayHoc");
-        const studentFirstNameInput = document.getElementById("suaTietHoc");
+        const classSessionId = document.getElementById("suaMaBuoiHoc");
+        const classSessionDay = document.getElementById("suaNgayHoc");
+        const classSessionName = document.getElementById("suaTenBuoiHoc")
+        const classSessionNumber = document.getElementById("suaTietHoc");
 
 
         const response = await axios.get(`${BASE_URL}/api/lay-chi-tiet-buoi-hoc/${id}`)
         const fetchedStudent = response.data;
 
         console.log(fetchedStudent.maBuoiHoc);
-        studentIdInput.value = fetchedStudent.maBuoiHoc;
-        studentLastNameInput.value = fetchedStudent.ngayHoc;
-        studentFirstNameInput.value = fetchedStudent.tietHoc;
+        classSessionId.value = fetchedStudent.maBuoiHoc;
+        classSessionName.value = fetchedStudent.tenBuoiHoc
+        classSessionDay.value = fetchedStudent.ngayHoc;
+        classSessionNumber.value = fetchedStudent.tietHoc;
 
         console.log(response)
     } catch (ex) {
@@ -114,15 +116,15 @@ function updateClass() {
     const updateClassForm = document.getElementById("updateClassForm");
 
     const classDayInput = document.getElementById("suaNgayHoc");
-    const classLessonInput = document.getElementById("suaTietHoc");
+    const classLessonNameInput = document.getElementById("suaTenBuoiHoc");
 
 
     const classDay = classDayInput.value;
-    const classLesson = classLessonInput.value.trim();
+    const classLessonName = classLessonNameInput.value.trim();
 
 
     // Validate inputs
-    if (!classDay || !classLesson) {
+    if (!classDay || !classLessonName) {
         Swal.fire(
             "Lỗi",
             "Vui lòng nhập đầy đủ dữ liệu",

@@ -1056,10 +1056,33 @@ namespace uef_diem_danh.Controllers
                 BuoiHoc _class = await context.BuoiHocs
                     .FirstOrDefaultAsync(lh => lh.MaBuoiHoc == request.MaBuoiHoc);
 
-                _class.NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture);
-                _class.TietHoc = request.TietHoc;
+                // Check if class session name existed
+                if (context.BuoiHocs
+                    .Any(bh => 
+                        bh.MaLopHoc == study_class_id && 
+                        bh.TenBuoiHoc == request.TenBuoiHoc && 
+                        bh.MaBuoiHoc != request.MaBuoiHoc
+                    )
+                )
+                {
+                    TempData["ClassErrorMessage"] = $"Tên buổi học {request.TenBuoiHoc} đã tồn tại";
+                    return Redirect("/quan-ly-danh-sach-lop-hoc/" + study_class_id + "/quan-ly-danh-sach-buoi-hoc");
+                }
 
-                await context.SaveChangesAsync();
+                if (request.TietHoc != null)
+                {
+                    _class.NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture);
+                    _class.TenBuoiHoc = request.TenBuoiHoc;
+                    _class.TietHoc = (int)request.TietHoc;
+                }
+                else
+                {
+                    _class.NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture);
+                    _class.TenBuoiHoc = request.TenBuoiHoc;
+                    _class.TietHoc = 1;
+                }
+
+                    await context.SaveChangesAsync();
 
                 TempData["ClassSuccessMessage"] = "Cập nhật buổi học thành công!";
                 return Redirect($"/quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-buoi-hoc");
