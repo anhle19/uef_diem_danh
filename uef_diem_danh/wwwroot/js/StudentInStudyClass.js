@@ -89,15 +89,28 @@ function searchAvailableStudent() {
     axios.get(`${BASE_URL}/hoc-vien/tim-theo-so-dien-thoai?phoneNumber=${phone}`)
         .then(res => {
             const data = res.data;
+
             // Đổ dữ liệu vào form
-            document.getElementById("hinhAnhHocVienLopHocPreview").src = `${BASE_URL}/student_pictures/${data.hinhAnh}`
-            document.getElementById("themHo").value = data.ho;
-            document.getElementById("themTen").value = data.ten;
-            document.getElementById("themNgaySinh").value = data.ngaySinh;
-            document.getElementById("themDiaChi").value = data.diaChi;
-            document.getElementById("themEmail").value = data.email;
-            document.getElementById("themSoDienThoai").value = data.soDienThoai;
-            document.getElementById("themDonVi").value = data.donVi;
+            if (data.studentAvatar == null) {
+                document.getElementById("hinhAnhHocVienLopHocPreview").src = `${BASE_URL}/student_pictures/logo.png`
+                document.getElementById("themHo").value = data.studentLastName;
+                document.getElementById("themTen").value = data.studentFirstName;
+                document.getElementById("themNgaySinh").value = data.studentDayOfBirth;
+                document.getElementById("themDiaChi").value = data.studentAddress;
+                document.getElementById("themEmail").value = data.studentEmail;
+                document.getElementById("themSoDienThoai").value = data.studentPhoneNumber;
+                document.getElementById("themDonVi").value = data.studyCenter;
+            }
+            else {
+                document.getElementById("hinhAnhHocVienLopHocPreview").src = `${BASE_URL}/student_pictures/${data.studentAvatar}`
+                document.getElementById("themHo").value = data.studentLastName;
+                document.getElementById("themTen").value = data.studentFirstName;
+                document.getElementById("themNgaySinh").value = data.studentDayOfBirth;
+                document.getElementById("themDiaChi").value = data.studentAddress;
+                document.getElementById("themEmail").value = data.studentEmail;
+                document.getElementById("themSoDienThoai").value = data.studentPhoneNumber;
+                document.getElementById("themDonVi").value = data.studyCenter;
+            }
         })
         .catch(err => {
             if (err.response && err.response.status === 404) {
