@@ -119,24 +119,24 @@ using (var scope = app.Services.CreateScope())
     }
 
     string adminEmail = "admin@example.com";
-    List<object> staffInfos = new List<object>
-    {   new
-        {
-            UserName = "GiaoVien1",
-            FullName = "Nguyễn Thành Công",
-            Address = "88/1 Phường Nguyễn Công Mèo, Quận 1",
-            Email = "giaovien1@gmail.com",
-            PhoneNumber = "0909113112"
-        },
-        new
-        {
-            UserName = "GiaoVien2",
-            FullName = "Nguyễn Thành Tài",
-            Address = "88/1 Phường Nguyễn Công Mèo, Quận Ba Đình",
-            Email = "giaovien2@gmail.com",
-            PhoneNumber = "0909113114"
-        },
-    };
+    //List<object> staffInfos = new List<object>
+    //{   new
+    //    {
+    //        UserName = "GiaoVien1",
+    //        FullName = "Nguyễn Thành Công",
+    //        Address = "88/1 Phường Nguyễn Công Mèo, Quận 1",
+    //        Email = "giaovien1@gmail.com",
+    //        PhoneNumber = "0909113112"
+    //    },
+    //    new
+    //    {
+    //        UserName = "GiaoVien2",
+    //        FullName = "Nguyễn Thành Tài",
+    //        Address = "88/1 Phường Nguyễn Công Mèo, Quận Ba Đình",
+    //        Email = "giaovien2@gmail.com",
+    //        PhoneNumber = "0909113114"
+    //    },
+    //};
 
 
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
@@ -165,33 +165,33 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    foreach (dynamic staffInfo in staffInfos)
-    {
-       NguoiDungUngDung staffUser = new NguoiDungUngDung
-       {
-           UserName = staffInfo.UserName,
-           FullName = staffInfo.FullName,
-           Address = staffInfo.Address,
-           PhoneNumber = staffInfo.PhoneNumber,
-           Email = staffInfo.Email,
-           EmailConfirmed = true
-       };
+    //foreach (dynamic staffInfo in staffInfos)
+    //{
+    //   NguoiDungUngDung staffUser = new NguoiDungUngDung
+    //   {
+    //       UserName = staffInfo.PhoneNumber,
+    //       FullName = staffInfo.FullName,
+    //       Address = staffInfo.Address,
+    //       PhoneNumber = staffInfo.PhoneNumber,
+    //       Email = staffInfo.Email,
+    //       EmailConfirmed = true
+    //   };
 
-       var result = await userManager.CreateAsync(staffUser, "123");
+    //   var result = await userManager.CreateAsync(staffUser, staffInfo.PhoneNumber);
 
-       if (result.Succeeded)
-       {
+    //   if (result.Succeeded)
+    //   {
 
-           var createdStaffUser = await userManager.FindByEmailAsync(staffInfo.Email);
+    //       var createdStaffUser = await userManager.FindByEmailAsync(staffInfo.Email);
 
-           await userManager.AddToRoleAsync(createdStaffUser, "Staff");
-           Console.WriteLine("STAFF ACCOUNT CREATED !!!");
-       }
-       else
-       {
-           Console.WriteLine("Error creating STAFF: " + string.Join(", ", result.Errors.Select(e => e.Description)));
-       }
-    }
+    //       await userManager.AddToRoleAsync(createdStaffUser, "Staff");
+    //       Console.WriteLine("STAFF ACCOUNT CREATED !!!");
+    //   }
+    //   else
+    //   {
+    //       Console.WriteLine("Error creating STAFF: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+    //   }
+    //}
 }
 
 
