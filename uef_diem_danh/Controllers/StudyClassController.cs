@@ -193,7 +193,18 @@ namespace uef_diem_danh.Controllers
                 return BadRequest("Số điện thoại không được để trống.");
             }
             var student = await context.HocViens
-                .FirstOrDefaultAsync(hv => hv.SoDienThoai == phoneNumber);
+                .Select(hv => new
+                {
+                    StudentFirstName = hv.Ten,
+                    StudentLastName = hv.Ho,
+                    StudentEmail = hv.Email,
+                    StudentAvatar = hv.HinhAnh.Name,
+                    StudyCenter = hv.DonVi,
+                    StudentPhoneNumber = hv.SoDienThoai,
+                    StudentDayOfBirth = hv.NgaySinh,
+                    StudentAddress = hv.DiaChi
+                })
+                .FirstOrDefaultAsync(hv => hv.StudentPhoneNumber == phoneNumber);
             if (student == null)
             {
                 return NotFound("Không tìm thấy học viên với số điện thoại này.");
