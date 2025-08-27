@@ -104,7 +104,6 @@ async function fakeBarcodeScannedEvent() {
         const avatar = document.getElementById("avatar");
         const fullNameInfo = document.getElementById("fullNameInfo");
         const dayOfBirthInfo = document.getElementById("dobInfo");
-        //const phoneNumberInfo = document.getElementById("phoneNumberInfo");
 
         const studyClassName = document.getElementById("studyClassNameInfo").innerText;
         const classSessionId = document.getElementById("classSessionIdInput").value;
@@ -120,9 +119,8 @@ async function fakeBarcodeScannedEvent() {
             ClassSessionId: parseInt(classSessionId)
         }
 
-        console.log(checkingAttendanceRequest);
 
-        //// Call API to save checked attendance
+        // Call API to save checked attendance
         const response = await axios.post(`${BASE_URL}/api/diem-danh-hoc-vien`, checkingAttendanceRequest)
 
         // Set successful message
@@ -134,7 +132,6 @@ async function fakeBarcodeScannedEvent() {
         avatar.src = `${BASE_URL}/student_pictures/${response.data.studentAvatar}`
         fullNameInfo.innerText = `${response.data.studentLastName} ${response.data.studentFirstName}`;
         dayOfBirthInfo.innerText = `${moment(response.data.studentDayOfBirth).format("DD/MM/YYYY")}`
-        //phoneNumberInfo.innerHTML = `<strong>SĐT:</strong>: ${response.data.studentPhoneNumber}`;
 
         // Generate barcode by phone number
         JsBarcode("#studentBarcode", response.data.studentPhoneNumber, {
@@ -223,7 +220,12 @@ async function fakeBarcodeScannedEvent() {
         // Enable failed toast
         bootstrap.Toast.getOrCreateInstance(failedToast).show();
     } finally {
+        const updateStudentBarcodeInput = document.getElementById("studentBarcodeInput");
+
+        // Clear spinner and input
         loadingRow.style.display = "none";
+        updateStudentBarcodeInput.value = "";
+
     }
 
 }
@@ -246,10 +248,6 @@ document.getElementById("studentBarcodeInput").addEventListener("paste", async (
     studentBarcode = updateStudentBarcodeInput.value;
 
     if (studentBarcode.trim().length > 0) {
-        //JsBarcode("#studentBarcode", studentBarcode, {
-        //    width: 2,
-        //    height: 30,
-        //});
 
         await fakeBarcodeScannedEvent();
     } else {
