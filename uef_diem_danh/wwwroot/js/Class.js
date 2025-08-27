@@ -57,15 +57,15 @@ function addClass() {
     const popup = document.getElementById("popupThemBuoiHoc");
 
     const classDayInput = popup.querySelector("#themNgayHoc");
-    const classLessonInput = popup.querySelector("#themTietHoc");
+    const classLessonNameInput = popup.querySelector("#themTenBuoiHoc");
 
 
     const classDay = classDayInput.value;
-    const classLesson = classLessonInput.value.trim();
+    const classLessonName = classLessonNameInput.value.trim();
 
 
     // Validate inputs
-    if (!classDay || !classLesson) {
+    if (!classDay || !classLessonName) {
         Swal.fire(
             "Lỗi",
             "Vui lòng nhập đầy đủ dữ liệu",

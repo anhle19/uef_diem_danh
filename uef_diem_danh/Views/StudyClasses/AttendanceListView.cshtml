@@ -10,13 +10,13 @@
 <div>
     @if (TempData["ClassSuccessMessage"] != null)
     {
-        <div class="bg-success p-2 text-white">
+        <div class="bg-success text-white text-center p-2">
             @TempData["ClassSuccessMessage"]
         </div>
     }
     @if (TempData["ClassErrorMessage"] != null)
     {
-        <div class="bg-danger">
+        <div class="bg-danger text-white text-center p-2">
             @TempData["ClassErrorMessage"]
         </div>
     }
@@ -42,6 +42,7 @@
                 <tr>
                     <th>STT</th>
                     <th>Buổi học</th>
+                    <th>Số tiết</th>
                     <th>Thời gian</th>
                     <th>Số lượng</th>
                     <th>Hiện diện</th>
@@ -60,7 +61,8 @@
                 {
                     <tr>
                         <td>@stt</td>
-                        <td>Buổi @classSession.ClassSessionNumber</td>
+                        <td>@classSession.ClassSessionName</td>
+                        <td>@classSession.ClassSessionNumber</td>
                         <td>@classSession.ClassSessionTime.ToString("dd/MM/yyyy")</td>
                         <td>@classSession.ClassTotalStudent</td>
                         <td>@classSession.ClassSessionAttendanceCount</td>
