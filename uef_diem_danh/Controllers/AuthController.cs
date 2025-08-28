@@ -274,13 +274,13 @@ namespace uef_diem_danh.Controllers
 
                 await _userManager.DeleteAsync(staff);
 
-                TempData["StudentSuccessMessage"] = "Xóa học viên thành công!";
+                TempData["StaffSuccessMessage"] = "Xóa nhân viên thành công!";
                 return Redirect("nhan-vien");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                TempData["StudentSuccessMessage"] = "Có lỗi xảy ra khi xóa học viên: " + ex.Message;
+                TempData["StaffErrorMessage"] = "Có lỗi xảy ra khi xóa nhân viên: " + ex.Message;
                 return Redirect("nhan-vien");
             }
         }
