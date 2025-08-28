@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,9 +19,12 @@ namespace uef_diem_danh.Controllers
 
         private readonly AppDbContext context;
 
-        public EventController(AppDbContext context)
+        private readonly UserManager<NguoiDungUngDung> _userManager;
+
+        public EventController(AppDbContext context, UserManager<NguoiDungUngDung> _userManager)
         {
             this.context = context;
+            this._userManager = _userManager;
         }
 
 
@@ -29,7 +33,7 @@ namespace uef_diem_danh.Controllers
         [HttpGet]
         public IActionResult GetListManagementPage()
         {
-            List<SuKien> suKiens = context.SuKiens.ToList();
+            List<SuKien> suKiens = context.SuKiens.Include(sk => sk.NguoiPhuTrach).ToList();
             return View("~/Views/Events/ListView.cshtml", suKiens);
         }
 
@@ -56,6 +60,18 @@ namespace uef_diem_danh.Controllers
             ViewBag.EventId = event_id;
 
             return View("~/Views/Events/AttendanceEvent.cshtml", classEvent);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("api/lay-danh-sach-ten-nguoi-phu-trach")]
+        public async Task<IActionResult> GetNameAndIdOfUsers()
+        {
+            var users = await _userManager.GetUsersInRoleAsync("Staff");
+            return Ok(users.Select(u => new UserGetNameAndIdRequest
+            {
+                Id = u.Id,
+                Name = u.FullName,
+            }));
         }
 
         [Route("ket-qua-diem-danh-su-kien/{event_id}")]
@@ -89,6 +105,7 @@ namespace uef_diem_danh.Controllers
             return View("~/Views/Events/ResultView.cshtml", attendanceResult);
         }
 
+
         [Authorize(Roles = "Admin")]
         [Route("tao-su-kien")]
         [HttpPost]
@@ -98,11 +115,10 @@ namespace uef_diem_danh.Controllers
 
             try
             {
-
                 SuKien evt = new SuKien
                 {
                     TieuDe = request.TieuDe,
-                    NguoiPhuTrach = request.NguoiPhuTrach,
+                    MaNguoiPhuTrach = request.MaNguoiPhuTrach,
                     SoLuongDuKien = request.SoLuongDuKien,
                     ThoiGian = DateTime.Parse(request.ThoiGian, CultureInfo.InvariantCulture),
                     TrangThai = true,
@@ -137,7 +153,7 @@ namespace uef_diem_danh.Controllers
                     .FirstOrDefaultAsync(lh => lh.Id == request.Id);
 
                 evt.TieuDe = request.TieuDe;
-                evt.NguoiPhuTrach = request.NguoiPhuTrach;
+                evt.MaNguoiPhuTrach = request.MaNguoiPhuTrach;
                 evt.SoLuongDuKien = request.SoLuongDuKien;
                 evt.ThoiGian = DateTime.Parse(request.ThoiGian, CultureInfo.InvariantCulture);
 
