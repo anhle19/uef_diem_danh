@@ -152,8 +152,7 @@ namespace uef_diem_danh.Controllers
 
 
             // Make copy from Attendance Result sample.xlsx
-            //string sampleFilePath = Path.Combine(Directory.GetCurrentDirectory(), "ExportExcels", "Attendance Result sample.xlsx");
-            string sampleFilePath = Path.Combine(Directory.GetCurrentDirectory(), "ExportExcels", "New Attendance result sample.xlsx");
+            string sampleFilePath = Path.Combine(Directory.GetCurrentDirectory(), "ExportExcels", "Attendance Result sample.xlsx");
 
 
             string processingFileName = $"Attendance Result {attendanceResult.StudyClassName} - Buổi {attendanceResult.ClassSessionNumber}.xlsx";

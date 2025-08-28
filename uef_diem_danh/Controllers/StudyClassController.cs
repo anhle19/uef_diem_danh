@@ -193,7 +193,18 @@ namespace uef_diem_danh.Controllers
                 return BadRequest("Số điện thoại không được để trống.");
             }
             var student = await context.HocViens
-                .FirstOrDefaultAsync(hv => hv.SoDienThoai == phoneNumber);
+                .Select(hv => new
+                {
+                    StudentFirstName = hv.Ten,
+                    StudentLastName = hv.Ho,
+                    StudentEmail = hv.Email,
+                    StudentAvatar = hv.HinhAnh.Name,
+                    StudyCenter = hv.DonVi,
+                    StudentPhoneNumber = hv.SoDienThoai,
+                    StudentDayOfBirth = hv.NgaySinh,
+                    StudentAddress = hv.DiaChi
+                })
+                .FirstOrDefaultAsync(hv => hv.StudentPhoneNumber == phoneNumber);
             if (student == null)
             {
                 return NotFound("Không tìm thấy học viên với số điện thoại này.");
@@ -871,6 +882,7 @@ namespace uef_diem_danh.Controllers
                     {
                         ClassSessionId = bh.MaBuoiHoc,
                         ClassSessionNumber = bh.TietHoc,
+                        ClassSessionName = bh.TenBuoiHoc,
                         ClassSessionTime = bh.NgayHoc,
                         ClassTotalStudent = lh.ThamGias.Count(),
                         ClassSessionAttendanceCount = bh.DiemDanhs.Count(dd => dd.TrangThai == true),
@@ -903,12 +915,13 @@ namespace uef_diem_danh.Controllers
             try
             {
 
-                // Check if class session existed
-                if (context.BuoiHocs.Any(bh => bh.MaLopHoc == request.MaLopHoc && bh.TietHoc == request.TietHoc))
+                // Check if class session name existed
+                if (context.BuoiHocs.Any(bh => bh.MaLopHoc == request.MaLopHoc && bh.TenBuoiHoc == request.TenBuoiHoc))
                 {
-                    TempData["ClassErrorMessage"] = $"Buổi học {request.TietHoc.ToString()} đã tồn tại";
+                    TempData["ClassErrorMessage"] = $"Tên buổi học {request.TenBuoiHoc} đã tồn tại";
                     return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-buoi-hoc");
                 }
+
                 // Check if class session day is before today
                 DateOnly currentDay = DateOnly.FromDateTime(DateTime.Now);
                 if (DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture) < currentDay)
@@ -917,16 +930,32 @@ namespace uef_diem_danh.Controllers
                     return Redirect("quan-ly-danh-sach-lop-hoc/" + request.MaLopHoc + "/quan-ly-danh-sach-buoi-hoc");
                 }
 
+                BuoiHoc _class = new BuoiHoc();
 
-                BuoiHoc _class = new BuoiHoc
+                if (request.TietHoc != null)
                 {
-                    NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture),
-                    TietHoc = request.TietHoc,
-                    TrangThai = true,
-                    MaLopHoc = request.MaLopHoc
-                };
+                    _class = new BuoiHoc
+                    {
+                        NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture),
+                        TenBuoiHoc = request.TenBuoiHoc,
+                        TietHoc = (int)request.TietHoc,
+                        TrangThai = true,
+                        MaLopHoc = request.MaLopHoc
+                    };
+                }
+                else
+                {
+                    _class = new BuoiHoc
+                    {
+                        NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture),
+                        TenBuoiHoc = request.TenBuoiHoc,
+                        TietHoc = 1,
+                        TrangThai = true,
+                        MaLopHoc = request.MaLopHoc
+                    };
+                }
 
-                context.BuoiHocs.Add(_class);
+                    context.BuoiHocs.Add(_class);
 
                 await context.SaveChangesAsync();
 
@@ -1027,10 +1056,33 @@ namespace uef_diem_danh.Controllers
                 BuoiHoc _class = await context.BuoiHocs
                     .FirstOrDefaultAsync(lh => lh.MaBuoiHoc == request.MaBuoiHoc);
 
-                _class.NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture);
-                _class.TietHoc = request.TietHoc;
+                // Check if class session name existed
+                if (context.BuoiHocs
+                    .Any(bh => 
+                        bh.MaLopHoc == study_class_id && 
+                        bh.TenBuoiHoc == request.TenBuoiHoc && 
+                        bh.MaBuoiHoc != request.MaBuoiHoc
+                    )
+                )
+                {
+                    TempData["ClassErrorMessage"] = $"Tên buổi học {request.TenBuoiHoc} đã tồn tại";
+                    return Redirect("/quan-ly-danh-sach-lop-hoc/" + study_class_id + "/quan-ly-danh-sach-buoi-hoc");
+                }
 
-                await context.SaveChangesAsync();
+                if (request.TietHoc != null)
+                {
+                    _class.NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture);
+                    _class.TenBuoiHoc = request.TenBuoiHoc;
+                    _class.TietHoc = (int)request.TietHoc;
+                }
+                else
+                {
+                    _class.NgayHoc = DateOnly.Parse(request.NgayHoc, CultureInfo.InvariantCulture);
+                    _class.TenBuoiHoc = request.TenBuoiHoc;
+                    _class.TietHoc = 1;
+                }
+
+                    await context.SaveChangesAsync();
 
                 TempData["ClassSuccessMessage"] = "Cập nhật buổi học thành công!";
                 return Redirect($"/quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-buoi-hoc");
