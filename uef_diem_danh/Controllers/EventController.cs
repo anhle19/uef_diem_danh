@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System.Data;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -220,7 +221,7 @@ namespace uef_diem_danh.Controllers
 
                 if (existed != null)
                 {
-                    return BadRequest(new { message = "Số điện thoại đã điểm danh rồi!" });
+                    return BadRequest(new { message = "Đã ghi nhận điểm danh!" });
                 }
 
                 // tách họ tên
@@ -234,8 +235,9 @@ namespace uef_diem_danh.Controllers
                     DonVi = request.Unit,
                     SoDienThoai = request.PhoneNumber,
                     Ho = ho,
-                    Ten = ten,
+                    Ten = ten, 
                     AttendanceDate = DateTime.Now,
+                    NgaySinh = request.Dob.IsNullOrEmpty() ? null : DateOnly.Parse(request.Dob, CultureInfo.InvariantCulture),
                 };
 
                 context.DiemDanhSuKiens.Add(diemDanh);
@@ -264,16 +266,15 @@ namespace uef_diem_danh.Controllers
 
                 // Row 1
                 worksheet.Cell("B1").Value = "ĐẢNG ỦY PHƯỜNG XUÂN HÒA";
-                worksheet.Cell("G1").Value = "ĐẢNG CỘNG SẢN VIỆT NAM";
 
                 // Row 2
-                worksheet.Cell("B2").Value = "TRUNG TÂM CHÍNH TRỊ *";
+                worksheet.Cell("B2").Value = "TRUNG TÂM CHÍNH TRỊ PHƯỜNG XUÂN HÒA";
 
                 // Row 3
-                worksheet.Cell("A3").Value = "  DANH SÁCH   ";
+                worksheet.Cell("A3").Value = "DANH SÁCH ĐIỂM DANH";
 
-                // Row 4
-                worksheet.Cell("A4").Value = $"ĐIỂM DANH SỰ KIỆN {evt.TieuDe.ToUpper()}";
+                //Row 4
+                worksheet.Cell("A4").Value = $"{evt.TieuDe.ToUpper()}";
 
 
                 // Row 6 - Headers
@@ -283,6 +284,7 @@ namespace uef_diem_danh.Controllers
                 worksheet.Cell("D6").Value = "SỐ ĐIỆN THOẠI";
                 worksheet.Cell("E6").Value = "ĐƠN VỊ";
                 worksheet.Cell("F6").Value = "NGÀY SINH";
+                worksheet.Cell("G6").Value = "NGÀY ĐIỂM DANH";
 
                 // Add student data starting from row 7
                 int row = 7, stt = 1;
@@ -294,24 +296,25 @@ namespace uef_diem_danh.Controllers
                     worksheet.Cell(row, 4).Value = diemDanh.SoDienThoai;  
                     worksheet.Cell(row, 5).Value = diemDanh.DonVi; 
                     worksheet.Cell(row, 6).Value = diemDanh.NgaySinh.ToString(); 
+                    worksheet.Cell(row, 7).Value = diemDanh.AttendanceDate.ToString(); 
                     row++;
                     stt++;
                 }
 
                 worksheet.Range("A6:F6").SetAutoFilter();
 
-                var tableRange = worksheet.Range($"A6:F{row - 1}");
+                var tableRange = worksheet.Range($"A6:G{row - 1}");
                 tableRange.Style
                     .Border.SetOutsideBorder(XLBorderStyleValues.Thin)
                     .Border.SetInsideBorder(XLBorderStyleValues.Thin);
 
                 // Formatting
-                worksheet.Range("G1:H1").Merge();
-                worksheet.Cell("G1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                worksheet.Range("A3:H3").Merge();
+                worksheet.Range("A3:G3").Merge();
+                worksheet.Range("A4:G4").Merge();
                 worksheet.Cell("A3").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                worksheet.Range("A4:H4").Merge();
                 worksheet.Cell("A4").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                worksheet.Cell("B1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                worksheet.Cell("B2").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
                 worksheet.Row(6).Style.Font.Bold = true; // Bold headers
                 worksheet.Cell("B1").Style.Font.Bold = true;

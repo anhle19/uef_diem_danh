@@ -9,5 +9,7 @@
         public string PhoneNumber { get; set; }
         
         public string Unit { get; set; }
+
+        public string Dob {  get; set; }
     }
 }

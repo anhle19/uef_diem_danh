@@ -23,6 +23,8 @@
                     @Html.AntiForgeryToken()
                     <input type="hidden" id="MaSuKien" name="Id" value="@Model.Id" />
 
+                    <div id="successMessage"></div>
+
                     <!-- Họ tên -->
                     <div class="mb-3">
                         <label for="fullName" class="form-label">Họ và tên <span class="text-danger">*</span></label>
@@ -48,7 +50,7 @@
                     </div>
 
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Xác nhận điểm danh</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Xác nhận điểm danh</button>
                     </div>
                 </form>
             </div>
@@ -63,7 +65,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <script>
-                document.getElementById("attendanceForm").addEventListener("submit", function (e) {
+            document.getElementById("attendanceForm").addEventListener("submit", function (e) {
             e.preventDefault();
 
             const formData = new FormData();
@@ -71,6 +73,7 @@
             formData.append("Name", document.getElementById("fullName").value.trim());
             formData.append("PhoneNumber", document.getElementById("phone").value.trim());
             formData.append("Unit", document.getElementById("organization").value.trim());
+            formData.append("Dob", document.getElementById("dob").value);
             formData.append("__RequestVerificationToken", document.querySelector('input[name="__RequestVerificationToken"]').value);
 
             axios.post("/them-diem-danh-su-kien", formData)
@@ -81,7 +84,8 @@
                         text: res.data?.message || "Cảm ơn bạn đã tham dự.",
                         confirmButtonText: "OK"
                     });
-                    document.getElementById("attendanceForm").reset();
+                    document.getElementById("successMessage").innerHTML = '<div class="bg-success p-2 text-white text-center">Điểm danh thành công</div>';
+                    document.getElementById("submitBtn").disabled = true;
                 })
                 .catch(err => {
                     Swal.fire("Lỗi", err.response?.data?.message || "Không thể điểm danh. Vui lòng thử lại!", "error");
