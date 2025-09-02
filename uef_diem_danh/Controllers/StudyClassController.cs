@@ -67,6 +67,7 @@ namespace uef_diem_danh.Controllers
                         TeacherFullName = lh.GiaoVien.FullName,
                         StartDate = lh.ThoiGianBatDau,
                         EndDate = lh.ThoiGianKetThuc,
+                        StudentQuantity = lh.ThamGias.Count(),
                         CreatedAt = lh.CreatedAt
                     })
                     .OrderBy(lh => lh.CreatedAt)
@@ -284,7 +285,7 @@ namespace uef_diem_danh.Controllers
 
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Staff")]
         [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/them-hoc-vien-vao-lop-hoc-bang-excel")]
         [HttpPost]
         public async Task<IActionResult> ImportStudentsFromExcel(int study_class_id, [FromForm] ImportStudentToStudyClassByExcelRequest request)
@@ -645,7 +646,7 @@ namespace uef_diem_danh.Controllers
 
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Staff")]
         [Route("tao-hoc-vien-moi-vao-lop")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -833,7 +834,7 @@ namespace uef_diem_danh.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Staff")]
         [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/xoa-hoc-vien-khoi-lop-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -866,7 +867,7 @@ namespace uef_diem_danh.Controllers
 
 
         // Quản lí buổi học của lớp học
-        [Authorize(Roles = "Admin,Staff")]
+        [Authorize(Roles = "Admin, Staff")]
         [Route("quan-ly-danh-sach-lop-hoc/{study_class_id}/quan-ly-danh-sach-buoi-hoc")]
         [HttpGet]
         public async Task<IActionResult> GetListOfClassSessionManagementPage(int study_class_id)
@@ -896,7 +897,7 @@ namespace uef_diem_danh.Controllers
             return View("~/Views/StudyClasses/AttendanceListView.cshtml", classSessions);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Staff")]
         [Route("api/lay-chi-tiet-buoi-hoc/{class_id}")]
         [HttpGet]
         public async Task<IActionResult> GetClassDetailForUpdate(int class_id)
@@ -906,7 +907,7 @@ namespace uef_diem_danh.Controllers
             return Ok(await context.BuoiHocs.FindAsync(class_id));
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Staff")]
         [Route("tao-buoi-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -971,7 +972,7 @@ namespace uef_diem_danh.Controllers
 
         }
 
-        [Authorize(Roles = "Admin,Staff")]
+        [Authorize(Roles = "Admin, Staff")]
         [Route("khoa-diem-danh-buoi-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -1045,6 +1046,7 @@ namespace uef_diem_danh.Controllers
 
         }
 
+        [Authorize(Roles = "Admin, Staff")]
         [Route("quan-ly-lop-hoc/{study_class_id}/cap-nhat-buoi-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -1097,7 +1099,7 @@ namespace uef_diem_danh.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Staff")]
         [Route("xoa-buoi-hoc")]
         [HttpPost]
         [ValidateAntiForgeryToken]
