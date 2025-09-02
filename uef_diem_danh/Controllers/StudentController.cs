@@ -415,7 +415,6 @@ namespace uef_diem_danh.Controllers
         [Authorize(Roles = "Admin")]
         [Route("api/tai-ve-mot-the-hoc-vien/{student_id}")]
         [HttpPost]
-        // Later change this to get student id via path variable
         public IActionResult DownloadSingleStudentCard(int student_id)
         {
 

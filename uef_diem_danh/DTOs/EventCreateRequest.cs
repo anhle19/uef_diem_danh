@@ -4,7 +4,7 @@
     {
         public string TieuDe { get; set; }
 
-        public string NguoiPhuTrach { get; set; }
+        public string MaNguoiPhuTrach { get; set; }
 
         public int SoLuongDuKien { get; set; }
 

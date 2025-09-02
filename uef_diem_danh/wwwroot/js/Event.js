@@ -17,6 +17,9 @@ let eventTable = new DataTable('#eventTable', {
         zeroRecords: "Không tìm thấy sự kiện nào",
     }
 });
+
+
+
 // ================== SEARCH ==================
 
 function preventSearchStudentSubmit() {
@@ -67,7 +70,7 @@ function addEvent() {
     const eventExpectedQuantityInput = popup.querySelector("#themSoLuongDuKien");
 
     const eventTitle = eventTitleInput.value.trim();
-    const eventCoordinator = eventCoordinatorInput.value.trim();
+    const eventCoordinator = eventCoordinatorInput.value;
     const eventExpectedQuantity = eventExpectedQuantityInput.value.trim();
 
     // Validate inputs
@@ -90,23 +93,38 @@ function addEvent() {
 
 
 async function initUpdateEventFields(id) {
-    console.log("Update");
     // Call API to get study class detail
     try {
         const eventIdInput = document.getElementById("suaMaSuKien");
         const eventTitleInput = document.getElementById("suaTieuDe");
-        const eventCoordinatorInput = document.getElementById("suaNguoiPhuTrach");
         const eventExpectedQuantityInput = document.getElementById("suaSoLuongDuKien");
         const eventDateTime = document.getElementById("suaThoiGian");
 
         const response = await axios.get(`/api/lay-chi-tiet-su-kien/${id}`)
-        const fetchedStudent = response.data;
+        const fetchedEvent = response.data;
 
         eventIdInput.value = id;
-        eventTitleInput.value = fetchedStudent.tieuDe;
-        eventCoordinatorInput.value = fetchedStudent.nguoiPhuTrach;
-        eventExpectedQuantityInput.value = fetchedStudent.soLuongDuKien;
-        eventDateTime.value = fetchedStudent.thoiGian;
+        eventTitleInput.value = fetchedEvent.tieuDe;
+        eventExpectedQuantityInput.value = fetchedEvent.soLuongDuKien;
+        eventDateTime.value = fetchedEvent.thoiGian;
+
+        // Đổ danh sách người phụ trách
+        const responseStaff = await axios.get(`api/lay-danh-sach-ten-nguoi-phu-trach`);
+        const fetchedStaff = responseStaff.data;
+
+        const dropdown = document.getElementById("suaMaNguoiPhuTrach");
+        dropdown.innerHTML = ""; // clear cũ nếu có
+        
+        console.log("Mã người phụ trách: " + fetchedEvent);
+        fetchedStaff.forEach(item => {
+            const option = document.createElement("option");
+            option.value = item.id;
+            option.textContent = item.name;
+            if (item.id == fetchedEvent.maNguoiPhuTrach) {
+                option.selected = true;
+            }
+            dropdown.appendChild(option);
+        });
 
 
         console.log(response)
@@ -121,7 +139,7 @@ function updateEvent() {
     const updateEventForm = document.getElementById("updateEventForm");
 
     const eventTitleInput = document.getElementById("suaTieuDe");
-    const eventCoordinatorInput = document.getElementById("suaNguoiPhuTrach");
+    const eventCoordinatorInput = document.getElementById("suaMaNguoiPhuTrach");
     const eventExpectedQuantityInput = document.getElementById("suaSoLuongDuKien");
 
     const eventTitle = eventTitleInput.value.trim();
@@ -243,7 +261,34 @@ function goToPage(targetPage) {
 
 }
 
-// ================== INIT QR CODE ==================
+async function initStaffList() {
+    try {
+        const response = await axios.get(`api/lay-danh-sach-ten-nguoi-phu-trach`);
+        const fetchedStaff = response.data;
+
+        const dropdown = document.getElementById("themNguoiPhuTrach");
+        dropdown.innerHTML = ""; // clear cũ nếu có
+
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Chọn người phụ trách"
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        dropdown.appendChild(defaultOption);
+
+
+        fetchedStaff.forEach(item => {
+            const option = document.createElement("option");
+            option.value = item.id;
+            option.textContent = item.name;
+            dropdown.appendChild(option);
+        });
+
+    } catch (ex) {
+        console.log(ex);
+    }
+}
+
 
 
 // ================== CALL FUNCTIONS ==================
