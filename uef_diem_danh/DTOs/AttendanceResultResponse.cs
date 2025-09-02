@@ -6,6 +6,7 @@
         public string StudyClassName { get; set; }
 
         public int ClassSessionId { get; set; }
+        public string ClassSessionTitle { get; set; }
         public int ClassSessionNumber { get; set; }
 
         public int TotalStudents { get; set; }
