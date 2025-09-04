@@ -13,6 +13,7 @@ namespace uef_diem_danh.Models
         // Relationships
 
         public ICollection<LopHoc>? LopHocs { get; set; }
+        public ICollection<SuKien>? SuKiens { get; set; }
 
     }
 }

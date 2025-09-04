@@ -51,7 +51,7 @@ namespace uef_diem_danh.Controllers
         }
 
 
-        [Authorize(Roles = "Admin,Staff")]
+        [Authorize(Roles = "Admin, Staff")]
         [Route("diem-danh-hoc-vien")]
         public async Task<IActionResult> GetAttendanceCheckingPage([FromQuery] int studyClassId, [FromQuery] int classSessionId)
         {
@@ -72,7 +72,7 @@ namespace uef_diem_danh.Controllers
         }
 
         
-        [Authorize(Roles = "Admin,Staff")]
+        [Authorize(Roles = "Admin, Staff")]
         [Route("api/lay-nam-buoi-diem-danh-moi-nhat/{study_class_id}")]
         public async Task<IActionResult> GetFiveLatestAttendances(int study_class_id)
         {
@@ -135,6 +135,7 @@ namespace uef_diem_danh.Controllers
                     StudyClassId = bh.LopHoc.MaLopHoc,
                     StudyClassName = bh.LopHoc.TenLopHoc,
                     ClassSessionId = bh.MaBuoiHoc,
+                    ClassSessionTitle = bh.TenBuoiHoc,
                     ClassSessionNumber = bh.TietHoc,
                     TotalStudents = bh.LopHoc.ThamGias.Count(),
                     TotalStudentsPresent = bh.DiemDanhs.Count(sbh => sbh.TrangThai == true),
@@ -183,32 +184,34 @@ namespace uef_diem_danh.Controllers
                 var studyClassNameAndClassSessionCell = worksheet.CellsUsed()
                     .FirstOrDefault(c => 
                         c.Value.ToString().Contains("LỚP") &&
-                        c.Value.ToString().Contains("BUỔI")
+                        c.Value.ToString().Contains("BUỔI") && 
+                        c.Value.ToString().Contains("SỐ TIẾT")
                     );
                 var totalStudentsCell = worksheet.CellsUsed()
-                    .FirstOrDefault(c => c.Value.ToString().Contains("TỔNG SỐ"));
+                    .FirstOrDefault(c => c.Value.ToString().Contains("Tổng số"));
                 var totalPresentStudentsCell = worksheet.CellsUsed()
-                    .FirstOrDefault(c => c.Value.ToString().Contains("HIỆN DIỆN"));
+                    .FirstOrDefault(c => c.Value.ToString().Contains("Hiện diện"));
 
 
                 // Set basic data
                 if (studyClassNameAndClassSessionCell != null)
                 {
                     studyClassNameAndClassSessionCell.Value = studyClassNameAndClassSessionCell.Value.
-                        ToString().Replace("<STUDY_CLASS_NAME>", attendanceResult.StudyClassName);
+                        ToString().Replace("<STUDY_CLASS_TITLE>", attendanceResult.StudyClassName);
                     studyClassNameAndClassSessionCell.Value = studyClassNameAndClassSessionCell.Value.
-                        ToString().Replace("<CLASS_SESSION_TITLE>", attendanceResult.ClassSessionNumber.ToString());
-                    Console.WriteLine(studyClassNameAndClassSessionCell.Value.ToString());
+                        ToString().Replace("<CLASS_SESSION_TITLE>", attendanceResult.ClassSessionTitle);
+                    studyClassNameAndClassSessionCell.Value = studyClassNameAndClassSessionCell.Value.
+                        ToString().Replace("<NUMBER_OF_SESSION>", attendanceResult.ClassSessionNumber.ToString());
                 }
                 if (totalStudentsCell != null)
                 {
                     totalStudentsCell.Value = totalStudentsCell.Value.
-                        ToString().Replace("<TOTAL_STUDENT>", attendanceResult.TotalStudents.ToString());
+                        ToString().Replace("<TOTAL_STUDENTS>", attendanceResult.TotalStudents.ToString());
                 }
                 if (totalPresentStudentsCell != null)
                 {
                     totalPresentStudentsCell.Value = totalPresentStudentsCell.Value.
-                        ToString().Replace("<TOTAL_PRESENT>", attendanceResult.TotalStudentsPresent.ToString());
+                        ToString().Replace("<TOTAL_PRESENT_STUDENTS>", attendanceResult.TotalStudentsPresent.ToString());
                 }
 
                 int currentStudentIndex = 0;

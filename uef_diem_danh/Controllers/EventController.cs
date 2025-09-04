@@ -1,8 +1,10 @@
 ﻿using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System.Data;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -17,9 +19,12 @@ namespace uef_diem_danh.Controllers
 
         private readonly AppDbContext context;
 
-        public EventController(AppDbContext context)
+        private readonly UserManager<NguoiDungUngDung> _userManager;
+
+        public EventController(AppDbContext context, UserManager<NguoiDungUngDung> _userManager)
         {
             this.context = context;
+            this._userManager = _userManager;
         }
 
 
@@ -28,7 +33,7 @@ namespace uef_diem_danh.Controllers
         [HttpGet]
         public IActionResult GetListManagementPage()
         {
-            List<SuKien> suKiens = context.SuKiens.ToList();
+            List<SuKien> suKiens = context.SuKiens.Include(sk => sk.NguoiPhuTrach).ToList();
             return View("~/Views/Events/ListView.cshtml", suKiens);
         }
 
@@ -55,6 +60,18 @@ namespace uef_diem_danh.Controllers
             ViewBag.EventId = event_id;
 
             return View("~/Views/Events/AttendanceEvent.cshtml", classEvent);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("api/lay-danh-sach-ten-nguoi-phu-trach")]
+        public async Task<IActionResult> GetNameAndIdOfUsers()
+        {
+            var users = await _userManager.GetUsersInRoleAsync("Staff");
+            return Ok(users.Select(u => new UserGetNameAndIdRequest
+            {
+                Id = u.Id,
+                Name = u.FullName,
+            }));
         }
 
         [Route("ket-qua-diem-danh-su-kien/{event_id}")]
@@ -88,6 +105,7 @@ namespace uef_diem_danh.Controllers
             return View("~/Views/Events/ResultView.cshtml", attendanceResult);
         }
 
+
         [Authorize(Roles = "Admin")]
         [Route("tao-su-kien")]
         [HttpPost]
@@ -97,11 +115,10 @@ namespace uef_diem_danh.Controllers
 
             try
             {
-
                 SuKien evt = new SuKien
                 {
                     TieuDe = request.TieuDe,
-                    NguoiPhuTrach = request.NguoiPhuTrach,
+                    MaNguoiPhuTrach = request.MaNguoiPhuTrach,
                     SoLuongDuKien = request.SoLuongDuKien,
                     ThoiGian = DateTime.Parse(request.ThoiGian, CultureInfo.InvariantCulture),
                     TrangThai = true,
@@ -136,7 +153,7 @@ namespace uef_diem_danh.Controllers
                     .FirstOrDefaultAsync(lh => lh.Id == request.Id);
 
                 evt.TieuDe = request.TieuDe;
-                evt.NguoiPhuTrach = request.NguoiPhuTrach;
+                evt.MaNguoiPhuTrach = request.MaNguoiPhuTrach;
                 evt.SoLuongDuKien = request.SoLuongDuKien;
                 evt.ThoiGian = DateTime.Parse(request.ThoiGian, CultureInfo.InvariantCulture);
 
@@ -220,7 +237,7 @@ namespace uef_diem_danh.Controllers
 
                 if (existed != null)
                 {
-                    return BadRequest(new { message = "Số điện thoại đã điểm danh rồi!" });
+                    return BadRequest(new { message = "Đã ghi nhận điểm danh!" });
                 }
 
                 // tách họ tên
@@ -234,8 +251,9 @@ namespace uef_diem_danh.Controllers
                     DonVi = request.Unit,
                     SoDienThoai = request.PhoneNumber,
                     Ho = ho,
-                    Ten = ten,
+                    Ten = ten, 
                     AttendanceDate = DateTime.Now,
+                    NgaySinh = request.Dob.IsNullOrEmpty() ? null : DateOnly.Parse(request.Dob, CultureInfo.InvariantCulture),
                 };
 
                 context.DiemDanhSuKiens.Add(diemDanh);
@@ -264,16 +282,15 @@ namespace uef_diem_danh.Controllers
 
                 // Row 1
                 worksheet.Cell("B1").Value = "ĐẢNG ỦY PHƯỜNG XUÂN HÒA";
-                worksheet.Cell("G1").Value = "ĐẢNG CỘNG SẢN VIỆT NAM";
 
                 // Row 2
-                worksheet.Cell("B2").Value = "TRUNG TÂM CHÍNH TRỊ *";
+                worksheet.Cell("B2").Value = "TRUNG TÂM CHÍNH TRỊ PHƯỜNG XUÂN HÒA";
 
                 // Row 3
-                worksheet.Cell("A3").Value = "  DANH SÁCH   ";
+                worksheet.Cell("A3").Value = "DANH SÁCH ĐIỂM DANH";
 
-                // Row 4
-                worksheet.Cell("A4").Value = $"ĐIỂM DANH SỰ KIỆN {evt.TieuDe.ToUpper()}";
+                //Row 4
+                worksheet.Cell("A4").Value = $"{evt.TieuDe.ToUpper()}";
 
 
                 // Row 6 - Headers
@@ -283,6 +300,7 @@ namespace uef_diem_danh.Controllers
                 worksheet.Cell("D6").Value = "SỐ ĐIỆN THOẠI";
                 worksheet.Cell("E6").Value = "ĐƠN VỊ";
                 worksheet.Cell("F6").Value = "NGÀY SINH";
+                worksheet.Cell("G6").Value = "NGÀY ĐIỂM DANH";
 
                 // Add student data starting from row 7
                 int row = 7, stt = 1;
@@ -294,24 +312,25 @@ namespace uef_diem_danh.Controllers
                     worksheet.Cell(row, 4).Value = diemDanh.SoDienThoai;  
                     worksheet.Cell(row, 5).Value = diemDanh.DonVi; 
                     worksheet.Cell(row, 6).Value = diemDanh.NgaySinh.ToString(); 
+                    worksheet.Cell(row, 7).Value = diemDanh.AttendanceDate.ToString(); 
                     row++;
                     stt++;
                 }
 
                 worksheet.Range("A6:F6").SetAutoFilter();
 
-                var tableRange = worksheet.Range($"A6:F{row - 1}");
+                var tableRange = worksheet.Range($"A6:G{row - 1}");
                 tableRange.Style
                     .Border.SetOutsideBorder(XLBorderStyleValues.Thin)
                     .Border.SetInsideBorder(XLBorderStyleValues.Thin);
 
                 // Formatting
-                worksheet.Range("G1:H1").Merge();
-                worksheet.Cell("G1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                worksheet.Range("A3:H3").Merge();
+                worksheet.Range("A3:G3").Merge();
+                worksheet.Range("A4:G4").Merge();
                 worksheet.Cell("A3").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                worksheet.Range("A4:H4").Merge();
                 worksheet.Cell("A4").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                worksheet.Cell("B1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                worksheet.Cell("B2").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
                 worksheet.Row(6).Style.Font.Bold = true; // Bold headers
                 worksheet.Cell("B1").Style.Font.Bold = true;

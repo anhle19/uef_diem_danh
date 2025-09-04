@@ -32,7 +32,8 @@
                 <button type="button"
                         class="btn-next-secondary btn-sm btn-add"
                         data-bs-toggle="modal"
-                        data-bs-target="#popupThemSuKien">
+                        data-bs-target="#popupThemSuKien"
+                        onclick="initStaffList()">
                     Thêm sự kiện
                 </button>
             </div>
@@ -60,7 +61,7 @@
 						<tr>
 							<td class="text-center">@stt</td>
                             <td class="text-center">@evt.TieuDe</td>
-                            <td class="text-center">@evt.NguoiPhuTrach</td>
+                            <td class="text-center">@evt.NguoiPhuTrach.FullName</td>
                             <td class="text-center">@evt.SoLuongDuKien</td>
                             <td class="text-center">@evt.ThoiGian</td>
                             <td class="text-center">
