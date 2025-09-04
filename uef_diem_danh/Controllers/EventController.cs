@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
 using System.Globalization;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using uef_diem_danh.Database;
 using uef_diem_danh.DTOs;
@@ -28,13 +29,26 @@ namespace uef_diem_danh.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [Route("quan-ly-danh-sach-su-kien")]
         [HttpGet]
-        public IActionResult GetListManagementPage()
+        public async Task<IActionResult> GetListManagementPage()
         {
-            List<SuKien> suKiens = context.SuKiens.Include(sk => sk.NguoiPhuTrach).ToList();
-            return View("~/Views/Events/ListView.cshtml", suKiens);
+            //List<SuKien> suKiens = context.SuKiens.Include(sk => sk.NguoiPhuTrach).ToList();
+            List<SuKien> suKiens = new List<SuKien>();
+
+            if (User.IsInRole("Admin"))
+            {
+                suKiens = context.SuKiens.Include(sk => sk.NguoiPhuTrach).ToList();
+            }
+            else if (User.IsInRole("Staff"))
+            {
+                suKiens = context.SuKiens
+                    .Include(sk => sk.NguoiPhuTrach)
+                    .Where(sk => sk.MaNguoiPhuTrach == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                    .ToList();
+            }
+                return View("~/Views/Events/ListView.cshtml", suKiens);
         }
 
         [Authorize(Roles = "Admin")]

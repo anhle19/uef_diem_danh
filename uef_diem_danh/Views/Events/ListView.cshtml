@@ -47,8 +47,11 @@
                         <th class="text-center">Người phụ trách</th>
                         <th class="text-center">Số lượng dự kiến</th>
                         <th class="text-center">Thời gian</th>
-                        <th class="text-center">Thao tác</th>
-                        <th class="text-center">Màn hình điểm danh</th>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <th class="text-center">Thao tác</th>
+                            <th class="text-center">Màn hình điểm danh</th>
+                        }
                         <th class="text-center">Kết quả</th>
                     </tr>
                 </thead>
@@ -64,68 +67,72 @@
                             <td class="text-center">@evt.NguoiPhuTrach.FullName</td>
                             <td class="text-center">@evt.SoLuongDuKien</td>
                             <td class="text-center">@evt.ThoiGian</td>
-                            <td class="text-center">
-                                <div class="dropdown">
-                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
-                                            type="button"
-                                            data-bs-toggle="dropdown"
-                                            aria-expanded="false">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <button class="dropdown-item btn-edit"
-                                                    data-id="@evt.Id"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#popupSuaSuKien"
-                                                    onclick="initUpdateEventFields(@evt.Id)">
-                                                Sửa
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button class="dropdown-item btn btn-outline-danger btn-sm btn-delete"
-                                                    data-id="@evt.Id"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#popupXoaSuKien"
-                                                    onclick="initDeleteEventField(@evt.Id)">
-                                                Xóa
-                                            </button>
-                                        </li>
-                                        @if(evt.TrangThai == true)
-                                        {
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <td class="text-center">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                                type="button"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <button class="dropdown-item btn-edit"
+                                                        data-id="@evt.Id"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#popupSuaSuKien"
+                                                        onclick="initUpdateEventFields(@evt.Id)">
+                                                    Sửa
+                                                </button>
+                                            </li>
                                             <li>
                                                 <button class="dropdown-item btn btn-outline-danger btn-sm btn-delete"
                                                         data-id="@evt.Id"
                                                         data-bs-toggle="modal"
-                                                        data-bs-target="#popupKhoaSuKien"
-                                                        onclick="initLockEvent(@evt.Id)">
-                                                    Khóa
+                                                        data-bs-target="#popupXoaSuKien"
+                                                        onclick="initDeleteEventField(@evt.Id)">
+                                                    Xóa
                                                 </button>
                                             </li>
-                                        }
-                                    </ul>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                @if(evt.TrangThai == true)
-                                {
-                                    <button class="btn btn-outline-danger btn-sm btn-qr"
-                                            data-id="@evt.Id"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#qrModal"
-                                            onclick="genQrCode(@evt.Id)">
-                                        Điểm danh
-                                    </button>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-outline-danger bg-danger text-white btn-sm"
-                                            href="#"
-                                            disabled>
-                                        Đã Khóa
-                                    </button>
-                                }
-                            </td>
+                                            @if (evt.TrangThai == true)
+                                            {
+                                                <li>
+                                                    <button class="dropdown-item btn btn-outline-danger btn-sm btn-delete"
+                                                            data-id="@evt.Id"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#popupKhoaSuKien"
+                                                            onclick="initLockEvent(@evt.Id)">
+                                                        Khóa
+                                                    </button>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    @if (evt.TrangThai == true)
+                                    {
+                                        <button class="btn btn-outline-danger btn-sm btn-qr"
+                                                data-id="@evt.Id"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#qrModal"
+                                                onclick="genQrCode(@evt.Id)">
+                                            Điểm danh
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-outline-danger bg-danger text-white btn-sm"
+                                                href="#"
+                                                disabled>
+                                            Đã Khóa
+                                        </button>
+                                    }
+                                </td>
+                            }
+                            
                             <td class="text-center"><a href="/ket-qua-diem-danh-su-kien/@evt.Id">Kết quả</a></td>
 							@{
 
