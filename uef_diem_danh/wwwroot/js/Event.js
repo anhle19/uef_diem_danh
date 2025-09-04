@@ -7,16 +7,28 @@ $(document).ready(function () {
 
 })
 
+const colCount = document.querySelectorAll('#eventTable thead th').length;
+let disableCols = [];
+
+// Luôn disable cột "Kết quả" (cuối cùng)
+disableCols.push(colCount - 1);
+
+// Nếu có thêm cột thao tác + điểm danh (admin)
+if (colCount > 6) {
+    disableCols.push(colCount - 2, colCount - 3);
+}
+
 let eventTable = new DataTable('#eventTable', {
-    'dom': 'rt',    // "l" = length, "r" = processing, "t" = table, "p" = pagination
+    dom: 'rt',
     columnDefs: [
-        { orderable: false, targets: [5, 6, 7] } // Disable button column
+        { orderable: false, targets: disableCols }
     ],
     language: {
         emptyTable: "Hiện không có sự kiện nào",
         zeroRecords: "Không tìm thấy sự kiện nào",
     }
 });
+
 
 
 
