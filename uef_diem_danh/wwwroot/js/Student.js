@@ -4,7 +4,7 @@
 $(document).ready(function () {
     //// ================== INIT ==================
     $.fn.dataTable.moment('DD/MM/YYYY');
-   
+
 })
 
 let studentTable = new DataTable('#studentTable', {
@@ -64,7 +64,7 @@ function changeCreatePreviewStudentAvatar() {
 
     if (
         studentAvatarFile.type === "image/png" ||
-        studentAvatarFile.type === "image/jpg" || 
+        studentAvatarFile.type === "image/jpg" ||
         studentAvatarFile.type === "image/jpeg"
     ) {
         const themHinhAnhPreview = document.getElementById("themHinhAnhPreview");
@@ -158,7 +158,7 @@ async function initUpdateStudentFields(id) {
         studentDobInput.value = fetchedStudent.ngaySinh;
         studentAddressInput.value = fetchedStudent.diaChi;
         studentEmailInput.value = fetchedStudent.email;
-        studentPhoneNumberInput.value = fetchedStudent.soDienThoai; 
+        studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
         studentUnitInput.value = fetchedStudent.donVi;
 
 
@@ -288,7 +288,7 @@ function initTablePagination() {
 
 
         paginationContainer.innerHTML +=
-        `
+            `
             <ol class="paginationFirstPageItem" id="paginationItem_first_page" onclick="goToPage(1)">Trang đầu</ol>
         `;
 
@@ -357,7 +357,7 @@ function goToPage(targetPage) {
     const currentPaginationItem = document.getElementById(`paginationItem_${targetPage}`);
     currentPaginationItem.classList.add("paginationActive");
 
-   
+
 
 }
 
