@@ -49,7 +49,7 @@ function updateSearchOrderType() {
     searchOrderTypeInput.value = "SEARCH_ONLY";
 }
 
-async function searchStudent() {
+async function searchStaff() {
     const searchResultLabel = document.getElementById("searchResultLabel");
     const staffsTableBody = document.getElementById("staffsTableBody");
     const searchOrderStaffForm = document.getElementById("searchOrderStaffForm");
@@ -64,7 +64,7 @@ async function searchStudent() {
             return;
         } else {
 
-            studentTable.search(staffSearchInputValue).draw();
+            staffTable.search(staffSearchInputValue).draw();
 
         }
 
@@ -179,7 +179,6 @@ async function initDeleteStaffField(id) {
 //=================== RESET PASSWORD ==================
 async function initStaffResetPasswordField(id) {
     const studyClassIdInput = document.getElementById("maNhanVien");
-    console.log("Ma nhan vien: " + id);
     studyClassIdInput.value = id;
 }
 
