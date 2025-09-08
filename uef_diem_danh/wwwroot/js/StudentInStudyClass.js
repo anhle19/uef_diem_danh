@@ -22,7 +22,7 @@ let studentManagementInStudyClassTable = new DataTable('#studentManagementInStud
                 return data;
             }
         }, // Sort NgaySinh column based on Year
-        { orderable: false, targets: [5] } // Disable button column
+        { orderable: false, targets: [1, 6] } // Disable button column
     ],
     language: {
         emptyTable: "Hiện không có dữ liệu học viên nào của lớp học",

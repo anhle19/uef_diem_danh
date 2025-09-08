@@ -30,7 +30,7 @@ let staffTable = new DataTable('#staffTable', {
     'dom': 'rt',    // "l" = length, "r" = processing, "t" = table, "p" = pagination
     columnDefs: [
         // Disable button column
-        //{ orderable: false, targets: [6, 7] } 
+        { orderable: false, targets: [4, 5, 6] } 
     ]
 });
 
@@ -44,10 +44,6 @@ function preventSearchStaffSubmit() {
     return false;
 }
 
-function updateSearchOrderType() {
-    const searchOrderTypeInput = document.getElementById("searchOrderType");
-    searchOrderTypeInput.value = "SEARCH_ONLY";
-}
 
 async function searchStaff() {
     const searchResultLabel = document.getElementById("searchResultLabel");
@@ -65,6 +61,12 @@ async function searchStaff() {
         } else {
 
             staffTable.search(staffSearchInputValue).draw();
+
+            const paginationContainer = document.getElementById("paginationContainer");
+
+            paginationContainer.innerHTML = '';
+
+            initTablePagination()
 
         }
 
@@ -239,7 +241,7 @@ function initTablePagination() {
     const totalPages = Math.ceil(tablePageInfo.recordsDisplay / 10);
 
 
-    if (totalPages >= 2) {
+    if (totalPages > 1) {
         const paginationWindow = getPaginationWindow(1, totalPages, PAGINATION_ITEM_LIMIT_RENDERING_NUMBER);
 
 

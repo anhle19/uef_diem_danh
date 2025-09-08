@@ -66,7 +66,7 @@
                             <td class="text-center">@evt.TieuDe</td>
                             <td class="text-center">@evt.NguoiPhuTrach.FullName</td>
                             <td class="text-center">@evt.SoLuongDuKien</td>
-                            <td class="text-center">@evt.ThoiGian</td>
+                            <td class="text-center">@evt.ThoiGian.ToString("dd/MM/yyyy HH:mm")</td>
                             @if (User.IsInRole("Admin"))
                             {
                                 <td class="text-center">
