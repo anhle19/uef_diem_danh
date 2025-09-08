@@ -4,13 +4,13 @@
 $(document).ready(function () {
     //// ================== INIT ==================
     $.fn.dataTable.moment('DD/MM/YYYY');
-   
+
 })
 
 let studentTable = new DataTable('#studentTable', {
     'dom': 'rt',    // "l" = length, "r" = processing, "t" = table, "p" = pagination
     columnDefs: [
-        { orderable: false, targets: [6, 7] } // Disable button column
+        { orderable: false, targets: [1, 8, 9] } // Disable button column
     ],
     language: {
         emptyTable: "Hiện không có dữ liệu học viên nào",
@@ -45,6 +45,11 @@ async function searchStudent() {
 
             studentTable.search(studyClassSearchInputValue).draw();
 
+            const paginationContainer = document.getElementById("paginationContainer");
+
+            paginationContainer.innerHTML = '';
+
+            initTablePagination()
         }
 
     } catch (ex) {
@@ -64,7 +69,7 @@ function changeCreatePreviewStudentAvatar() {
 
     if (
         studentAvatarFile.type === "image/png" ||
-        studentAvatarFile.type === "image/jpg" || 
+        studentAvatarFile.type === "image/jpg" ||
         studentAvatarFile.type === "image/jpeg"
     ) {
         const themHinhAnhPreview = document.getElementById("themHinhAnhPreview");
@@ -126,6 +131,16 @@ function addStudent() {
         return;
     }
 
+    let check = String(studentPhoneNumber).trim();
+    const re = /^(\+84|84|0)(3|5|7|8|9)\d{8}$/;
+    if (!re.test(check)) {
+        Swal.fire(
+            "Lỗi",
+            "Số điện thoại không hợp lệ",
+            "warning"
+        );
+        return;
+    }
 
     // Submit form
     createStudentForm.requestSubmit();
@@ -158,7 +173,7 @@ async function initUpdateStudentFields(id) {
         studentDobInput.value = fetchedStudent.ngaySinh;
         studentAddressInput.value = fetchedStudent.diaChi;
         studentEmailInput.value = fetchedStudent.email;
-        studentPhoneNumberInput.value = fetchedStudent.soDienThoai; 
+        studentPhoneNumberInput.value = fetchedStudent.soDienThoai;
         studentUnitInput.value = fetchedStudent.donVi;
 
 
@@ -236,6 +251,17 @@ function updateStudent() {
         return;
     }
 
+    let check = String(studentPhoneNumber).trim();
+    const re = /^(\+84|84|0)(3|5|7|8|9)\d{8}$/;
+    if (!re.test(check)) {
+        Swal.fire(
+            "Lỗi",
+            "Số điện thoại không hợp lệ",
+            "warning"
+        );
+        return;
+    }
+
     // Submit form
     updateStudyClassForm.requestSubmit();
 };
@@ -282,13 +308,13 @@ function initTablePagination() {
     const totalPages = Math.ceil(tablePageInfo.recordsDisplay / 10);
 
 
-    if (totalPages >= 2) {
+    if (totalPages > 1) {
 
         const paginationWindow = getPaginationWindow(1, totalPages, PAGINATION_ITEM_LIMIT_RENDERING_NUMBER);
 
 
         paginationContainer.innerHTML +=
-        `
+            `
             <ol class="paginationFirstPageItem" id="paginationItem_first_page" onclick="goToPage(1)">Trang đầu</ol>
         `;
 
@@ -357,7 +383,7 @@ function goToPage(targetPage) {
     const currentPaginationItem = document.getElementById(`paginationItem_${targetPage}`);
     currentPaginationItem.classList.add("paginationActive");
 
-   
+
 
 }
 

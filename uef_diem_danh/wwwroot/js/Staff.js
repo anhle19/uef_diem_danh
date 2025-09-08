@@ -30,7 +30,7 @@ let staffTable = new DataTable('#staffTable', {
     'dom': 'rt',    // "l" = length, "r" = processing, "t" = table, "p" = pagination
     columnDefs: [
         // Disable button column
-        //{ orderable: false, targets: [6, 7] } 
+        { orderable: false, targets: [4, 5, 6] } 
     ]
 });
 
@@ -44,12 +44,8 @@ function preventSearchStaffSubmit() {
     return false;
 }
 
-function updateSearchOrderType() {
-    const searchOrderTypeInput = document.getElementById("searchOrderType");
-    searchOrderTypeInput.value = "SEARCH_ONLY";
-}
 
-async function searchStudent() {
+async function searchStaff() {
     const searchResultLabel = document.getElementById("searchResultLabel");
     const staffsTableBody = document.getElementById("staffsTableBody");
     const searchOrderStaffForm = document.getElementById("searchOrderStaffForm");
@@ -64,7 +60,13 @@ async function searchStudent() {
             return;
         } else {
 
-            studentTable.search(staffSearchInputValue).draw();
+            staffTable.search(staffSearchInputValue).draw();
+
+            const paginationContainer = document.getElementById("paginationContainer");
+
+            paginationContainer.innerHTML = '';
+
+            initTablePagination()
 
         }
 
@@ -104,6 +106,16 @@ function addStaff() {
         return;
     }
 
+    let check = String(staffPhoneNumber).trim();
+    const re = /^(\+84|84|0)(3|5|7|8|9)\d{8}$/;
+    if (!re.test(check)) {
+        Swal.fire(
+            "Lỗi",
+            "Số điện thoại không hợp lệ",
+            "warning"
+        );
+        return;
+    }
 
     // Submit form
     createStudentForm.requestSubmit();
@@ -163,6 +175,17 @@ function updateStaff() {
         return;
     }
 
+    let check = String(staffPhoneNumber).trim();
+    const re = /^(\+84|84|0)(3|5|7|8|9)\d{8}$/;
+    if (!re.test(check)) {
+        Swal.fire(
+            "Lỗi",
+            "Số điện thoại không hợp lệ",
+            "warning"
+        );
+        return;
+    }
+
     // Submit form
     updateStudyClassForm.requestSubmit();
 };
@@ -179,7 +202,6 @@ async function initDeleteStaffField(id) {
 //=================== RESET PASSWORD ==================
 async function initStaffResetPasswordField(id) {
     const studyClassIdInput = document.getElementById("maNhanVien");
-    console.log("Ma nhan vien: " + id);
     studyClassIdInput.value = id;
 }
 
@@ -219,7 +241,7 @@ function initTablePagination() {
     const totalPages = Math.ceil(tablePageInfo.recordsDisplay / 10);
 
 
-    if (totalPages >= 2) {
+    if (totalPages > 1) {
         const paginationWindow = getPaginationWindow(1, totalPages, PAGINATION_ITEM_LIMIT_RENDERING_NUMBER);
 
 

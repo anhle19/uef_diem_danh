@@ -13,7 +13,7 @@ let studyClassTable = new DataTable('#studyClassTable', {
     dom: 'rt',    // "l" = length, "r" = processing, "t" = table, "i" = info, "p" = pagination
     // Notice no "f" here, which is the default filter/search box
     columnDefs: [
-        { orderable: false, targets: [4, 5, 6, 7] } // Disable button column
+        { orderable: false, targets: [6, 7] } // Disable button column
     ],
     language: {
         emptyTable: "Hiện không có dữ liệu lớp học nào",
@@ -257,6 +257,12 @@ async function searchStudyClass() {
 
             studyClassTable.search(studyClassSearchInputValue).draw();
 
+            const paginationContainer = document.getElementById("paginationContainer");
+
+            paginationContainer.innerHTML = '';
+
+            initTablePagination()
+
         }
 
     } catch (ex) {
@@ -300,7 +306,7 @@ function initTablePagination() {
     console.log(totalPages)
 
 
-    if (totalPages >= 2) {
+    if (totalPages > 1) {
 
         const paginationWindow = getPaginationWindow(1, totalPages, PAGINATION_ITEM_LIMIT_RENDERING_NUMBER);
 

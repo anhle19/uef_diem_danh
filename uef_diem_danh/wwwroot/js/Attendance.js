@@ -39,6 +39,12 @@ async function searchAttendances() {
             return;
         } else {
             attendanceManagementTable.search(search).draw();
+
+            const paginationContainer = document.getElementById("paginationContainer");
+
+            paginationContainer.innerHTML = '';
+
+            initTablePagination()
         }
 
     } catch (ex) {
@@ -81,7 +87,7 @@ function initTablePagination() {
     const totalPages = Math.ceil(tablePageInfo.recordsDisplay / 10);
 
 
-    if (totalPages >= 2) {
+    if (totalPages > 1) {
         const paginationWindow = getPaginationWindow(1, totalPages, PAGINATION_ITEM_LIMIT_RENDERING_NUMBER);
 
 
