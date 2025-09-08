@@ -126,6 +126,16 @@ function addStudent() {
         return;
     }
 
+    let check = String(studentPhoneNumber).trim();
+    const re = /^(\+84|84|0)(3|5|7|8|9)\d{8}$/;
+    if (!re.test(check)) {
+        Swal.fire(
+            "Lỗi",
+            "Số điện thoại không hợp lệ",
+            "warning"
+        );
+        return;
+    }
 
     // Submit form
     createStudentForm.requestSubmit();
@@ -231,6 +241,17 @@ function updateStudent() {
         Swal.fire(
             "Lỗi",
             "Vui lòng nhập đầy đủ dữ liệu",
+            "warning"
+        );
+        return;
+    }
+
+    let check = String(studentPhoneNumber).trim();
+    const re = /^(\+84|84|0)(3|5|7|8|9)\d{8}$/;
+    if (!re.test(check)) {
+        Swal.fire(
+            "Lỗi",
+            "Số điện thoại không hợp lệ",
             "warning"
         );
         return;

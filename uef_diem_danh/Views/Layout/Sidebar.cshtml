@@ -110,19 +110,19 @@
                            id="matKhauCu"
                            name="OldPassword"
                            class="form-control mb-3"
-                           placeholder="Mật khẩu hiện tại" />
+                           placeholder="Mật khẩu hiện tại"/>
 
                     <input type="password"
                            id="matKhauMoi"
                            name="NewPassword"
                            class="form-control mb-3"
-                           placeholder="Mật khẩu mới" />
+                           placeholder="Mật khẩu mới"/>
 
                     <input type="password"
                            id="xacNhanMatKhauMoi"
                            name="ConfirmPassword"
                            class="form-control"
-                           placeholder="Xác nhận mật khẩu mới" />
+                           placeholder="Xác nhận mật khẩu mới"/>
 
                 </form>
 
@@ -131,8 +131,76 @@
             <!-- Footer -->
             <div class="modal-footer">
                 <button type="button" class="btn-next-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button type="submit" class="btn-next-primary" id="btnLuuMatKhau" form="changePasswordForm">Lưu thay đổi</button>
+
+                <button type="button"
+                        class="btn-next-secondary"
+                        id="btnLuuMatKhau">
+                    Lưu thay đổi
+                </button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal xác nhận -->
+<div class="modal fade" id="popupXacNhan" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn thay đổi mật khẩu?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-next-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn-next-primary" id="btnXacNhanLuu">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const doiMatKhauModalEl = document.getElementById("popupDoiMatKhau");
+        const xacNhanModalEl = document.getElementById("popupXacNhan");
+
+        const doiMatKhauModal = new bootstrap.Modal(doiMatKhauModalEl);
+        const xacNhanModal = new bootstrap.Modal(xacNhanModalEl);
+
+        btnLuuMatKhau.addEventListener("click", function () {
+            const matKhauCuInput = document.getElementById("matKhauCu");
+            const matKhauMoiInput = document.getElementById("matKhauMoi");
+            const xacNhanMatKhauMoiInput = document.getElementById("xacNhanMatKhauMoi");
+
+            const matKhauCu = matKhauCuInput.value.trim();
+            const matKhauMoi = matKhauMoiInput.value.trim();
+            const xacNhanMatKhauMoi = xacNhanMatKhauMoiInput.value.trim();
+
+            if(!matKhauCu || !matKhauMoi || !xacNhanMatKhauMoi){
+                Swal.fire(
+                    "Lỗi",
+                    "Vui lòng nhập đầy đủ dữ liệu",
+                    "warning"
+                );
+                return;
+            }
+            doiMatKhauModal.hide();       
+            xacNhanModal.show();          
+        });
+
+        xacNhanModalEl.addEventListener("hidden.bs.modal", function () {
+            if (!xacNhanModalEl.dataset.submitted) {
+                doiMatKhauModal.show();
+            }
+        });
+
+        document.getElementById("btnXacNhanLuu").addEventListener("click", function () {
+
+            
+            xacNhanModalEl.dataset.submitted = true;
+            document.getElementById("changePasswordForm").submit();
+        });
+    });
+</script>
