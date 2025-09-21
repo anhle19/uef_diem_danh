@@ -197,10 +197,10 @@ async function initLockEvent(id) {
 function genQrCode(id) {
     console.log("Gen QR");
 
-    const link = "https://localhost:5046/diem-danh-su-kien/" + id;
+    const link = "https://trungtamchinhtrixuanhoa.edu.vn/diem-danh-su-kien/" + id;
     // Gán link vào input
     const attendanceLink = document.getElementById('attendanceLink');
-    attendanceLink.value = "https://localhost:5046/diem-danh-su-kien/" + id;
+    attendanceLink.value = "https://trungtamchinhtrixuanhoa.edu.vn/diem-danh-su-kien/" + id;
 
     const olink = document.getElementById("attendanceLinkClick");
     // Gán link YouTube động

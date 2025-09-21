@@ -430,7 +430,8 @@ namespace uef_diem_danh.Controllers
 
 
                 //driver.Navigate().GoToUrl($"https://laitsolution.id.vn/in-mot-the-hoc-vien/{student_id}");
-                driver.Navigate().GoToUrl($"https://localhost:5046/in-mot-the-hoc-vien/{student_id}");
+                // driver.Navigate().GoToUrl($"https://localhost:5046/in-mot-the-hoc-vien/{student_id}");
+                driver.Navigate().GoToUrl($"https://trungtamchinhtrixuanhoa.edu.vn/in-mot-the-hoc-vien/{student_id}");
 
 
                 var printOptions = new PrintOptions
@@ -485,7 +486,7 @@ namespace uef_diem_danh.Controllers
                 using var driver = new ChromeDriver(options);
 
                 //driver.Navigate().GoToUrl($"https://laitsolution.id.vn/in-danh-sach-the-hoc-vien/{study_class_id}");
-                driver.Navigate().GoToUrl($"https://localhost:5046/in-danh-sach-the-hoc-vien/{study_class_id}");
+                driver.Navigate().GoToUrl($"https://trungtamchinhtrixuanhoa.edu.vn/in-danh-sach-the-hoc-vien/{study_class_id}");
 
 
                 var printOptions = new PrintOptions
