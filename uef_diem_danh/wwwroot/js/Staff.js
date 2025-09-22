@@ -39,7 +39,7 @@ let staffTable = new DataTable('#staffTable', {
 // ================== SEARCH ==================
 
 function preventSearchStaffSubmit() {
-    searchStudyClass();
+    searchStaff();
 
     return false;
 }
