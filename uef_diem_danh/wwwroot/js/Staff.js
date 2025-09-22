@@ -57,7 +57,7 @@ async function searchStaff() {
     try {
 
         if (!staffSearchInputValue) {
-            return;
+            staffTable.search('').draw();
         } else {
 
             staffTable.search(staffSearchInputValue).draw();
