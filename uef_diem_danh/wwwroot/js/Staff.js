@@ -31,7 +31,11 @@ let staffTable = new DataTable('#staffTable', {
     columnDefs: [
         // Disable button column
         { orderable: false, targets: [4, 5, 6] } 
-    ]
+    ],
+    language: {
+        emptyTable: "Hiện không có dữ liệu nhân viên nào",
+        zeroRecords: "Không tìm thấy nhân viên nào",
+    }
 });
 
 
@@ -60,7 +64,7 @@ async function searchStaff() {
             staffTable.search('').draw();
         } else {
 
-            staffTable.search(staffSearchInputValue).draw();
+            staffTable.column(3).search(staffSearchInputValue).draw();
 
             const paginationContainer = document.getElementById("paginationContainer");
 
