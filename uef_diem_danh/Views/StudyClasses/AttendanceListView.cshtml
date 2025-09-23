@@ -104,17 +104,15 @@
                         </td>
                         <td>
                             @if (classSession.ClassSessionStatus == true)
-                            {      
-                                <form method="POST" action="/khoa-diem-danh-buoi-hoc?studyClassId=@Model.StudyClassId&classSessionId=@classSession.ClassSessionId">
-                                    @Html.AntiForgeryToken()
-
-                                    <button 
-                                        type="submit"
-                                        class="btn btn-outline-primary btn-sm"
-                                       >
-                                        Khóa
-                                    </button>
-                                </form>
+                            {
+                                <button 
+                                    type="submit"
+                                    class="btn btn-outline-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                        data-bs-target="#popupXacNhanKhoaBuoiHoc"
+                                    onclick="initLockClassConfirmationFields(@Model.StudyClassId, @classSession.ClassSessionId)">
+                                    Khóa
+                                </button>
                             } 
                             else
                             {
@@ -158,6 +156,8 @@
 @await Html.PartialAsync("/Views/Component/UpdateClassModal.cshtml", new uef_diem_danh.DTOs.ClassUpdateRequest())
 
 @await Html.PartialAsync("/Views/Component/DeleteClassModal.cshtml", new uef_diem_danh.DTOs.ClassDeleteRequest())
+
+@await Html.PartialAsync("/Views/Component/LockClassConfirmationModal.cshtml")
 
 
 <script src="~/js/Class.js"></script>
