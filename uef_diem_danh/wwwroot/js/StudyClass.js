@@ -252,7 +252,7 @@ async function searchStudyClass() {
     try {
 
         if (!studyClassSearchInputValue) {
-            return;
+            studyClassTable.search('').draw();
         } else {
 
             studyClassTable.search(studyClassSearchInputValue).draw();

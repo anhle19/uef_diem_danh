@@ -40,7 +40,7 @@ async function searchStudent() {
     try {
 
         if (!studyClassSearchInputValue) {
-            return;
+            studentTable.search('').draw();
         } else {
 
             studentTable.search(studyClassSearchInputValue).draw();
