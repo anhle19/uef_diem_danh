@@ -36,7 +36,7 @@ async function searchAttendances() {
     try {
 
         if (!search) {
-            attendanceManagementTable.search('').draw();
+            return;
         } else {
             attendanceManagementTable.search(search).draw();
 

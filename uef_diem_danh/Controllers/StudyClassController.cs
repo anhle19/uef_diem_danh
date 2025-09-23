@@ -623,11 +623,6 @@ namespace uef_diem_danh.Controllers
    
                 //}
 
-
-                creatingStudents = creatingStudents
-                    .DistinctBy(s => s.SoDienThoai)
-                    .ToList();
-
                 // Save creating students to database
                 context.HocViens.AddRange(creatingStudents);
                 await context.SaveChangesAsync();
