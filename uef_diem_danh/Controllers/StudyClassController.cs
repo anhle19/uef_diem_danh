@@ -1,15 +1,9 @@
-using ClosedXML.Excel;
-using ClosedXML.Excel.Drawings;
-using DocumentFormat.OpenXml.InkML;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
+
 using ExcelDataReader;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.Security.Claims;
 using System.Text;

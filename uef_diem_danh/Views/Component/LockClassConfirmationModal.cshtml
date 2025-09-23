@@ -1,0 +1,36 @@
+﻿
+
+<div class="modal fade"
+	 id="popupXacNhanKhoaBuoiHoc"
+	 tabindex="-1"
+	 aria-labelledby="popupXacNhanKhoaBuoiHocLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<form method="POST" id="lockClassSessionForm" class="modal-content">
+			@Html.AntiForgeryToken()
+
+			<div class="modal-header">
+				<h5 class="modal-title" id="popupBuoiHocLabel">Xác nhận khóa buổi học</h5>
+				<button type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Đóng"></button>
+			</div>
+			<div class="modal-body">Bạn có chắc chắn muốn khóa buổi học này không?</div>
+			<div class="modal-footer">
+				<button type="button"
+						class="btn-next-secondary"
+						data-bs-dismiss="modal">
+					Huỷ
+				</button>
+				<button type="submit"
+						class="btn-next-primary"
+						id="btnXacNhanKhoaBuoiHoc"
+						form="lockClassSessionForm">
+					Khóa
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
+
