@@ -148,3 +148,13 @@ async function initDeleteClassField(studyClassId, classId) {
     studyClassIdInput.value = studyClassId;
     classIdInput.value = classId;
 }
+
+
+
+// ================== LOCK CLASS CONFIRMATION ==================
+function initLockClassConfirmationFields(studyClassId, classSessionId) {
+    const lockClassSessionForm = document.getElementById("lockClassSessionForm");
+
+    lockClassSessionForm.action = `/khoa-diem-danh-buoi-hoc?studyClassId=${studyClassId}&classSessionId=${classSessionId}`
+
+}
