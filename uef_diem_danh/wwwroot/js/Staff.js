@@ -31,11 +31,7 @@ let staffTable = new DataTable('#staffTable', {
     columnDefs: [
         // Disable button column
         { orderable: false, targets: [4, 5, 6] } 
-    ],
-    language: {
-        emptyTable: "Hiện không có dữ liệu nhân viên nào",
-        zeroRecords: "Không tìm thấy nhân viên nào",
-    }
+    ]
 });
 
 
@@ -43,7 +39,7 @@ let staffTable = new DataTable('#staffTable', {
 // ================== SEARCH ==================
 
 function preventSearchStaffSubmit() {
-    searchStaff();
+    searchStudyClass();
 
     return false;
 }
@@ -61,10 +57,10 @@ async function searchStaff() {
     try {
 
         if (!staffSearchInputValue) {
-            staffTable.search('').draw();
+            return;
         } else {
 
-            staffTable.column(3).search(staffSearchInputValue).draw();
+            staffTable.search(staffSearchInputValue).draw();
 
             const paginationContainer = document.getElementById("paginationContainer");
 
