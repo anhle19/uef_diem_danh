@@ -79,7 +79,34 @@ async function searchStudent() {
 
 
 // ================== ADD STUDY CLASS ==================
-function addEvent() {
+async function initStaffList() {
+    // Đổ danh sách người phụ trách
+    const responseStaff = await axios.get(`api/lay-danh-sach-ten-nguoi-phu-trach`);
+    const fetchedStaff = responseStaff.data;
+
+    const dropdown = document.getElementById("themNguoiPhuTrach");
+    dropdown.innerHTML = ""; 
+
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Mời chọn";
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    dropdown.appendChild(defaultOption);
+
+    console.log("Mã người phụ trách: " + fetchedStaff);
+    fetchedStaff.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = item.name;
+        if (item.id == fetchedStaff.id) {
+            option.selected = true;
+        }
+        dropdown.appendChild(option);
+    });
+}
+
+ function addEvent() {
     const createEventForm = document.getElementById("createEventForm");
     const popup = document.getElementById("popupThemSuKien");
 
